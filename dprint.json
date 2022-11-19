@@ -1,14 +1,14 @@
 {
   "typescript": {
     "indentWidth": 4,
+    "lineWidth": 100,
     "useTabs": true,
     "preferSingleLine": true,
     "arrowFunction.useParentheses": "force"
   },
   "json": {},
-  "includes": ["**/*.{ts,tsx,js,jsx,cjs,mjs,json}"],
+  "includes": ["src/**/*.{ts,tsx,js,jsx,json}", "./*.{ts,tsx,js,jsx,json}"],
   "excludes": [
-    "**/node_modules",
     "**/*-lock.json"
   ],
   "plugins": [
