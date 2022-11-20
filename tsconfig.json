@@ -12,7 +12,6 @@
     "skipLibCheck": true,
     "noUnusedParameters": true,
     "importsNotUsedAsValues": "remove",
-    "preserveValueImports": true,
     "noEmit": true,
     "jsx": "react-native"
   },

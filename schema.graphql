@@ -1,0 +1,677 @@
+"""Exposes a URL that specifies the behavior of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behavior of this scalar."""
+  url: String!
+) on SCALAR
+
+type Activity {
+  id: String!
+  startDate: String
+  endDate: String
+  dueDate: String
+  completed: Boolean!
+  completionDate: String
+  organization: Organization
+  source: ActivitySource
+  gradeInfo: GradeInfo
+  feedback: Feedback @deprecated(reason: "Fetch feedback directly on the UserGrade instead, which is simpler and more accurate.")
+}
+
+interface ActivityDateApproachingAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityId: String!
+}
+
+type ActivityFeedArticle implements ActivityFeedEntity & ActivityFeedTopLevelPost {
+  id: String!
+  author: User!
+  type: String!
+  publishedDate: String!
+  attachmentLinks: [ActivityFeedLink!]!
+  isPinned: Boolean!
+  webLink: String
+  commentsLink: String
+  allCommentsLink: String @deprecated(reason: "Use commentsLink instead, which is paged.")
+  firstComment: ActivityFeedComment
+  commentsCount: Int!
+  message: String!
+}
+
+type ActivityFeedArticlePage {
+  id: String!
+  activityFeedArticles: [ActivityFeedPost!]!
+  next: String
+}
+
+type ActivityFeedAssignment implements ActivityFeedEntity & ActivityFeedTopLevelPost {
+  id: String!
+  author: User!
+  type: String!
+  publishedDate: String!
+  attachmentLinks: [ActivityFeedLink!]!
+  isPinned: Boolean!
+  webLink: String
+  commentsLink: String
+  allCommentsLink: String @deprecated(reason: "Use commentsLink instead, which is paged.")
+  firstComment: ActivityFeedComment
+  commentsCount: Int!
+  name: String!
+  instructions: String
+  dueDate: String
+  submissionLink: String
+}
+
+type ActivityFeedComment implements ActivityFeedEntity {
+  id: String!
+  author: User!
+  type: String!
+  publishedDate: String!
+  message: String!
+}
+
+type ActivityFeedCommentPage {
+  id: String!
+  activityFeedComments: [ActivityFeedComment!]!
+  next: String
+}
+
+interface ActivityFeedEntity {
+  id: String!
+  author: User!
+  type: String!
+  publishedDate: String!
+}
+
+type ActivityFeedLink {
+  id: String!
+  name: String!
+  href: String!
+  iconHref: String!
+  type: String!
+}
+
+union ActivityFeedPost = ActivityFeedArticle | ActivityFeedAssignment
+
+interface ActivityFeedTopLevelPost {
+  attachmentLinks: [ActivityFeedLink!]!
+  isPinned: Boolean!
+  webLink: String
+  commentsLink: String
+  allCommentsLink: String @deprecated(reason: "Use commentsLink instead, which is paged.")
+  firstComment: ActivityFeedComment
+  commentsCount: Int!
+}
+
+interface ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+}
+
+"""Common interface to all alert items."""
+interface Alert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+}
+
+type AlertsPage {
+  id: String!
+  alerts: [Alert!]!
+  next: String
+}
+
+type Announcement {
+  id: String!
+  title: String!
+  body: String!
+  bodyHtml: String!
+  bodyHtmlRichContent: String
+  date: String! @deprecated(reason: "Use startDate instead, which admits nullability.")
+  startDate: String
+  viewUrl: String!
+}
+
+interface AnnouncementAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  announcementId: String!
+}
+
+type AnnouncementAvailableAlert implements Alert & AnnouncementAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  announcementId: String!
+}
+
+type AnnouncementUpdatedAlert implements Alert & AnnouncementAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  announcementId: String!
+}
+
+type Assignment implements ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+  outOf: Float
+  addToGrades: Boolean
+  draft: Boolean
+  submissionType: Int
+  completionType: Int
+}
+
+type ChecklistItem implements ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+}
+
+interface ClassStreamAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityFeedItemId: String!
+}
+
+type ClassStreamCommentAlert implements Alert & ClassStreamAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityFeedItemId: String!
+}
+
+type ClassStreamMessageAlert implements Alert & ClassStreamAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityFeedItemId: String!
+}
+
+type ConsortiumOrganization {
+  id: String!
+  name: String!
+  homeUrl: String
+  tenant: String!
+  user: String!
+}
+
+type Content implements ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+}
+
+interface ContentAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  contentId: String!
+}
+
+type ContentCreatedAlert implements Alert & ContentAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  contentId: String!
+}
+
+interface ContentItem {
+  id: String!
+  parentId: String
+  title: String!
+  isComplete: Boolean
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+}
+
+type ContentModule implements ContentItem {
+  id: String!
+  parentId: String
+  title: String!
+  isComplete: Boolean
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  children: [ContentItem!]!
+}
+
+type ContentRoot {
+  id: String!
+  modules: [ContentModule!]!
+}
+
+type ContentTopic implements ContentItem {
+  id: String!
+  parentId: String
+  title: String!
+  isComplete: Boolean
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  viewHref: String! @deprecated(reason: "viewHref is deprecated. Use viewUrl instead, which admits nullability, rather than substituting the URL of a 403 error page.")
+  viewUrl: String
+  downloadHref: String
+  pdfHref: String
+  iconHref: String!
+  type: String
+  fileName: String
+  modifiedDate: String
+}
+
+type ContentUpdatedAlert implements Alert & ContentAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  contentId: String!
+}
+
+type CourseOfferingActivity implements ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+}
+
+type DropboxDueDateApproachingAlert implements Alert & ActivityDateApproachingAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityId: String!
+}
+
+type DropboxEndDateApproachingAlert implements Alert & ActivityDateApproachingAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityId: String!
+}
+
+enum EnrollmentState {
+  CURRENT
+  FUTURE
+  PAST
+  OVERDUE
+  DUESOON
+  ENDSSOON
+  COMPLETE
+  INACTIVE
+}
+
+type Event {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  startDate: String!
+  endDate: String!
+  allDay: Boolean!
+  location: String
+  organization: Organization
+}
+
+type Feedback {
+  id: String!
+  text: String!
+  textHtml: String!
+  textHtmlRichContent: String
+  viewUrl: String
+}
+
+"""
+Generic implementation of an alert. Used for cases where no additional
+information is provided, and the clients just care about having a viewUrl to open.
+"""
+type GenericAlert implements Alert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+}
+
+interface GradeAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  gradeId: String!
+}
+
+type GradeInfo {
+  id: String!
+  type: String
+  value: Float
+}
+
+type GradeReleasedAlert implements Alert & GradeAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  gradeId: String!
+}
+
+type GradeUpdatedAlert implements Alert & GradeAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  gradeId: String!
+}
+
+type Mutation {
+  resetNotificationCount: Boolean!
+  viewContentTopic(topicId: String!): ContentTopic!
+  pinEnrollment(id: String!): UserEnrollment
+  unpinEnrollment(id: String!): UserEnrollment
+  updatePushNotificationSetting(settingKey: String!, enabled: Boolean!): PushNotificationSetting
+
+  """Old mutation. Will be removed, do not use in new code."""
+  acknowledgeAllUpdates(id: String): UpdatesPage
+}
+
+type Notifications {
+  assignmentsCount: Int
+  assignmentsUrl: String
+  discussionsCount: Int
+  discussionsUrl: String
+  quizzesCount: Int
+  quizzesUrl: String
+}
+
+type Organization {
+  id: String!
+  name: String!
+  code: String
+  startDate: String
+  endDate: String
+  isActive: Boolean!
+  color: String
+  homeUrl: String
+  imageUrl: String
+  sequenceUrl: String
+  gradesViewUrl: String
+  semester: Semester
+  theme: Theme
+  hasGradesEnabled: Boolean!
+  hasActivityFeed: Boolean!
+}
+
+type PushNotificationConfigOptions {
+  categories: [PushNotificationSettingCategory!]!
+}
+
+type PushNotificationSetting {
+  settingKey: String!
+  name: String!
+  enabled: Boolean!
+}
+
+type PushNotificationSettingCategory {
+  name: String!
+  settings: [PushNotificationSetting!]!
+}
+
+type Query {
+  activityFeedArticlePage(orgUnitId: String!, id: String): ActivityFeedArticlePage
+  activityFeedArticle(id: String!): ActivityFeedPost
+  activityFeedCommentPage(id: String!): ActivityFeedCommentPage
+  activities(start: String!, end: String!, strict: Boolean): [Activity!]!
+  activity(id: String!): Activity
+  alert(alertId: String!): Alert
+
+  """Old, poorly-named query. Use updateAlertsPage instead."""
+  alertsPage(id: String): AlertsPage!
+  subscriptionAlert(alertId: String!): Alert
+  subscriptionAlertsPage(id: String, pageSize: Int = 20): AlertsPage!
+  updateAlert(alertId: String!): Alert
+  updateAlertsPage(id: String, pageSize: Int = 20): AlertsPage!
+  announcement(id: String!): Announcement
+  contentRoot(organizationId: String!): ContentRoot!
+  contentModule(moduleId: String!): ContentModule!
+  contentTopic(topicId: String!): ContentTopic!
+  enrollment(id: String!): UserEnrollment
+  enrollmentPage(id: String): UserEnrollmentPage
+  event(id: String!): Event
+  events(start: String!, end: String!): [Event!]!
+  userGrade(gradeId: String!): UserGrade
+  userGrades(organization: String!): [UserGrade!]!
+  organization(id: String!): Organization
+  rootOrganization: Organization
+  consortiumOrganizations: [ConsortiumOrganization!]!
+  pushNotificationConfig: PushNotificationConfigOptions!
+  user: User
+
+  """Old query. Will be removed, use updateAlertsPage instead."""
+  updatesPage(id: String): UpdatesPage
+
+  """Old query. Will be removed, do not use in new code."""
+  update(id: String!): Update
+}
+
+type Quiz implements ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+}
+
+type QuizDueDateApproachingAlert implements Alert & ActivityDateApproachingAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityId: String!
+}
+
+type QuizEndDateApproachingAlert implements Alert & ActivityDateApproachingAlert {
+  id: String!
+  title: String!
+  message: String!
+  viewUrl: String!
+  iconUrl: String!
+  date: String!
+  organization: Organization!
+  activityId: String!
+}
+
+type Semester {
+  name: String!
+}
+
+type Survey implements ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+}
+
+type Theme {
+  color: String!
+  imageLink: String
+}
+
+type Topic implements ActivitySource {
+  id: String!
+  name: String
+  url: String
+  description: String
+  descriptionHtml: String
+  descriptionHtmlRichContent: String
+  organization: Organization
+}
+
+type Update {
+  id: String!
+  title: String
+  date: String
+  type: UpdateType
+  description: String
+  descriptionHtml: String
+  link: String
+  organization: Organization
+  contentLink: String
+  activityFeedLink: String
+  dueDate: String
+  startDate: String
+  endDate: String
+  userActivityUsageLink: String
+  gradeLink: String
+}
+
+type UpdatesPage {
+  id: String!
+  updates: [Update!]!
+  next: String
+}
+
+enum UpdateType {
+  ANNOUNCEMENT
+  CONTENTADDED
+  CONTENTUPDATED
+  CONTENTOVERVIEWUPDATED
+  GRADE
+  CLASSSTREAMMESSAGE
+  CLASSSTREAMCOMMENT
+  QUIZDUEDATEAPPROACHING
+  QUIZENDDATEAPPROACHING
+  DROPBOXDUEDATEAPPROACHING
+  DROPBOXENDDATEAPPROACHING
+}
+
+type User {
+  id: String!
+  displayName: String
+  firstName: String
+  lastName: String
+  imageUrl: String
+}
+
+type UserEnrollment {
+  id: String!
+  pinned: Boolean!
+  state: EnrollmentState!
+  organization: Organization
+  notifications: Notifications
+  startDate: String
+  endDate: String
+  dueDate: String
+  completionDate: String
+}
+
+type UserEnrollmentPage {
+  id: String!
+  enrollments: [UserEnrollment!]!
+  next: String
+  organization: Organization
+}
+
+type UserGrade {
+  id: String!
+  name: String!
+  value: String!
+  userActivityUsageLink: String
+  activity: Activity
+  feedback: Feedback
+}
+
