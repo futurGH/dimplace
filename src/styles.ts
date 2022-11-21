@@ -1,5 +1,6 @@
 export const Colors = {
 	Background: "#131720",
+	Button: "#1F2937",
 	Card: "#181D2B",
 	Border: "#374151",
 	TextPrimary: "#E5E7EB",
@@ -9,16 +10,14 @@ export const Colors = {
 	Active: "#06B6D4",
 } as const;
 
-export const FontWeight = { Regular: 400, Medium: 500, Bold: 700 } as const;
-
-export const Text = {
-	Caption: { fontSize: 12, fontWeight: FontWeight.Regular },
-	Label: { fontSize: 13, fontWeight: FontWeight.Regular },
-	Footnote: { fontSize: 13, fontWeight: FontWeight.Medium },
-	Body: { fontSize: 15, fontWeight: FontWeight.Regular },
+export const Typography = {
+	Caption: { fontSize: 12, fontFamily: "WorkRegular", lineHeight: 16 },
+	Label: { fontSize: 13, fontFamily: "WorkRegular", lineHeight: 18 },
+	Footnote: { fontSize: 13, fontFamily: "WorkMedium", lineHeight: 18 },
+	Body: { fontSize: 15, fontFamily: "WorkRegular", lineHeight: 20 },
 	// not a fan of this naming; it's the name of an assignment, grade, or content item
-	ListHeading: { fontSize: 17, fontWeight: FontWeight.Regular },
-	Subheading: { fontSize: 17, fontWeight: FontWeight.Medium },
-	Heading: { fontSize: 18, fontWeight: FontWeight.Medium },
-	Title: { fontSize: 20, fontWeight: FontWeight.Medium },
-} as const;
+	ListHeading: { fontSize: 17, fontFamily: "WorkRegular", lineHeight: 22 },
+	Subheading: { fontSize: 17, fontFamily: "WorkMedium", lineHeight: 22 },
+	Heading: { fontSize: 18, fontFamily: "WorkMedium", lineHeight: 24 },
+	Title: { fontSize: 20, fontFamily: "WorkMedium", lineHeight: 25 },
+};

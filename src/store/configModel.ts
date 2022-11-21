@@ -54,6 +54,6 @@ export const configModel: ConfigModel = {
 		refreshToken: "",
 		setRefreshToken: action((state, payload) => {
 			state.api.refreshToken = payload;
-		})
+		}),
 	},
 };

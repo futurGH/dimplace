@@ -1,15 +1,14 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Onboarding } from "./src/screens/Onboarding";
+import { StoreProvider } from "easy-peasy";
+import * as SplashScreen from "expo-splash-screen";
+import { NavigationWrapper } from "./src/components/layout/NavigationWrapper";
+import { store } from "./src/store/store";
 
-const Stack = createNativeStackNavigator();
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
 	return (
-		<NavigationContainer>
-			<Stack.Navigator>
-				<Stack.Screen name="Onboarding" component={Onboarding} />
-			</Stack.Navigator>
-		</NavigationContainer>
+		<StoreProvider store={store}>
+			<NavigationWrapper />
+		</StoreProvider>
 	);
 }
