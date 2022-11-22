@@ -2,7 +2,7 @@ export const Colors = {
 	Background: "#131720",
 	Button: "#1F2937",
 	Card: "#181D2B",
-	Border: "#374151",
+	Border: "#2F3846",
 	TextPrimary: "#E5E7EB",
 	TextSecondary: "#D1D5DB",
 	TextLabel: "#9CA3AF",
