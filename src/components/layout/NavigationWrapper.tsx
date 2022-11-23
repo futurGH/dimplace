@@ -9,10 +9,19 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useStoreRehydrated } from "easy-peasy";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
-import { Onboarding } from "../../screens/Onboarding";
+import { Home } from "../../screens/home/Home";
+import { AuthWebView } from "../../screens/onboarding/AuthWebView";
+import { InstitutionSelection } from "../../screens/onboarding/InstitutionSelection";
+import { Onboarding } from "../../screens/onboarding/Onboarding";
 import { useStoreState } from "../../store/store";
 
-const Stack = createNativeStackNavigator();
+export type StackParamList = {
+	Onboarding: undefined;
+	InstitutionSelection: undefined;
+	AuthWebView: { source: string };
+	Home: undefined;
+};
+const Stack = createNativeStackNavigator<StackParamList>();
 
 export function NavigationWrapper() {
 	const [fontsLoaded] = useFonts({
@@ -36,7 +45,25 @@ export function NavigationWrapper() {
 	return (
 		<NavigationContainer onReady={onReady}>
 			<Stack.Navigator screenOptions={{ headerShown: false }}>
-				{!config.onboarded && <Stack.Screen name="Onboarding" component={Onboarding} />}
+				<Stack.Group navigationKey="Onboarding">
+					{!config.onboarded && (
+						<>
+							<Stack.Screen name="Onboarding" component={Onboarding} />
+							<Stack.Screen
+								name="InstitutionSelection"
+								component={InstitutionSelection}
+							/>
+						</>
+					)}
+					<Stack.Screen
+						name="AuthWebView"
+						component={AuthWebView}
+						initialParams={{ source: "" }}
+					/>
+				</Stack.Group>
+				<Stack.Group navigationKey="Home">
+					<Stack.Screen name="Home" component={Home} />
+				</Stack.Group>
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

@@ -6,8 +6,8 @@ export type ButtonProps = BuiltInButtonProps & {
 };
 export default function Button({ onPress, title, style }: ButtonProps) {
 	return (
-		<Pressable style={{ ...baseStyles.button, ...style.button }} onPress={onPress}>
-			<Text style={{ ...baseStyles.text, ...style.text }}>{title}</Text>
+		<Pressable style={[baseStyles.button, style.button]} onPress={onPress}>
+			<Text style={[baseStyles.text, style.text]}>{title}</Text>
 		</Pressable>
 	);
 }

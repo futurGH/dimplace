@@ -1,19 +1,20 @@
+import type { ReactNode } from "react";
 import type { FlatListProps, TextStyle, ViewStyle } from "react-native";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors, Typography } from "../styles";
 import { ItemSeparator } from "./ItemSeparator";
 
-interface ListItemProps {
-	icon: (props?: { style?: ViewStyle }) => JSX.Element;
+export interface ListItemProps {
 	title: string;
+	icon?: ReactNode;
 	subtitle?: string;
 	onPress?: () => void;
 	style?: { container?: ViewStyle; icon?: ViewStyle; title?: TextStyle; subtitle?: TextStyle };
 }
-export function ListItem({ icon: Icon, title, subtitle, onPress, style = {} }: ListItemProps) {
+export function ListItem({ icon = null, title, subtitle, onPress, style = {} }: ListItemProps) {
 	return (
 		<View style={[listItemStyles.container, style.container]}>
-			<Icon />
+			{icon}
 			<Pressable style={listItemStyles.text} onPress={onPress}>
 				<Text style={[listItemStyles.title, style.title]}>{title}</Text>
 				{subtitle && (
@@ -31,13 +32,15 @@ const listItemStyles = StyleSheet.create({
 	subtitle: { ...Typography.Label, color: Colors.TextLabel },
 });
 
-export function List<T extends ListItemProps>(
-	props: Partial<FlatListProps<T>> & Pick<FlatListProps<T>, "data">,
-) {
+interface ListProps<T> extends Partial<FlatListProps<T>> {
+	data: Array<T>;
+	onItemPress?: (item: T) => void;
+}
+export function List<T extends ListItemProps>({ onItemPress = () => {}, ...props }: ListProps<T>) {
 	return (
 		<FlatList
 			ItemSeparatorComponent={ItemSeparator}
-			renderItem={({ item }) => <ListItem {...item} />}
+			renderItem={({ item }) => <ListItem onPress={() => onItemPress(item)} {...item} />}
 			{...props}
 		/>
 	);

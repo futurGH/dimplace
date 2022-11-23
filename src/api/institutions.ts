@@ -1,27 +1,28 @@
-import { s } from "@sapphire/shapeshift";
+import * as t from "typed";
 
-const institutionListValidator = s.object({
-	entities: s.array(
-		s.object({
-			class: s.string.array,
-			properties: s.object({ name: s.string }),
-			links: s.array(s.object({ rel: s.array(s.string), href: s.string })),
+const institutionListValidator = t.object({
+	entities: t.array(
+		t.object({
+			class: t.array(t.string()),
+			properties: t.object({ name: t.string() }),
+			links: t.array(t.object({ rel: t.array(t.string()), href: t.string() })),
 		}),
 	),
 });
 
-export async function getInstitutionList(contains: string = "") {
+export type InstitutionList = Array<{ name: string; links: { self?: string; lms?: string } }>;
+export async function getInstitutionList(contains: string = ""): Promise<InstitutionList> {
 	const response = await fetch(
 		`https://lms-disco.api.brightspace.com/institutions`
 			+ (contains ? `?contains=${contains}` : ""),
 		{ method: "GET" },
 	);
-	if (!response.ok || !response.body) {
+	if (!response.ok) {
 		return [];
 	}
 	try {
 		const result = await response.json();
-		const parsedResult = institutionListValidator.parse(result);
+		const parsedResult = t.unwrap(institutionListValidator(result));
 		return parsedResult.entities.map((entity) => ({
 			name: entity.properties.name,
 			links: {
@@ -34,26 +35,24 @@ export async function getInstitutionList(contains: string = "") {
 	}
 }
 
-const institutionInfoValidator = s.tuple([
-	s.object({
-		tenantId: s.string,
-		domain: s.string,
-		"_links": s.object({ "self": s.object({ "href": s.string }) }),
-	}),
-]);
+const institutionInfoValidator = t.object({
+	tenantId: t.string(),
+	domain: t.string(),
+	"_links": t.object({ "self": t.object({ "href": t.string() }) }),
+});
 
-export async function getInstitutionInfo(lmsDomain: string) {
+export type InstitutionInfo = t.Infer<typeof institutionInfoValidator>;
+export async function getInstitutionInfo(lmsDomain: string): Promise<InstitutionInfo | null> {
 	const response = await fetch(
 		`https://landlord.brightspace.com/v1/tenants?domain=${lmsDomain}`,
 		{ method: "GET" },
 	);
-	if (!response.ok || !response.body) {
+	if (!response.ok) {
 		return null;
 	}
 	try {
 		const result = await response.json();
-		const [parsedResult] = institutionInfoValidator.parse(result);
-		return parsedResult;
+		return t.unwrap(institutionInfoValidator(result[0]));
 	} catch (e) {
 		return null;
 	}

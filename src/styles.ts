@@ -1,6 +1,7 @@
 export const Colors = {
 	Background: "#131720",
 	Button: "#1F2937",
+	Input: "#1A212E",
 	Card: "#181D2B",
 	Border: "#2F3846",
 	TextPrimary: "#E5E7EB",
