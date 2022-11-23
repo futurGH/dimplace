@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { FlatListProps, TextStyle, ViewStyle } from "react-native";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors, Typography } from "../styles";
+import { Colors, Typography } from "../../styles";
 import { ItemSeparator } from "./ItemSeparator";
 
 export interface ListItemProps {

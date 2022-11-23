@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
-import { Colors } from "../styles";
+import { Colors } from "../../styles";
 
 interface ContainerProps {
 	style?: View["props"]["style"];

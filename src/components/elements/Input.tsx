@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { TextInput } from "react-native";
 import { StyleSheet, View } from "react-native";
-import { Colors } from "../styles";
+import { Colors } from "../../styles";
 
 export type InputProps = TextInput["props"] & {
 	icon?: ReactNode;

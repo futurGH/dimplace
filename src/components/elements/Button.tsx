@@ -1,5 +1,5 @@
 import { type ButtonProps as BuiltInButtonProps, Pressable, StyleSheet, Text } from "react-native";
-import { Colors, Typography } from "../styles";
+import { Colors, Typography } from "../../styles";
 
 export type ButtonProps = BuiltInButtonProps & {
 	style: Partial<StyleSheet.NamedStyles<typeof baseStyles>>;
