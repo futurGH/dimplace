@@ -1,4 +1,5 @@
 import { Action, action, Thunk, thunk } from "easy-peasy";
+import { gqlClient } from "../api/gqlClient";
 
 export interface ConfigModel {
 	onboarded: boolean;
@@ -41,10 +42,13 @@ export const configModel: ConfigModel = {
 				client_id: state.clientId,
 			}),
 		});
-		if (response.ok) {
+		try {
+			if (!response.ok) throw new Error();
 			const data = await response.json();
+			if (!data.access_token) throw new Error();
+			gqlClient.setHeader("Authorization", "Bearer " + data.access_token);
 			actions.setAccessToken(data.access_token);
-		} else {
+		} catch (e) {
 			fail({ status: response.status, statusText: response.statusText });
 		}
 	}),

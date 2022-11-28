@@ -4,7 +4,8 @@
     "lineWidth": 100,
     "useTabs": true,
     "preferSingleLine": true,
-    "arrowFunction.useParentheses": "force"
+    "arrowFunction.useParentheses": "force",
+    "quoteProps": "asNeeded"
   },
   "json": {},
   "includes": ["src/**/*.{ts,tsx,js,jsx,json}", "./*.{ts,tsx,js,jsx,json}"],

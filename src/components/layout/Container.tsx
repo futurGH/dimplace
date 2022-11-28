@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Colors } from "../../styles";
 
 interface ContainerProps {
@@ -7,14 +7,14 @@ interface ContainerProps {
 	children: ReactNode;
 }
 export function Container({ style, children }: ContainerProps) {
-	return (
-		<SafeAreaView style={baseStyles.container}>
-			<View style={[baseStyles.content, style]}>{children}</View>
-		</SafeAreaView>
-	);
+	return <View style={[baseStyles.content, style]}>{children}</View>;
 }
 
 const baseStyles = StyleSheet.create({
-	container: { backgroundColor: Colors.Background, width: "100%", height: "100%" },
-	content: { padding: "5%" },
+	content: {
+		backgroundColor: Colors.Background,
+		height: "100%",
+		width: "100%",
+		paddingHorizontal: "5%",
+	},
 });

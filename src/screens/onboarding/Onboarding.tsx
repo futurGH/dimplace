@@ -1,14 +1,17 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StyleSheet, Text } from "react-native";
 import { BrokenLightbulb } from "../../assets/broken-lightbulb";
-import Button from "../../components/Button";
-import { Container } from "../../components/Container";
+import Button from "../../components/elements/Button";
+import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type { StackParamList } from "../../components/layout/NavigationWrapper";
+import { useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 
 export function Onboarding({ navigation }: NativeStackScreenProps<StackParamList, "Onboarding">) {
+	const config = useStoreState((state) => state.config);
+	if (config.onboarded) navigation.navigate("Home");
 	return (
-		<Container style={styles.content}>
+		<HeaderlessContainer style={styles.content}>
 			<BrokenLightbulb />
 			<Text style={styles.title}>Welcome to Dimplace!</Text>
 			<Text style={styles.body}>Log in with your education provider to get started.</Text>
@@ -19,7 +22,7 @@ export function Onboarding({ navigation }: NativeStackScreenProps<StackParamList
 					navigation.navigate("InstitutionSelection");
 				}}
 			/>
-		</Container>
+		</HeaderlessContainer>
 	);
 }
 
