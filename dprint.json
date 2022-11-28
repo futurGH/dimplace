@@ -10,7 +10,8 @@
   "json": {},
   "includes": ["src/**/*.{ts,tsx,js,jsx,json}", "./*.{ts,tsx,js,jsx,json}"],
   "excludes": [
-    "**/*-lock.json"
+    "**/*-lock.json",
+    "src/gql/**/*"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.78.0.wasm",
