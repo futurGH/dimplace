@@ -36,7 +36,7 @@ export function CourseNavigation() {
 	const { id: courseId } = route.params;
 	const id = `https://${config.tenantId}.organizations.api.brightspace.com/${courseId}`;
 
-	const { data, error, isLoading } = useQuery({
+	const { data, error: errors, isLoading, refetch } = useQuery({
 		queryKey: ["course", id],
 		queryFn: async () => {
 			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
@@ -46,13 +46,18 @@ export function CourseNavigation() {
 
 	if (isLoading) {
 		return (
-			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center" }}>
+			<HeaderlessContainer
+				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
+			>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
 	}
 
-	if (error) navigation.goBack();
+	if (errors) {
+		handleErrors({ errors, refetch });
+		console.error(errors);
+	}
 
 	return (
 		<Tab.Navigator

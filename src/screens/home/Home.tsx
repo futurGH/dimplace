@@ -7,13 +7,15 @@ import { CourseCard } from "../../components/home/CourseCard";
 import { Container } from "../../components/layout/Container";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import { graphql } from "../../gql";
-import { useStoreActions, useStoreState } from "../../store/store";
-import { buildAuthUrl } from "../onboarding/AuthWebView";
+import { useStoreState } from "../../store/store";
+import { handleErrors } from "../../util/errors";
 
 export function Home() {
 	const navigation = useNavigation();
+
+	navigation.addListener("beforeRemove", (e) => e.preventDefault());
+
 	const config = useStoreState((state) => state.config);
-	const configActions = useStoreActions((actions) => actions.config);
 	const { data, error: errors, isLoading, refetch } = useQuery({
 		queryKey: ["home"],
 		queryFn: async () => {
@@ -27,24 +29,16 @@ export function Home() {
 
 	if (isLoading) {
 		return (
-			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center" }}>
+			<HeaderlessContainer
+				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
+			>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
 	}
 	if (errors) {
+		handleErrors({ errors, refetch });
 		console.error(errors);
-		if (Array.isArray(errors) && errors.length) {
-			const error = errors[0];
-			const errorCode = error.response.status;
-			if (errorCode === 401) {
-				configActions.updateAccessToken(config.refreshToken);
-				// TODO: alert or something when repeated fetching fails
-				refetch().catch(() => {
-					navigation.navigate("AuthWebView", { source: buildAuthUrl(config) });
-				});
-			}
-		}
 	}
 
 	const courses: Array<CourseCardProps> =
