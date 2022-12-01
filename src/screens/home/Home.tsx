@@ -24,9 +24,10 @@ export function Home() {
 			return gqlClient.request(COURSE_LIST_QUERY, { startDate, endDate });
 		},
 	});
+
 	if (isLoading) {
 		return (
-			<HeaderlessContainer>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
@@ -45,6 +46,7 @@ export function Home() {
 			}
 		}
 	}
+
 	const courses: Array<CourseCardProps> =
 		data?.enrollmentPage?.enrollments?.filter((
 			enrollment,
@@ -65,6 +67,7 @@ export function Home() {
 				}),
 			};
 		}) || [];
+
 	return (
 		<Container>
 			<FlatList

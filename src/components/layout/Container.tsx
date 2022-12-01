@@ -16,5 +16,6 @@ const baseStyles = StyleSheet.create({
 		height: "100%",
 		width: "100%",
 		paddingHorizontal: "5%",
+		paddingTop: "2.5%",
 	},
 });

@@ -4,13 +4,20 @@ import {
 	WorkSans_500Medium,
 	WorkSans_700Bold,
 } from "@expo-google-fonts/work-sans";
-import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+	LinkingOptions,
+	NavigationContainer,
+	NavigatorScreenParams,
+} from "@react-navigation/native";
+import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useStoreRehydrated } from "easy-peasy";
 import * as Linking from "expo-linking";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
-import { CourseNavigation } from "../../screens/course/CourseNavigation";
+import {
+	CourseNavigation,
+	CourseTabNavigatorParamList,
+} from "../../screens/course/CourseNavigation";
 import { Home } from "../../screens/home/Home";
 import { AuthWebView } from "../../screens/onboarding/AuthWebView";
 import { InstitutionSelection } from "../../screens/onboarding/InstitutionSelection";
@@ -23,8 +30,13 @@ export type StackParamList = {
 	InstitutionSelection: undefined;
 	AuthWebView: { source: string };
 	Home: undefined;
-	CourseNavigation: undefined;
+	CourseNavigation: NavigatorScreenParams<CourseTabNavigatorParamList> & { id: string };
 };
+export type RootStackScreenProps<T extends keyof StackParamList> = NativeStackScreenProps<
+	StackParamList,
+	T
+>;
+
 const Stack = createNativeStackNavigator<StackParamList>();
 
 declare global {
@@ -58,11 +70,17 @@ export function NavigationWrapper() {
 		config: {
 			screens: {
 				CourseNavigation: {
+					path: "courses/:id",
+					initialRouteName: "CourseHomeStack" as never,
 					screens: {
-						CourseHome: "/courses/:id",
-						CourseContent: "/courses/:id/content",
-						CourseAssignments: "/courses/:id/assignments",
-						CourseGrades: "/courses/:id/grades",
+						CourseHomeStack: {
+							path: "",
+							initialRouteName: "CourseFeed" as never,
+							screens: { CourseFeed: "feed" },
+						},
+						CourseContent: "content",
+						CourseAssignments: "assignments",
+						CourseGrades: "grades",
 					},
 				},
 			},
@@ -94,9 +112,7 @@ export function NavigationWrapper() {
 						options={{ headerShown: true, title: "Courses" }}
 					/>
 				</Stack.Group>
-				<Stack.Group navigationKey="Course">
-					<Stack.Screen name="CourseNavigation" component={CourseNavigation} />
-				</Stack.Group>
+				<Stack.Screen name="CourseNavigation" component={CourseNavigation} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

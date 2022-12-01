@@ -13,6 +13,8 @@ export interface CourseCardProps {
 }
 export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps) {
 	const linkTo = useLinkTo();
+	const courseIdFragments = id.split("/");
+	const courseId = courseIdFragments[courseIdFragments.length - 1];
 	return (
 		<Card
 			content={
@@ -33,7 +35,7 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 					{assignments.map((props) => <CourseCardAssignment {...props} />)}
 				</View>
 			}
-			onPress={() => linkTo("/courses/" + id)}
+			onPress={() => linkTo("/courses/" + courseId)}
 		/>
 	);
 }
