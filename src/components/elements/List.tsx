@@ -75,6 +75,7 @@ export function List<T extends ListItemProps>(
 	return (
 		<FlatList
 			ItemSeparatorComponent={props.ItemSeparatorComponent || ItemSeparator}
+			keyboardShouldPersistTaps="handled"
 			renderItem={({ item }) => {
 				const style = { ...listItemStyles, ...props.itemStyles };
 				return (
