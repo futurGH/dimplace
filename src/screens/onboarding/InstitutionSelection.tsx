@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Fuse from "fuse.js";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import {
 	getInstitutionInfo,
@@ -12,6 +12,7 @@ import { List, type ListItemProps } from "../../components/elements/List";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type { StackParamList } from "../../components/layout/NavigationWrapper";
 import { useStoreActions, useStoreState } from "../../store/store";
+import { useDebounce } from "../../util/useDebounce";
 import { buildAuthUrl } from "./AuthWebView";
 
 const fuse = new Fuse<ListItemProps>([], { keys: ["title", "subtitle"] });
@@ -34,13 +35,17 @@ export function InstitutionSelection(
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
-	useEffect(() => {
-		getInstitutionList(filter).then((data) => {
-			const listToDisplay = apiInstitutionListToDisplay(data);
-			fuse.setCollection(listToDisplay);
-			setInstitutionList(fuse.search(filter).map((result) => result.item));
-		});
-	}, [filter]);
+	useDebounce(
+		() => {
+			getInstitutionList(filter).then((data) => {
+				const listToDisplay = apiInstitutionListToDisplay(data);
+				fuse.setCollection(listToDisplay);
+				setInstitutionList(fuse.search(filter).map((result) => result.item));
+			});
+		},
+		[filter],
+		250,
+	);
 	return (
 		<HeaderlessContainer>
 			{loadingWebView
