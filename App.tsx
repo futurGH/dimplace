@@ -13,7 +13,7 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
 	return (
 		<>
-			<StatusBar style="light" />
+			<StatusBar style="light" backgroundColor="#131720" />
 			<SafeAreaProvider>
 				<QueryClientProvider client={queryClient}>
 					<StoreProvider store={store}>
