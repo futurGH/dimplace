@@ -2,8 +2,12 @@ import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigatio
 import type { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
-import { ActivityIndicator } from "react-native";
+import * as Linking from "expo-linking";
+import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import type { SvgProps } from "react-native-svg";
 import { gqlClient } from "../../api/gqlClient";
+import { ExitIcon } from "../../assets/icons/exit";
+import { ExternalIcon } from "../../assets/icons/external";
 import { Header } from "../../components/layout/Header";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type {
@@ -12,6 +16,8 @@ import type {
 } from "../../components/layout/NavigationWrapper";
 import { graphql } from "../../gql";
 import { useStoreState } from "../../store/store";
+import { Colors, Typography } from "../../styles";
+import { handleErrors } from "../../util/errors";
 import { CourseHomeStack, CourseHomeStackParamList } from "./CourseHomeStack";
 
 export type CourseTabNavigatorParamList = {
@@ -30,7 +36,6 @@ const Tab = createBottomTabNavigator<CourseTabNavigatorParamList>();
 
 export function CourseNavigation() {
 	const route = useRoute<RootStackScreenProps<"CourseNavigation">["route"]>();
-	const navigation = useNavigation<RootStackScreenProps<"CourseNavigation">["navigation"]>();
 	const config = useStoreState((state) => state.config);
 
 	const { id: courseId } = route.params;
@@ -61,11 +66,20 @@ export function CourseNavigation() {
 
 	return (
 		<Tab.Navigator
-			screenOptions={{ header: Header, headerTitle: data?.organization?.name, title: "Feed" }}
+			screenOptions={{
+				header: Header,
+				headerLeft: CoursePageHeaderLeftButton,
+				headerRight: () => (
+					<CoursePageHeaderRightButton url={data?.organization?.homeUrl} />
+				),
+				headerTitle: data?.organization?.name,
+				title: "Feed",
+			}}
 		>
 			<Tab.Screen
 				name="CourseHomeStack"
 				component={CourseHomeStack}
+				options={{ headerTitle: "" }}
 				/* pass through route parameters because nested screens otherwise can't access them */
 				initialParams={route.params as never}
 			/>
@@ -73,17 +87,104 @@ export function CourseNavigation() {
 	);
 }
 
+export function CoursePageHeaderLeftButton() {
+	const navigation = useNavigation();
+	return (
+		<Pressable style={styles.leftButton} onPress={() => navigation.navigate("Home")}>
+			<ExitIcon {...iconStyles} />
+			<Text style={styles.leftButtonText}>Courses</Text>
+		</Pressable>
+	);
+}
+
+export function CoursePageHeaderRightButton({ url }: { url?: string | undefined | null }) {
+	return (
+		<Pressable onPress={() => url && Linking.openURL(url)}>
+			<ExternalIcon {...iconStyles} />
+		</Pressable>
+	);
+}
+
+const styles = StyleSheet.create({
+	leftButton: { flexDirection: "row", alignItems: "center", height: 24 },
+	leftButtonText: { ...Typography.Footnote, color: Colors.TextPrimary, marginLeft: 8 },
+});
+const iconStyles: SvgProps = { width: 24, height: 24, fill: Colors.TextPrimary };
+
 const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
 	query CoursePage($id: String!, $orgUnitId: String!) {
 		organization(id: $id) {
 			name
 			imageUrl
+			homeUrl
 		}
 		activityFeedArticlePage(id: null, orgUnitId: $orgUnitId) {
 			id
 			activityFeedArticles {
-				__typename
+				... on ActivityFeedArticle {
+					...ArticleDetails
+				}
 			}
 		}
+	}
+    fragment ArticleDetails on ActivityFeedArticle {
+        id
+        type
+        author {
+			...UserDetails
+        }
+        message
+        publishedDate
+        attachmentLinks {
+            ...LinkDetails
+        }
+        allCommentsLink
+        commentsCount
+        firstComment {
+			...CommentDetails
+        }
+        isPinned
+    }
+    fragment AssignmentDetails on ActivityFeedAssignment {
+        id
+		type
+        author {
+            ...UserDetails
+        }
+        publishedDate
+        allCommentsLink
+        commentsCount
+        name
+        instructions
+        dueDate
+        attachmentLinks {
+            ...LinkDetails
+        }
+        firstComment {
+            ...CommentDetails
+        }
+        submissionLink
+        isPinned
+    }
+	fragment UserDetails on User {
+        id
+        displayName
+        firstName
+        lastName
+        imageUrl
+    }
+	fragment LinkDetails on ActivityFeedLink {
+        id
+        type
+        name
+        href
+	}
+	fragment CommentDetails on ActivityFeedComment {
+        id
+        author {
+            ...UserDetails
+        }
+        message
+        publishedDate
 	}
 `);

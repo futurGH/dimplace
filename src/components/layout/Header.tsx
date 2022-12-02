@@ -20,7 +20,7 @@ export function Header(
 		HeaderProps,
 ) {
 	const title = (typeof headerTitle === "function" ? headerTitle({ children: "" }) : headerTitle)
-		|| _title || name;
+		?? _title ?? name;
 	const { top: paddingTop } = useSafeAreaInsets();
 	const leftIcon = headerLeft?.({ canGoBack: true }) || null;
 	const rightIcon = headerRight?.({ canGoBack: true }) || null;
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		paddingHorizontal: "10%",
+		paddingHorizontal: "5%",
 		paddingVertical: 16,
 	},
 	title: { ...Typography.Heading, color: Colors.TextPrimary, textAlign: "center" },

@@ -69,6 +69,7 @@ export function NavigationWrapper() {
 		prefixes: [Linking.createURL("/")],
 		config: {
 			screens: {
+				Home: { path: "courses" },
 				CourseNavigation: {
 					path: "courses/:id",
 					initialRouteName: "CourseHomeStack" as never,
@@ -109,7 +110,7 @@ export function NavigationWrapper() {
 					<Stack.Screen
 						name="Home"
 						component={Home}
-						options={{ headerShown: true, title: "Courses" }}
+						options={{ headerShown: true, title: "Courses", gestureEnabled: false }}
 					/>
 				</Stack.Group>
 				<Stack.Screen name="CourseNavigation" component={CourseNavigation} />
