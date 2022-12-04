@@ -15,13 +15,19 @@ import type {
 	StackParamList,
 } from "../../components/layout/NavigationWrapper";
 import { graphql } from "../../gql";
-import { useStoreState } from "../../store/store";
+import type { CoursePageQuery } from "../../gql/graphql";
+import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
 import { CourseHomeStack, CourseHomeStackParamList } from "./CourseHomeStack";
 
 export type CourseTabNavigatorParamList = {
-	CourseHomeStack: NavigatorScreenParams<CourseHomeStackParamList>;
+	CourseHomeStack:
+		& NavigatorScreenParams<CourseHomeStackParamList>
+		& Partial<
+			& Pick<NonNullable<CoursePageQuery["activityFeedArticlePage"]>, "activityFeedArticles">
+			& Pick<CoursePageQuery, "organization">
+		>;
 	CourseContent: undefined;
 	CourseAssignments: undefined;
 	CourseGrades: undefined;
@@ -37,6 +43,7 @@ const Tab = createBottomTabNavigator<CourseTabNavigatorParamList>();
 export function CourseNavigation() {
 	const route = useRoute<RootStackScreenProps<"CourseNavigation">["route"]>();
 	const config = useStoreState((state) => state.config);
+	const configActions = useStoreActions((actions) => actions.config);
 
 	const { id: courseId } = route.params;
 	const id = `https://${config.tenantId}.organizations.api.brightspace.com/${courseId}`;
@@ -60,7 +67,7 @@ export function CourseNavigation() {
 	}
 
 	if (errors) {
-		handleErrors({ errors, refetch });
+		handleErrors({ errors, refetch, config, actions: configActions });
 		console.error(errors);
 	}
 
@@ -81,7 +88,10 @@ export function CourseNavigation() {
 				component={CourseHomeStack}
 				options={{ headerTitle: "" }}
 				/* pass through route parameters because nested screens otherwise can't access them */
-				initialParams={route.params as never}
+				initialParams={{
+					activityFeedArticles: data?.activityFeedArticlePage?.activityFeedArticles,
+					organization: data?.organization,
+				}}
 			/>
 		</Tab.Navigator>
 	);

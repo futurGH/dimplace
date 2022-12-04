@@ -7,7 +7,11 @@ import type {
 } from "./CourseNavigation";
 
 export type CourseHomeStackParamList = {
-	CourseFeed: { id: string };
+	CourseFeed: {
+		activityFeedArticles?:
+			CourseTabNavigatorParamList["CourseHomeStack"]["activityFeedArticles"];
+		organization?: CourseTabNavigatorParamList["CourseHomeStack"]["organization"];
+	};
 	FeedComment: { id: string; postId: string };
 };
 export type CourseHomeStackScreenProps<T extends keyof CourseHomeStackParamList> =
@@ -26,7 +30,7 @@ export function CourseHomeStack() {
 				name="CourseFeed"
 				component={CourseFeed}
 				/* pass through route parameters because nested screens otherwise can't access them */
-				initialParams={route.params as never}
+				initialParams={route.params}
 			/>
 		</Stack.Navigator>
 	);

@@ -5,7 +5,7 @@ import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 
 export function CourseFeed() {
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeed">["route"]>();
-	const { id } = route.params;
+	const { activityFeedArticles, organization } = route.params;
 	return (
 		<HeaderlessContainer>
 			<Text>hi</Text>
