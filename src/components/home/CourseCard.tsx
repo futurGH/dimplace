@@ -1,5 +1,6 @@
 import { useLinkTo } from "@react-navigation/native";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import { Colors, Typography } from "../../styles";
 import { Card } from "../elements/Card";
 import type { CourseCardAssignmentProps } from "./CourseCardAssignment";
@@ -26,7 +27,12 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 							: { paddingTop: 24, paddingBottom: 20 },
 					]}
 				>
-					<Image style={styles.image} source={{ uri: imageUrl }} />
+					<ImageBackground style={styles.image} source={{ uri: imageUrl }}>
+						<LinearGradient
+							colors={[Colors.Card + "00", Colors.Card]}
+							style={styles.gradient}
+						/>
+					</ImageBackground>
 					<Text style={styles.title}>{name}</Text>
 				</View>
 			}
@@ -42,7 +48,16 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 
 const styles = StyleSheet.create({
 	content: { width: "100%", flex: 1, justifyContent: "center", paddingHorizontal: 16 },
-	image: { height: 96, resizeMode: "cover", borderRadius: 16 },
-	title: { ...Typography.Subheading, color: Colors.TextPrimary, maxWidth: "100%", marginTop: 20 },
+	image: {
+		height: 96,
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		resizeMode: "cover",
+		borderRadius: 16,
+		overflow: "hidden",
+	},
+	gradient: { width: "100%", height: "100%" },
+	title: { ...Typography.Subheading, color: Colors.TextPrimary, maxWidth: "100%", marginTop: 16 },
 	footer: { backgroundColor: Colors.Button, width: "100%", flex: 1, flexShrink: 1 },
 });

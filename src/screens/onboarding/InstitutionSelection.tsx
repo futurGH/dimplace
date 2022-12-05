@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Fuse from "fuse.js";
 import { useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import {
 	getInstitutionInfo,
 	getInstitutionList,
@@ -46,53 +46,45 @@ export function InstitutionSelection(
 		[filter],
 		250,
 	);
+
+	if (loadingWebView) {
+		return (
+			<HeaderlessContainer
+				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
+			>
+				<ActivityIndicator />
+			</HeaderlessContainer>
+		);
+	}
 	return (
 		<HeaderlessContainer>
-			{loadingWebView
-				? (
-					<View style={styles.spinnerContainer}>
-						<ActivityIndicator />
-					</View>
-				)
-				: (
-					<List
-						ListHeaderComponent={
-							<Input
-								value={filter}
-								onChangeText={setFilter}
-								placeholder="Who provides your learning?"
-								autoCapitalize="none"
-								clearButtonMode="always"
-								containerStyle={{ marginBottom: 12 }}
-							/>
-						}
-						data={institutionList}
-						onItemPress={(item) => {
-							if (!item.label) return;
-							setLoadingWebView(true);
-							getInstitutionInfo(item.label).then((info) => {
-								if (!info?.tenantId) return;
-								configActions.setTenantId(info.tenantId);
-								navigation.navigate("AuthWebView", {
-									source: buildAuthUrl({
-										tenantId: info.tenantId,
-										clientId: config.clientId,
-									}),
-								});
-							});
-						}}
+			<List
+				ListHeaderComponent={
+					<Input
+						value={filter}
+						onChangeText={setFilter}
+						placeholder="Who provides your learning?"
+						autoCapitalize="none"
+						clearButtonMode="always"
+						containerStyle={{ marginBottom: 12 }}
 					/>
-				)}
+				}
+				data={institutionList}
+				onItemPress={(item) => {
+					if (!item.label) return;
+					setLoadingWebView(true);
+					getInstitutionInfo(item.label).then((info) => {
+						if (!info?.tenantId) return;
+						configActions.setTenantId(info.tenantId);
+						navigation.navigate("AuthWebView", {
+							source: buildAuthUrl({
+								tenantId: info.tenantId,
+								clientId: config.clientId,
+							}),
+						});
+					});
+				}}
+			/>
 		</HeaderlessContainer>
 	);
 }
-
-const styles = StyleSheet.create({
-	spinnerContainer: {
-		flex: 1,
-		width: "100%",
-		height: "100%",
-		justifyContent: "center",
-		alignItems: "center",
-	},
-});
