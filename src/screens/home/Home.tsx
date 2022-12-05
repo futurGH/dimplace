@@ -7,7 +7,7 @@ import { CourseCard } from "../../components/home/CourseCard";
 import { Container } from "../../components/layout/Container";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import { graphql } from "../../gql";
-import { useStoreState } from "../../store/store";
+import { useStoreActions, useStoreState } from "../../store/store";
 import { handleErrors } from "../../util/errors";
 
 export function Home() {
@@ -16,6 +16,7 @@ export function Home() {
 	navigation.addListener("beforeRemove", (e) => e.preventDefault());
 
 	const config = useStoreState((state) => state.config);
+	const actions = useStoreActions((actions) => actions.config);
 	const { data, error: errors, isLoading, refetch } = useQuery({
 		queryKey: ["home"],
 		queryFn: async () => {
@@ -37,7 +38,7 @@ export function Home() {
 		);
 	}
 	if (errors) {
-		handleErrors({ errors, refetch });
+		handleErrors({ errors, refetch, config, actions });
 		console.error(errors);
 	}
 

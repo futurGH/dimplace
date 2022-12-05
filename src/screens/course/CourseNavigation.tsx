@@ -117,7 +117,12 @@ export function CoursePageHeaderRightButton({ url }: { url?: string | undefined 
 
 const styles = StyleSheet.create({
 	leftButton: { flexDirection: "row", alignItems: "center", height: 24 },
-	leftButtonText: { ...Typography.Footnote, color: Colors.TextPrimary, marginLeft: 8 },
+	leftButtonText: {
+		...Typography.Body,
+		fontFamily: "WorkMedium",
+		color: Colors.TextPrimary,
+		marginLeft: 8,
+	},
 });
 const iconStyles: SvgProps = { width: 24, height: 24, fill: Colors.TextPrimary };
 
@@ -127,13 +132,11 @@ const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
 			name
 			imageUrl
 			homeUrl
-		}
-		activityFeedArticlePage(id: null, orgUnitId: $orgUnitId) {
-			id
+        }
+		activityFeedArticlePage(orgUnitId: $orgUnitId) {
 			activityFeedArticles {
-				... on ActivityFeedArticle {
-					...ArticleDetails
-				}
+				...ArticleDetails
+				...AssignmentDetails
 			}
 		}
 	}
@@ -141,7 +144,7 @@ const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
         id
         type
         author {
-			...UserDetails
+            ...UserDetails
         }
         message
         publishedDate
@@ -151,13 +154,13 @@ const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
         allCommentsLink
         commentsCount
         firstComment {
-			...CommentDetails
+            ...CommentDetails
         }
         isPinned
     }
     fragment AssignmentDetails on ActivityFeedAssignment {
         id
-		type
+        type
         author {
             ...UserDetails
         }
@@ -176,25 +179,25 @@ const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
         submissionLink
         isPinned
     }
-	fragment UserDetails on User {
+    fragment UserDetails on User {
         id
         displayName
         firstName
         lastName
         imageUrl
     }
-	fragment LinkDetails on ActivityFeedLink {
+    fragment LinkDetails on ActivityFeedLink {
         id
         type
         name
         href
-	}
-	fragment CommentDetails on ActivityFeedComment {
+    }
+    fragment CommentDetails on ActivityFeedComment {
         id
         author {
             ...UserDetails
         }
         message
         publishedDate
-	}
+    }
 `);
