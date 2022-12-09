@@ -1,6 +1,10 @@
 import { useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import { Dimensions, FlatList, ImageBackground, StyleSheet, Text, View } from "react-native";
+import {
+	AnnouncementCard,
+	AnnouncementCardProps,
+} from "../../components/course/feed/AnnouncementCard";
 import { Container } from "../../components/layout/Container";
 import { Colors, Typography } from "../../styles";
 import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
@@ -8,20 +12,41 @@ import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 export function CourseFeed() {
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeed">["route"]>();
 	const { activityFeedArticles, organization } = route.params;
+	const windowHeight = Dimensions.get("window").height;
 	return (
 		<Container>
-			<View style={styles.imageContainer}>
-				<ImageBackground
-					style={styles.image}
-					source={{ uri: organization?.imageUrl || undefined }}
-				>
-					<LinearGradient
-						colors={[Colors.Background + "00", Colors.Background]}
-						style={styles.gradient}
-					/>
-				</ImageBackground>
-				<Text style={styles.title}>{organization?.name}</Text>
-			</View>
+			<FlatList
+				data={activityFeedArticles}
+				renderItem={({ item: _item }) => {
+					const item = _item as unknown as AnnouncementCardProps;
+					return <AnnouncementCard {...item} />;
+				}}
+				ListHeaderComponent={
+					<View style={[styles.imageContainer, { maxHeight: windowHeight / 4 }]}>
+						<ImageBackground
+							style={styles.image}
+							source={{ uri: organization?.imageUrl || undefined }}
+						>
+							<LinearGradient
+								colors={[Colors.Background + "22", Colors.Background]}
+								style={styles.gradient}
+							/>
+						</ImageBackground>
+						<Text style={styles.title}>{organization?.name}</Text>
+					</View>
+				}
+				ItemSeparatorComponent={() => <View style={styles.separator} />}
+				ListEmptyComponent={() => (
+					<View style={styles.noFeedContainer}>
+						<Text style={styles.noFeedTitle}>Nothing to see here!</Text>
+						<Text style={styles.noFeedText}>
+							There don’t appear to be any posts here yet. Check back for
+							announcements, assignments, and updates from your teacher.
+						</Text>
+					</View>
+				)}
+				showsVerticalScrollIndicator={false}
+			/>
 		</Container>
 	);
 }
@@ -30,11 +55,11 @@ const styles = StyleSheet.create({
 	imageContainer: {
 		width: "100%",
 		height: 144,
-		maxHeight: "25%",
 		flex: 1,
 		justifyContent: "center",
 		borderRadius: 16,
 		overflow: "hidden",
+		marginBottom: 32,
 	},
 	image: { flex: 1, justifyContent: "center", resizeMode: "cover" },
 	gradient: { width: "100%", height: "100%" },
@@ -46,4 +71,9 @@ const styles = StyleSheet.create({
 		left: 24,
 		right: 24,
 	},
+	feed: { width: "100%", flex: 1, flexGrow: 1 },
+	separator: { height: 24 },
+	noFeedContainer: { width: "100%", flex: 1, alignItems: "center" },
+	noFeedTitle: { ...Typography.Subheading, color: Colors.TextPrimary, marginBottom: 12 },
+	noFeedText: { ...Typography.Body, color: Colors.TextLabel, textAlign: "center" },
 });

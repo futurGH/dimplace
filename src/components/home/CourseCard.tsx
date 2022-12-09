@@ -18,6 +18,7 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 	const courseId = courseIdFragments[courseIdFragments.length - 1];
 	return (
 		<Card
+			key={id}
 			content={
 				<View
 					style={[

@@ -1,18 +1,17 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Colors, Typography } from "../../styles";
+import { formatDate } from "../../util/formatDate";
 
 export interface CourseCardAssignmentProps {
 	name: string;
 	dueDate: Date;
 }
 export function CourseCardAssignment({ name, dueDate }: CourseCardAssignmentProps) {
-	const due = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(
-		dueDate,
-	);
+	const due = formatDate(dueDate);
 	return (
 		<View style={styles.container}>
 			<Text numberOfLines={1} style={styles.name}>{name}</Text>
-			<Text style={styles.dueDate}>{due}</Text>
+			<Text style={styles.dueDate}>Due {due}</Text>
 		</View>
 	);
 }

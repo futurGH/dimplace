@@ -1,7 +1,7 @@
 import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
+import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import type { SvgProps } from "react-native-svg";
@@ -48,12 +48,11 @@ export function CourseNavigation() {
 	const { id: courseId } = route.params;
 	const id = `https://${config.tenantId}.organizations.api.brightspace.com/${courseId}`;
 
+	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
+
 	const { data, error: errors, isLoading, refetch } = useQuery({
-		queryKey: ["course", id],
-		queryFn: async () => {
-			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
-			return gqlClient.request(COURSE_PAGE_QUERY, { id, orgUnitId: courseId });
-		},
+		queryKey: ["course", { id, courseId }],
+		queryFn: fetchCourseFeed,
 	});
 
 	if (isLoading) {
@@ -126,6 +125,13 @@ const styles = StyleSheet.create({
 });
 const iconStyles: SvgProps = { width: 24, height: 24, fill: Colors.TextPrimary };
 
+export function fetchCourseFeed(
+	{ queryKey }: QueryFunctionContext<[string, { id: string; courseId: string }]>,
+) {
+	const [, { id, courseId }] = queryKey;
+	return gqlClient.request(COURSE_PAGE_QUERY, { id, orgUnitId: courseId });
+}
+
 const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
 	query CoursePage($id: String!, $orgUnitId: String!) {
 		organization(id: $id) {
@@ -135,69 +141,50 @@ const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
         }
 		activityFeedArticlePage(orgUnitId: $orgUnitId) {
 			activityFeedArticles {
-				...ArticleDetails
-				...AssignmentDetails
+				__typename
+				... on ActivityFeedEntity {
+					...FeedItem
+				}
+				... on ActivityFeedTopLevelPost {
+					...FeedPost
+				}
+				... on ActivityFeedArticle {
+					...ArticleDetails
+                }
+				... on ActivityFeedAssignment {
+					...AssignmentDetails
+				}
 			}
 		}
 	}
+	fragment FeedItem on ActivityFeedEntity {
+		id
+		type
+		author {
+			displayName
+			imageUrl
+		}
+		publishedDate
+	}
+	fragment FeedPost on ActivityFeedTopLevelPost {
+		commentsLink
+		commentsCount
+		attachmentLinks {
+			id
+			type
+			name
+			href
+			iconHref
+		}
+		isPinned
+	}
     fragment ArticleDetails on ActivityFeedArticle {
-        id
-        type
-        author {
-            ...UserDetails
-        }
         message
-        publishedDate
-        attachmentLinks {
-            ...LinkDetails
-        }
-        allCommentsLink
-        commentsCount
-        firstComment {
-            ...CommentDetails
-        }
-        isPinned
     }
     fragment AssignmentDetails on ActivityFeedAssignment {
-        id
-        type
-        author {
-            ...UserDetails
-        }
-        publishedDate
-        allCommentsLink
-        commentsCount
         name
         instructions
         dueDate
-        attachmentLinks {
-            ...LinkDetails
-        }
-        firstComment {
-            ...CommentDetails
-        }
         submissionLink
-        isPinned
-    }
-    fragment UserDetails on User {
-        id
-        displayName
-        firstName
-        lastName
-        imageUrl
-    }
-    fragment LinkDetails on ActivityFeedLink {
-        id
-        type
-        name
-        href
-    }
-    fragment CommentDetails on ActivityFeedComment {
-        id
-        author {
-            ...UserDetails
-        }
-        message
-        publishedDate
     }
 `);

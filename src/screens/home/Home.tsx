@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { gqlClient } from "../../api/gqlClient";
 import type { CourseCardProps } from "../../components/home/CourseCard";
@@ -9,11 +9,13 @@ import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer
 import { graphql } from "../../gql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { handleErrors } from "../../util/errors";
+import { fetchCourseFeed } from "../course/CourseNavigation";
 
 export function Home() {
 	const navigation = useNavigation();
-
 	navigation.addListener("beforeRemove", (e) => e.preventDefault());
+
+	const queryClient = useQueryClient();
 
 	const config = useStoreState((state) => state.config);
 	const actions = useStoreActions((actions) => actions.config);
@@ -63,6 +65,16 @@ export function Home() {
 			};
 		}) || [];
 
+	// Unfortunately react-query doesn't provide a built-in way to parallelize prefetching
+	courses.forEach((course) =>
+		queryClient.prefetchQuery({
+			queryKey: ["course", {
+				id: `https://${config.tenantId}.organizations.api.brightspace.com/${course.id}`,
+				courseId: course.id,
+			}],
+			queryFn: fetchCourseFeed,
+		}).catch(() => {})
+	);
 	return (
 		<Container>
 			<FlatList
