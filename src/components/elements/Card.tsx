@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Colors } from "../../styles";
 
@@ -9,8 +10,17 @@ export interface CardProps {
 	style?: View["props"]["style"];
 }
 export function Card({ content, footer = null, onPress, style }: CardProps) {
+	const [backgroundColor, setBackground] = useState<string>(styles.container.backgroundColor);
 	return (
-		<Pressable onPress={onPress} style={[styles.container, style]}>{content}{footer}</Pressable>
+		<Pressable
+			onPress={onPress}
+			onPressIn={() => setBackground(Colors.Button)}
+			onPressOut={() => setBackground(styles.container.backgroundColor)}
+			style={[styles.container, style, { backgroundColor }]}
+		>
+			{content}
+			{footer}
+		</Pressable>
 	);
 }
 

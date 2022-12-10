@@ -14,14 +14,18 @@ export type HeaderProps = {
 		headerLeft?: NativeStackHeaderProps["options"]["headerLeft"];
 		headerRight?: NativeStackHeaderProps["options"]["headerRight"];
 	};
+	paddingTop?: number;
 };
 export function Header(
-	{ route: { name }, options: { title: _title, headerTitle, headerLeft, headerRight } }:
-		HeaderProps,
+	{
+		route: { name },
+		options: { title: _title, headerTitle, headerLeft, headerRight },
+		paddingTop,
+	}: HeaderProps,
 ) {
 	const title = (typeof headerTitle === "function" ? headerTitle({ children: "" }) : headerTitle)
 		?? _title ?? name;
-	const { top: paddingTop } = useSafeAreaInsets();
+	paddingTop ??= useSafeAreaInsets().top;
 	const leftIcon = headerLeft?.({ canGoBack: true }) || null;
 	const rightIcon = headerRight?.({ canGoBack: true }) || null;
 	return (

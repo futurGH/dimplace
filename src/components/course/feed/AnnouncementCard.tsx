@@ -58,6 +58,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 		: null;
 
 	const [cardWidth, setCardWidth] = useState(0);
+	const [footerColor, setFooterColor] = useState<string>(Colors.Card);
 	return (
 		<Card
 			key={id}
@@ -130,7 +131,12 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 				</View>
 			}
 			footer={
-				<Pressable style={styles.footer}>
+				<Pressable
+					style={[styles.footer, { backgroundColor: footerColor }]}
+					onPressIn={() => setFooterColor(Colors.Button)}
+					onPressOut={() => setFooterColor(Colors.Card)}
+					onPress={props.onPress}
+				>
 					<Text style={styles.footerText}>
 						{commentsCount ? `${commentsCount} comments` : "Add a comment"}
 					</Text>

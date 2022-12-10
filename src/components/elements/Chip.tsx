@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import { Colors, Typography } from "../../styles";
@@ -10,8 +11,14 @@ export interface ChipProps {
 	style?: View["props"]["style"];
 }
 export function Chip({ text, icon: Icon = () => null, onPress, style }: ChipProps) {
+	const [backgroundColor, setBackground] = useState<string>(styles.container.backgroundColor);
 	return (
-		<Pressable onPress={onPress} style={[styles.container, style]}>
+		<Pressable
+			onPress={onPress}
+			onPressIn={() => setBackground(Colors.Button)}
+			onPressOut={() => setBackground(styles.container.backgroundColor)}
+			style={[styles.container, style, { backgroundColor }]}
+		>
 			<Icon style={styles.icon} fill={Colors.TextLabel} />
 			<Text style={styles.text}>{text}</Text>
 		</Pressable>
@@ -21,11 +28,12 @@ export function Chip({ text, icon: Icon = () => null, onPress, style }: ChipProp
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: Colors.Card,
-		borderRadius: 32,
+		borderRadius: 99,
 		borderWidth: 1,
 		borderColor: Colors.Border,
 		overflow: "hidden",
 		flexDirection: "row",
+		alignItems: "center",
 		paddingHorizontal: 16,
 		paddingVertical: 10,
 	},

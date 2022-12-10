@@ -11,15 +11,13 @@ export function handleErrors(
 	},
 ) {
 	const navigation = useNavigation();
-	if (Array.isArray(errors) && errors.length) {
-		const error = errors[0];
-		const errorCode = error.response.status;
-		if (errorCode === 401) {
-			actions.updateAccessToken(config.refreshToken);
-			// TODO: alert or something when repeated fetching fails
-			refetch().catch(() => {
-				navigation.navigate("AuthWebView", { source: buildAuthUrl(config) });
-			});
-		}
+	const error = (Array.isArray(errors) && errors.length) ? errors[0] : errors;
+	const errorCode = error.response.status;
+	if (errorCode === 401) {
+		actions.updateAccessToken(config.refreshToken);
 	}
+	// TODO: alert or something when repeated fetching fails
+	refetch().catch(() => {
+		navigation.navigate("AuthWebView", { source: buildAuthUrl(config) });
+	});
 }
