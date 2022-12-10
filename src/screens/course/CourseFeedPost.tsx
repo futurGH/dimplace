@@ -18,6 +18,7 @@ import { LinkIcon } from "../../assets/icons/link";
 import { UserProfileIcon } from "../../assets/icons/user-profile";
 import { Chip } from "../../components/elements/Chip";
 import { Container } from "../../components/layout/Container";
+import { Header } from "../../components/layout/Header";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import { graphql } from "../../gql";
 import type {
@@ -40,11 +41,6 @@ export function CourseFeedPost() {
 	if (!articleId) {
 		navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home");
 	}
-	navigation.getParent()?.setOptions({
-		headerTitle: orgName || "Course",
-		headerLeft: () => <CoursePageHeaderLeftButton text="" />,
-		headerRight: undefined,
-	});
 	const commentsId = `${articleId}/comment/all`;
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
@@ -98,6 +94,14 @@ export function CourseFeedPost() {
 	const width = Dimensions.get("window").width;
 	return (
 		<Container>
+			<Header
+				route={{ name: orgName }}
+				options={{
+					headerLeft: () => <CoursePageHeaderLeftButton text="" />,
+					headerRight: () => null,
+				}}
+				paddingTop={0}
+			/>
 			<FlatList
 				data={activityFeedComments}
 				ListHeaderComponent={() => (
@@ -116,9 +120,7 @@ export function CourseFeedPost() {
 							{width
 								? (
 									<RenderHtml
-										source={{
-											html: body || "Failed to fetch comment content.",
-										}}
+										source={{ html: body || "Failed to fetch post content." }}
 										contentWidth={width - 48}
 										tagsStyles={{
 											p: { marginVertical: 0, ...styles.bodyText },
@@ -169,21 +171,75 @@ export function CourseFeedPost() {
 									return (
 										<Chip
 											icon={icon}
-											text={item.name}
+											text={item.name.replace(/%20/g, " ")}
 											onPress={() => Linking.openURL(item.href)}
 											key={item.id || item.name}
 										/>
 									);
 								}}
-								ItemSeparatorComponent={() => (
-									<View style={styles.attachmentSeparator} />
-								)}
+								ItemSeparatorComponent={() => <View style={styles.separator} />}
 								showsVerticalScrollIndicator={false}
 							/>
 						</View>
 					</View>
 				)}
-				renderItem={() => null}
+				renderItem={({ item: comment }) => {
+					const authorIcon =
+						comment.author?.imageUrl?.includes("Framework.UserProfileBadge")
+							? <UserProfileIcon style={styles.authorIcon} fill={Colors.Inactive} />
+							: (
+								<Image
+									style={[styles.authorIcon, styles.authorImageIcon]}
+									source={{ uri: comment.author.imageUrl || undefined }}
+								/>
+							);
+					const publishedDate = new Date(comment.publishedDate);
+					const formattedDate = formatDate(
+						isNaN(publishedDate.getTime()) ? new Date() : publishedDate,
+					);
+					return (
+						<View>
+							<View style={styles.author}>
+								{authorIcon}
+								<View style={styles.authorText}>
+									<Text style={styles.authorName}>
+										{comment.author.displayName}
+										<Text style={styles.authorDate}>• {formattedDate}</Text>
+									</Text>
+								</View>
+							</View>
+							<View style={styles.body}>
+								{width
+									? (
+										<RenderHtml
+											source={{
+												html: body || "Failed to fetch comment content.",
+											}}
+											contentWidth={width - 48}
+											tagsStyles={{
+												p: { marginVertical: 0, ...styles.bodyText },
+												a: {
+													color: Colors.Active,
+													textDecorationColor: Colors.Active,
+												},
+											}}
+											systemFonts={[
+												"WorkRegular",
+												"WorkMedium",
+												...defaultSystemFonts,
+											]}
+											enableExperimentalGhostLinesPrevention={true}
+											enableExperimentalBRCollapsing={true}
+											enableExperimentalMarginCollapsing={true}
+										/>
+									)
+									: null}
+							</View>
+						</View>
+					);
+				}}
+				ItemSeparatorComponent={() => <View style={styles.separator} />}
+				showsVerticalScrollIndicator={false}
 			/>
 		</Container>
 	);
@@ -208,7 +264,8 @@ const styles = StyleSheet.create({
 	bodyText: { ...Typography.Body, color: Colors.TextPrimary },
 	bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
 	attachments: { alignItems: "flex-start", marginTop: 24 },
-	attachmentSeparator: { height: 16 },
+	separator: { height: 16 },
+	commentsTitle: { ...Typography.Subheading, color: Colors.TextLabel, marginTop: 32 },
 });
 
 const COURSE_FEED_POST_QUERY = graphql(/* GraphQL */ `
@@ -222,6 +279,7 @@ const COURSE_FEED_POST_QUERY = graphql(/* GraphQL */ `
 					displayName
 				}
 				message
+				publishedDate
 			}
         }
 		activityFeedArticle(id: $articleId) {
