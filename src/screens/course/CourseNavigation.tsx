@@ -1,5 +1,9 @@
 import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import type { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native";
+import type {
+	CompositeScreenProps,
+	NavigationProp,
+	NavigatorScreenParams,
+} from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
@@ -69,12 +73,11 @@ export function CourseNavigation() {
 		handleErrors({ errors, refetch, config, actions: configActions });
 		console.error(errors);
 	}
-
 	return (
 		<Tab.Navigator
 			screenOptions={{
 				header: Header,
-				headerLeft: CoursePageHeaderLeftButton,
+				headerLeft: () => <CoursePageHeaderLeftButton />,
 				headerRight: () => (
 					<CoursePageHeaderRightButton url={data?.organization?.homeUrl} />
 				),
@@ -96,12 +99,23 @@ export function CourseNavigation() {
 	);
 }
 
-export function CoursePageHeaderLeftButton() {
+export function CoursePageHeaderLeftButton(
+	{
+		onPress = (navigation: NavigationProp<any>) =>
+			navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home"),
+		icon: Icon = ExitIcon,
+		text = "Courses",
+	}: {
+		onPress?: (navigation: NavigationProp<any>) => void;
+		icon?: (props: SvgProps) => JSX.Element;
+		text?: string;
+	},
+) {
 	const navigation = useNavigation();
 	return (
-		<Pressable style={styles.leftButton} onPress={() => navigation.navigate("Home")}>
-			<ExitIcon {...iconStyles} />
-			<Text style={styles.leftButtonText}>Courses</Text>
+		<Pressable style={styles.leftButton} onPress={() => onPress(navigation)}>
+			<Icon {...iconStyles} />
+			{text && <Text style={styles.leftButtonText}>{text}</Text>}
 		</Pressable>
 	);
 }
@@ -116,14 +130,9 @@ export function CoursePageHeaderRightButton({ url }: { url?: string | undefined 
 
 const styles = StyleSheet.create({
 	leftButton: { flexDirection: "row", alignItems: "center", height: 24 },
-	leftButtonText: {
-		...Typography.Body,
-		fontFamily: "WorkMedium",
-		color: Colors.TextPrimary,
-		marginLeft: 8,
-	},
+	leftButtonText: { ...Typography.Body, color: Colors.TextSecondary, marginLeft: 8 },
 });
-const iconStyles: SvgProps = { width: 24, height: 24, fill: Colors.TextPrimary };
+const iconStyles: SvgProps = { width: 24, height: 24, fill: Colors.TextSecondary };
 
 export function fetchCourseFeed(
 	{ queryKey }: QueryFunctionContext<[string, { id: string; courseId: string }]>,
@@ -133,55 +142,56 @@ export function fetchCourseFeed(
 }
 
 const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
-	query CoursePage($id: String!, $orgUnitId: String!) {
-		organization(id: $id) {
-			name
-			imageUrl
-			homeUrl
+    query CoursePage($id: String!, $orgUnitId: String!) {
+        organization(id: $id) {
+            name
+            imageUrl
+            homeUrl
         }
-		activityFeedArticlePage(orgUnitId: $orgUnitId) {
-			activityFeedArticles {
-				__typename
-				... on ActivityFeedEntity {
-					...FeedItem
-				}
-				... on ActivityFeedTopLevelPost {
-					...FeedPost
-				}
-				... on ActivityFeedArticle {
-					...ArticleDetails
+        activityFeedArticlePage(orgUnitId: $orgUnitId) {
+            id
+            activityFeedArticles {
+                __typename
+                ... on ActivityFeedEntity {
+                    ...FeedItemFragment
                 }
-				... on ActivityFeedAssignment {
-					...AssignmentDetails
-				}
-			}
-		}
-	}
-	fragment FeedItem on ActivityFeedEntity {
-		id
-		type
-		author {
-			displayName
-			imageUrl
-		}
-		publishedDate
-	}
-	fragment FeedPost on ActivityFeedTopLevelPost {
-		commentsLink
-		commentsCount
-		attachmentLinks {
-			id
-			type
-			name
-			href
-			iconHref
-		}
-		isPinned
-	}
-    fragment ArticleDetails on ActivityFeedArticle {
+                ... on ActivityFeedTopLevelPost {
+                    ...FeedPostFragment
+                }
+                ... on ActivityFeedArticle {
+                    ...ArticleDetailsFragment
+                }
+                ... on ActivityFeedAssignment {
+                    ...AssignmentDetailsFragment
+                }
+            }
+        }
+    }
+    fragment FeedItemFragment on ActivityFeedEntity {
+        id
+        type
+        author {
+            displayName
+            imageUrl
+        }
+        publishedDate
+    }
+    fragment FeedPostFragment on ActivityFeedTopLevelPost {
+        commentsLink
+        commentsCount
+        attachmentLinks {
+            id
+            type
+            name
+            href
+            iconHref
+        }
+        isPinned
+    }
+    fragment ArticleDetailsFragment on ActivityFeedArticle {
         message
     }
-    fragment AssignmentDetails on ActivityFeedAssignment {
+    fragment AssignmentDetailsFragment on ActivityFeedAssignment {
         name
         instructions
         dueDate

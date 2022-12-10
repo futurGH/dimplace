@@ -28,7 +28,7 @@ export function Header(
 		<View style={[styles.paddingWrapper, { paddingTop }]}>
 			<View style={styles.container}>
 				<View style={styles.icon}>{leftIcon}</View>
-				<Text style={styles.title}>{title}</Text>
+				<Text numberOfLines={1} style={styles.title}>{title}</Text>
 				<View style={styles.icon}>{rightIcon}</View>
 			</View>
 		</View>
@@ -45,6 +45,13 @@ const styles = StyleSheet.create({
 		paddingHorizontal: "5%",
 		paddingVertical: 16,
 	},
-	title: { ...Typography.Heading, color: Colors.TextPrimary, textAlign: "center" },
+	title: {
+		...Typography.Heading,
+		color: Colors.TextPrimary,
+		textAlign: "center",
+		width: "50%",
+		marginHorizontal: 32,
+		flex: 1,
+	},
 	icon: { maxHeight: 28 },
 });

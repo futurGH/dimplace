@@ -1,6 +1,7 @@
 import { CompositeScreenProps, useRoute } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CourseFeed } from "./CourseFeed";
+import { CourseFeedPost } from "./CourseFeedPost";
 import type {
 	CourseTabNavigatorParamList,
 	CourseTabNavigatorScreenProps,
@@ -12,7 +13,7 @@ export type CourseHomeStackParamList = {
 			CourseTabNavigatorParamList["CourseHomeStack"]["activityFeedArticles"];
 		organization?: CourseTabNavigatorParamList["CourseHomeStack"]["organization"];
 	};
-	FeedComment: { id: string; postId: string };
+	CourseFeedPost: { articleId: string; orgName: string };
 };
 export type CourseHomeStackScreenProps<T extends keyof CourseHomeStackParamList> =
 	CompositeScreenProps<
@@ -31,6 +32,12 @@ export function CourseHomeStack() {
 				component={CourseFeed}
 				/* pass through route parameters because nested screens otherwise can't access them */
 				initialParams={route.params}
+			/>
+			<Stack.Screen
+				name="CourseFeedPost"
+				component={CourseFeedPost}
+				initialParams={{ orgName: route.params.organization?.name || "" }}
+				options={{ presentation: "modal" }}
 			/>
 		</Stack.Navigator>
 	);

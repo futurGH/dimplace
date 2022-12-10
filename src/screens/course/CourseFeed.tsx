@@ -1,4 +1,4 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Dimensions, FlatList, ImageBackground, StyleSheet, Text, View } from "react-native";
 import {
@@ -11,6 +11,7 @@ import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 
 export function CourseFeed() {
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeed">["route"]>();
+	const navigation = useNavigation<CourseHomeStackScreenProps<"CourseFeed">["navigation"]>();
 	const { activityFeedArticles, organization } = route.params;
 	const windowHeight = Dimensions.get("window").height;
 	return (
@@ -19,7 +20,13 @@ export function CourseFeed() {
 				data={activityFeedArticles}
 				renderItem={({ item: _item }) => {
 					const item = _item as unknown as AnnouncementCardProps;
-					return <AnnouncementCard {...item} />;
+					return (
+						<AnnouncementCard
+							{...item}
+							onPress={() =>
+								navigation.navigate("CourseFeedPost", { articleId: item.id })}
+						/>
+					);
 				}}
 				ListHeaderComponent={
 					<View style={[styles.imageContainer, { maxHeight: windowHeight / 4 }]}>

@@ -77,7 +77,7 @@ export function NavigationWrapper() {
 						CourseHomeStack: {
 							path: "",
 							initialRouteName: "CourseFeed" as never,
-							screens: { CourseFeed: "feed" },
+							screens: { CourseFeed: "feed", CourseFeedPost: "article/:articleId" },
 						},
 						CourseContent: "content",
 						CourseAssignments: "assignments",

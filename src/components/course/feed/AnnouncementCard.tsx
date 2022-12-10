@@ -27,6 +27,7 @@ export type AnnouncementCardProps = (FeedArticleCardProps | FeedAssignmentCardPr
 	publishedDate: string;
 	attachmentLinks: Array<{ id: string; type: string; name: string; href: string }>;
 	commentsCount: string;
+	onPress?: () => void;
 };
 export function AnnouncementCard(props: AnnouncementCardProps) {
 	const { id, author, publishedDate: _publishedDate, attachmentLinks, commentsCount } = props;
@@ -135,6 +136,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 					</Text>
 				</Pressable>
 			}
+			onPress={props.onPress}
 		/>
 	);
 }
@@ -160,12 +162,12 @@ const styles = StyleSheet.create({
 	authorName: { ...Typography.Callout, color: Colors.TextPrimary },
 	authorDate: { ...Typography.Footnote, color: Colors.TextLabel },
 	body: { width: "100%", marginTop: 16 },
-	bodyTitle: { ...Typography.Subheading, color: Colors.TextPrimary, marginBottom: 8 },
+	bodyTitle: { ...Typography.ListHeading, color: Colors.TextPrimary, marginBottom: 8 },
 	bodyText: { ...Typography.Body, color: Colors.TextPrimary },
 	bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
-	attachments: { width: "100%", flex: 1, marginTop: 16 },
-	attachmentsIcon: { width: 18, height: 18, fill: Colors.TextPrimary },
-	attachmentsText: { ...Typography.Label, color: Colors.TextPrimary, marginLeft: 2 },
+	attachments: { width: "100%", flex: 1, flexDirection: "row", marginTop: 16 },
+	attachmentsIcon: { width: 18, height: 18, fill: Colors.TextSecondary },
+	attachmentsText: { ...Typography.Label, color: Colors.TextSecondary, marginLeft: 2 },
 	footer: {
 		width: "100%",
 		borderTopWidth: 1,
