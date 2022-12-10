@@ -18,7 +18,6 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 	const courseId = courseIdFragments[courseIdFragments.length - 1];
 	return (
 		<Card
-			key={id}
 			content={
 				<View
 					style={[
@@ -39,7 +38,10 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 			}
 			footer={
 				<View style={styles.footer}>
-					{assignments.map((props) => <CourseCardAssignment {...props} />)}
+					{assignments.map((props) => <CourseCardAssignment
+						key={props.name}
+						{...props}
+					/>)}
 				</View>
 			}
 			onPress={() => linkTo("/courses/" + courseId)}

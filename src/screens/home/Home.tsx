@@ -79,7 +79,6 @@ export function Home() {
 		<Container>
 			<FlatList
 				data={courses}
-				keyExtractor={(item) => item.id}
 				renderItem={({ item: props }) => <CourseCard key={props.id} {...props} />}
 				ItemSeparatorComponent={() => <View style={styles.separator} />}
 				showsVerticalScrollIndicator={false}

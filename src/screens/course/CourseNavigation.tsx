@@ -12,12 +12,14 @@ import type { SvgProps } from "react-native-svg";
 import { gqlClient } from "../../api/gqlClient";
 import { ExitIcon } from "../../assets/icons/exit";
 import { ExternalIcon } from "../../assets/icons/external";
+import { MessageWritingIcon } from "../../assets/icons/message-writing";
 import { Header } from "../../components/layout/Header";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type {
 	RootStackScreenProps,
 	StackParamList,
 } from "../../components/layout/NavigationWrapper";
+import { TabBar } from "../../components/layout/TabBar";
 import { graphql } from "../../gql";
 import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
@@ -75,6 +77,7 @@ export function CourseNavigation() {
 	}
 	return (
 		<Tab.Navigator
+			tabBar={TabBar}
 			screenOptions={{
 				header: Header,
 				headerLeft: () => <CoursePageHeaderLeftButton />,
@@ -88,7 +91,12 @@ export function CourseNavigation() {
 			<Tab.Screen
 				name="CourseHomeStack"
 				component={CourseHomeStack}
-				options={{ headerTitle: "" }}
+				options={{
+					headerTitle: "",
+					tabBarIcon: ({ color, size }) => (
+						<MessageWritingIcon width={size} height={size} fill={color} />
+					),
+				}}
 				/* pass through route parameters because nested screens otherwise can't access them */
 				initialParams={{
 					activityFeedArticles: data?.activityFeedArticlePage?.activityFeedArticles,

@@ -1,6 +1,4 @@
-import type {
-	NativeStackHeaderProps,
-} from "@react-navigation/native-stack/lib/typescript/src/types";
+import type { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors, Typography } from "../../styles";
