@@ -1,5 +1,6 @@
 import { useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
+import * as WebBrowser from "expo-web-browser";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { gqlClient } from "../../api/gqlClient";
 import { SectionList } from "../../components/elements/SectionList";
@@ -25,6 +26,8 @@ export function CourseContent() {
 		queryFn: () => gqlClient.request(COURSE_CONTENT_QUERY, { orgId }),
 	});
 
+	console.log(errors);
+
 	if (isLoading) {
 		return (
 			<HeaderlessContainer
@@ -36,9 +39,10 @@ export function CourseContent() {
 	}
 
 	if (errors || !data?.contentRoot) {
+		console.error("handling error");
 		handleErrors({ errors, refetch, config, actions: configActions });
-		console.error(errors);
 	}
+	return null;
 
 	const { contentRoot } = data as { contentRoot: { modules: Array<CourseContent> } };
 
@@ -55,6 +59,17 @@ export function CourseContent() {
 						</Text>
 					</View>
 				)}
+				onItemPress={(item) => {
+					const link = item.pdfHref
+						|| (item.type?.endsWith("pdf") && item.downloadHref)
+						|| item.viewUrl
+						|| null;
+					if (!link) return;
+					// openAuthSession causes (some?) auth system(s?) to return "forbidden"
+					WebBrowser.openBrowserAsync(link, { windowName: item.title }).catch(
+						() => {}, // top tier error handling
+					);
+				}}
 			/>
 		</Container>
 	);
@@ -88,6 +103,8 @@ export type CourseContent = {
 	__typename?: string;
 	title: string;
 	viewUrl?: string;
+	downloadHref?: string;
+	pdfHref?: string;
 	modifiedDate?: string;
 	type?: string;
 	showCount?: boolean;
@@ -127,6 +144,8 @@ const COURSE_CONTENT_QUERY = graphql(/* GraphQL */ `
 		title
 		... on ContentTopic {
 			viewUrl
+			downloadHref
+			pdfHref
 			modifiedDate
 			type
 		}
