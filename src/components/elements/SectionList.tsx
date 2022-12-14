@@ -115,6 +115,7 @@ export function SectionList<T extends ListItemProps>(
 									...listItemStyles.title,
 									...(props.itemStyles?.title || {}),
 									...Typography.Callout,
+									color: Colors.TextSecondary,
 								},
 								text: { ...listItemStyles.text, ...(props.itemStyles?.text || {}) },
 								label: {
