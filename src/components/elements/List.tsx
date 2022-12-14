@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 import type { FlatListProps, GestureResponderEvent, TextStyle, ViewStyle } from "react-native";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors, Typography } from "../../styles";
@@ -8,10 +9,11 @@ export interface ListItemProps {
 	title: string;
 	icon?: ReactNode;
 	label?: string;
+	numberOfLines?: number;
 	onPress?: (event: GestureResponderEvent) => void;
 	onPressIn?: (event: GestureResponderEvent) => void;
 	onPressOut?: (event: GestureResponderEvent) => void;
-	style?: {
+	styles?: {
 		container?: ViewStyle;
 		text?: ViewStyle;
 		icon?: ViewStyle;
@@ -20,27 +22,36 @@ export interface ListItemProps {
 	};
 }
 export function ListItem(
-	{ icon = null, title, label, onPress, onPressIn, onPressOut, style = {} }: ListItemProps,
+	{ icon = null, title, label, numberOfLines, onPress, onPressIn, onPressOut, styles = {} }:
+		ListItemProps,
 ) {
+	const [backgroundColor, setBackground] = useState("transparent");
 	return (
-		<View style={style.container}>
+		<View style={{ ...styles.container, backgroundColor }}>
 			{icon}
 			<Pressable
-				style={style.text}
+				style={styles.text}
 				onPress={onPress}
-				onPressIn={onPressIn}
-				onPressOut={onPressOut}
+				onPressIn={(event) => {
+					setBackground(Colors.Card);
+					onPressIn?.(event);
+				}}
+				onPressOut={(event) => {
+					setBackground("transparent");
+					onPressOut?.(event);
+				}}
 			>
-				<Text style={style.title}>{title}</Text>
-				{label && <Text style={style.label}>{label}</Text>}
+				<Text numberOfLines={numberOfLines} style={styles.title}>{title}</Text>
+				{label && <Text style={styles.label}>{label}</Text>}
 			</Pressable>
 		</View>
 	);
 }
 
-const makeListItemStyles = (rightLabel: boolean) =>
+export const makeListItemStyles = (rightLabel: boolean) =>
 	StyleSheet.create({
 		container: {
+			maxWidth: "100%",
 			flex: 1,
 			flexDirection: "row",
 			paddingVertical: 16,
@@ -62,7 +73,7 @@ const makeListItemStyles = (rightLabel: boolean) =>
 
 interface ListProps<T> extends Partial<FlatListProps<T>> {
 	data: Array<T>;
-	itemStyles?: ListItemProps["style"];
+	itemStyles?: ListItemProps["styles"];
 	labelAlignment?: "bottom" | "right";
 	onItemPress?: (item: T) => void;
 	onItemPressIn?: (event: GestureResponderEvent) => void;
@@ -77,19 +88,10 @@ export function List<T extends ListItemProps>(
 			ItemSeparatorComponent={props.ItemSeparatorComponent || ItemSeparator}
 			keyboardShouldPersistTaps="handled"
 			renderItem={({ item }) => {
-				const style = { ...listItemStyles, ...props.itemStyles };
 				return (
 					<ListItem
 						onPress={() => onItemPress(item)}
-						onPressIn={(event) => {
-							style.container.backgroundColor = Colors.Card;
-							onItemPressIn?.(event);
-						}}
-						onPressOut={(event) => {
-							style.container.backgroundColor = "transparent";
-							onItemPressOut?.(event);
-						}}
-						style={style}
+						styles={{ ...listItemStyles, ...props.itemStyles }}
 						{...item}
 					/>
 				);

@@ -10,6 +10,7 @@ import * as Linking from "expo-linking";
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import { gqlClient } from "../../api/gqlClient";
+import { DocumentListIcon } from "../../assets/icons/document-list";
 import { ExitIcon } from "../../assets/icons/exit";
 import { ExternalIcon } from "../../assets/icons/external";
 import { MessageWritingIcon } from "../../assets/icons/message-writing";
@@ -25,6 +26,7 @@ import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
+import { CourseContent } from "./CourseContent";
 import { CourseHomeStack, CourseHomeStackParamList } from "./CourseHomeStack";
 
 export type CourseTabNavigatorParamList = {
@@ -34,7 +36,7 @@ export type CourseTabNavigatorParamList = {
 			& Pick<NonNullable<CoursePageQuery["activityFeedArticlePage"]>, "activityFeedArticles">
 			& Pick<CoursePageQuery, "organization">
 		>;
-	CourseContent: undefined;
+	CourseContent: { orgId: string };
 	CourseAssignments: undefined;
 	CourseGrades: undefined;
 };
@@ -85,7 +87,6 @@ export function CourseNavigation() {
 					<CoursePageHeaderRightButton url={data?.organization?.homeUrl} />
 				),
 				headerTitle: data?.organization?.name,
-				title: "Feed",
 			}}
 		>
 			<Tab.Screen
@@ -93,6 +94,7 @@ export function CourseNavigation() {
 				component={CourseHomeStack}
 				options={{
 					headerTitle: "",
+					title: "Feed",
 					tabBarIcon: ({ color, size }) => (
 						<MessageWritingIcon width={size} height={size} fill={color} />
 					),
@@ -102,6 +104,18 @@ export function CourseNavigation() {
 					activityFeedArticles: data?.activityFeedArticlePage?.activityFeedArticles,
 					organization: data?.organization,
 				}}
+			/>
+			<Tab.Screen
+				name="CourseContent"
+				component={CourseContent}
+				options={{
+					headerTitle: data?.organization?.name || "Content",
+					title: "Content",
+					tabBarIcon: ({ color, size }) => (
+						<DocumentListIcon width={size} height={size} fill={color} />
+					),
+				}}
+				initialParams={{ orgId: id }}
 			/>
 		</Tab.Navigator>
 	);

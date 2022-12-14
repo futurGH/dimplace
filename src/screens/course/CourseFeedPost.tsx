@@ -49,7 +49,7 @@ export function CourseFeedPost() {
 
 	const { data: _data, error: errors, isLoading, refetch } = useQuery({
 		queryKey: ["article", articleId],
-		queryFn: async () => gqlClient.request(COURSE_FEED_POST_QUERY, { articleId, commentsId }),
+		queryFn: () => gqlClient.request(COURSE_FEED_POST_QUERY, { articleId, commentsId }),
 	});
 
 	if (isLoading || !_data?.activityFeedArticle || !_data?.activityFeedCommentPage) {

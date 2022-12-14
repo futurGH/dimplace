@@ -24,7 +24,10 @@ export function CourseFeed() {
 						<AnnouncementCard
 							{...item}
 							onPress={() =>
-								navigation.navigate("CourseFeedPost", { articleId: item.id })}
+								navigation.navigate("CourseFeedPost", {
+									articleId: item.id,
+									orgName: organization?.name || "Announcement",
+								})}
 						/>
 					);
 				}}
