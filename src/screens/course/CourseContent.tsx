@@ -1,4 +1,4 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import * as WebBrowser from "expo-web-browser";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
@@ -15,6 +15,9 @@ import type { CourseTabNavigatorScreenProps } from "./CourseNavigation";
 
 export function CourseContent() {
 	const route = useRoute<CourseTabNavigatorScreenProps<"CourseContent">["route"]>();
+	const navigation = useNavigation<
+		CourseTabNavigatorScreenProps<"CourseContent">["navigation"]
+	>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 	const { orgId } = route.params;
@@ -25,8 +28,6 @@ export function CourseContent() {
 		queryKey: ["courseContent", { orgId }],
 		queryFn: () => gqlClient.request(COURSE_CONTENT_QUERY, { orgId }),
 	});
-
-	console.log(errors);
 
 	if (isLoading) {
 		return (
@@ -39,10 +40,9 @@ export function CourseContent() {
 	}
 
 	if (errors || !data?.contentRoot) {
-		console.error("handling error");
-		handleErrors({ errors, refetch, config, actions: configActions });
+		// console.error(errors);
+		handleErrors({ errors, refetch, navigation, config, actions: configActions });
 	}
-	return null;
 
 	const { contentRoot } = data as { contentRoot: { modules: Array<CourseContent> } };
 

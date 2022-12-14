@@ -40,7 +40,7 @@ export function Home() {
 		);
 	}
 	if (errors) {
-		handleErrors({ errors, refetch, config, actions });
+		handleErrors({ errors, refetch, navigation, config, actions });
 		console.error(errors);
 	}
 

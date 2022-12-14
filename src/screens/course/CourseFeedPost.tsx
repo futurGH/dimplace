@@ -63,7 +63,7 @@ export function CourseFeedPost() {
 	}
 
 	if (errors) {
-		handleErrors({ errors, refetch, config, actions: configActions });
+		handleErrors({ errors, refetch, navigation, config, actions: configActions });
 		console.error(errors);
 	}
 

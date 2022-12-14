@@ -14,6 +14,7 @@ import { DocumentListIcon } from "../../assets/icons/document-list";
 import { ExitIcon } from "../../assets/icons/exit";
 import { ExternalIcon } from "../../assets/icons/external";
 import { MessageWritingIcon } from "../../assets/icons/message-writing";
+import { WriteIcon } from "../../assets/icons/write";
 import { Header } from "../../components/layout/Header";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type {
@@ -26,6 +27,7 @@ import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
+import { CourseAssignments } from "./CourseAssignments";
 import { CourseContent } from "./CourseContent";
 import { CourseHomeStack, CourseHomeStackParamList } from "./CourseHomeStack";
 
@@ -50,6 +52,7 @@ const Tab = createBottomTabNavigator<CourseTabNavigatorParamList>();
 
 export function CourseNavigation() {
 	const route = useRoute<RootStackScreenProps<"CourseNavigation">["route"]>();
+	const navigation = useNavigation<RootStackScreenProps<"CourseNavigation">["navigation"]>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
@@ -74,7 +77,7 @@ export function CourseNavigation() {
 	}
 
 	if (errors) {
-		handleErrors({ errors, refetch, config, actions: configActions });
+		handleErrors({ errors, refetch, navigation, config, actions: configActions });
 		console.error(errors);
 	}
 	return (
@@ -116,6 +119,17 @@ export function CourseNavigation() {
 					),
 				}}
 				initialParams={{ orgId: id }}
+			/>
+			<Tab.Screen
+				name="CourseAssignments"
+				component={CourseAssignments}
+				options={{
+					headerTitle: data?.organization?.name || "Assignments",
+					title: "Assignments",
+					tabBarIcon: ({ color, size }) => (
+						<WriteIcon width={size} height={size} fill={color} />
+					),
+				}}
 			/>
 		</Tab.Navigator>
 	);
