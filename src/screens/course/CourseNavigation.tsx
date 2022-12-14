@@ -123,8 +123,7 @@ export function CourseNavigation() {
 
 export function CoursePageHeaderLeftButton(
 	{
-		onPress = (navigation: NavigationProp<any>) =>
-			navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home"),
+		onPress = (navigation: NavigationProp<any>) => navigation.navigate("Home"),
 		icon: Icon = ExitIcon,
 		text = "Courses",
 	}: {
