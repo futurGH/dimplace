@@ -38,10 +38,24 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 			}
 			footer={
 				<View style={styles.footer}>
-					{assignments.map((props) => <CourseCardAssignment
-						key={props.name}
-						{...props}
-					/>)}
+					{assignments.map((props) => {
+						// https://<tenant-id>.activites.api.brightspace.com/old/activities/:activityId/usages/:usage/users/:userId
+						const activityIdFragments = props.id.split("/");
+						const activityId = activityIdFragments[activityIdFragments.length - 5];
+						const usage = activityIdFragments[activityIdFragments.length - 3];
+						const userId = activityIdFragments[activityIdFragments.length - 1];
+						return (
+							<CourseCardAssignment
+								key={props.name}
+								onPress={() => {
+									linkTo(
+										`/courses/${courseId}/assignments/${activityId}/usages/${usage}/users/${userId}`,
+									);
+								}}
+								{...props}
+							/>
+						);
+					})}
 				</View>
 			}
 			onPress={() => linkTo("/courses/" + courseId)}

@@ -9,7 +9,13 @@ import { CourseAssignmentView } from "./CourseAssignmentView";
 
 export type CourseAssignmentsStackParamList = {
 	CourseAssignments: { orgId: string; orgName: string };
-	CourseAssignmentView: { orgId: string; orgName: string; activityId: string };
+	CourseAssignmentView: {
+		orgId: string;
+		orgName: string;
+		activityId: string;
+		usage?: string;
+		userId?: string;
+	};
 };
 export type CourseAssignmentsStackScreenProps<T extends keyof CourseAssignmentsStackParamList> =
 	CompositeScreenProps<

@@ -18,12 +18,22 @@ import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack
 export function CourseAssignmentView() {
 	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignmentView">["route"]>();
 	const navigation = useNavigation();
-	const { activityId, orgName, orgId } = route.params;
-	if (!activityId) {
-		navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home");
-	}
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
+
+	const { orgName, orgId } = route.params;
+	let activityId: string;
+	if (route.params.usage && route.params.userId && route.params.activityId) {
+		// Got here via deep link
+		activityId =
+			`https://${config.tenantId}.activities.api.brightspace.com/old/activities/${route.params.activityId}/usages/${route.params.usage}/users/${route.params.userId}`;
+	} else if (route.params.activityId) {
+		// Got here via navigator; most likely assignments list
+		activityId = route.params.activityId;
+	} else {
+		navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home");
+		return null;
+	}
 
 	const { data, error, isLoading } = useQuery({
 		queryKey: ["courseAssignments", { orgId }],

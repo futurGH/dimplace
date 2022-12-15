@@ -85,7 +85,10 @@ export function NavigationWrapper() {
 						CourseAssignmentsStack: {
 							path: "assignments",
 							initialRouteName: "CourseAssignments" as never,
-							screens: { CourseAssignments: "", CourseAssignment: ":assignmentId" },
+							screens: {
+								CourseAssignments: "",
+								CourseAssignmentView: ":activityId/usages/:usage/users/:userId",
+							},
 						},
 						CourseGrades: "grades",
 					},

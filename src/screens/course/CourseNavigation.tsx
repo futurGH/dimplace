@@ -29,7 +29,10 @@ import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
 import { fetchCourseAssignments } from "./assignments/CourseAssignments";
-import { CourseAssignmentsStack } from "./assignments/CourseAssignmentsStack";
+import {
+	CourseAssignmentsStack,
+	type CourseAssignmentsStackParamList,
+} from "./assignments/CourseAssignmentsStack";
 import { CourseContent, fetchCourseContent } from "./content/CourseContent";
 import { CourseHomeStack, type CourseHomeStackParamList } from "./feed/CourseHomeStack";
 import { CourseGrades, fetchCourseGrades } from "./grades/CourseGrades";
@@ -42,7 +45,10 @@ export type CourseTabNavigatorParamList = {
 			& Pick<CoursePageQuery, "organization">
 		>;
 	CourseContent: { orgId: string };
-	CourseAssignmentsStack: { orgName: string; orgId: string };
+	CourseAssignmentsStack: NavigatorScreenParams<CourseAssignmentsStackParamList> & {
+		orgName: string;
+		orgId: string;
+	};
 	CourseGrades: { orgId: string };
 };
 export type CourseTabNavigatorScreenProps<T extends keyof CourseTabNavigatorParamList> =

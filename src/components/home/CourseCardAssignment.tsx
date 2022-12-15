@@ -1,18 +1,20 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { Colors, Typography } from "../../styles";
 import { formatDate } from "../../util/formatDate";
 
 export interface CourseCardAssignmentProps {
+	id: string;
 	name: string;
 	dueDate: Date;
+	onPress?: () => void;
 }
-export function CourseCardAssignment({ name, dueDate }: CourseCardAssignmentProps) {
+export function CourseCardAssignment({ name, dueDate, onPress }: CourseCardAssignmentProps) {
 	const due = formatDate(dueDate);
 	return (
-		<View style={styles.container}>
+		<Pressable style={styles.container} onPress={onPress}>
 			<Text numberOfLines={1} style={styles.name}>{name}</Text>
 			<Text style={styles.dueDate}>Due {due}</Text>
-		</View>
+		</Pressable>
 	);
 }
 

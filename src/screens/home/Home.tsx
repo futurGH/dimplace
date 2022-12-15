@@ -65,6 +65,7 @@ export function Home() {
 					&& activity.completed === false
 				).map((activity) => {
 					return {
+						id: activity.id,
 						name: activity.source?.name || "Assignment not found",
 						dueDate: new Date(activity.dueDate || Date.now()),
 					};
