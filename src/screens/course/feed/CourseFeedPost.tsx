@@ -31,8 +31,8 @@ import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
 import { formatDate } from "../../../util/formatDate";
-import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 import { CoursePageHeaderLeftButton } from "../CourseNavigation";
+import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 
 export function CourseFeedPost() {
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeedPost">["route"]>();

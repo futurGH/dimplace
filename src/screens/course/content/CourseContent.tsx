@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
+import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import * as WebBrowser from "expo-web-browser";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
@@ -25,8 +25,8 @@ export function CourseContent() {
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseContent", { orgId }],
-		queryFn: () => gqlClient.request(COURSE_CONTENT_QUERY, { orgId }),
+		queryKey: ["courseContent", { accessToken: config.accessToken, orgId }],
+		queryFn: fetchCourseContent,
 		retry: (failureCount, error) => {
 			return handleErrors({
 				error,
@@ -120,6 +120,15 @@ export type CourseContent = {
 	collapsed?: boolean;
 	children?: Array<CourseContent>;
 };
+
+export function fetchCourseContent(
+	{ queryKey: [, { accessToken, orgId }] }: QueryFunctionContext<
+		[string, { accessToken: string; orgId: string }]
+	>,
+) {
+	gqlClient.setHeader("Authorization", "Bearer " + accessToken);
+	return gqlClient.request(COURSE_CONTENT_QUERY, { orgId });
+}
 
 const COURSE_CONTENT_QUERY = graphql(/* GraphQL */ `
     query CourseContent($orgId: String!) {

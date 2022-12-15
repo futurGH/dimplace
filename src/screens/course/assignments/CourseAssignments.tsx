@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
+import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
 import { WriteIcon } from "../../../assets/icons/write";
@@ -26,16 +26,8 @@ export function CourseAssignments() {
 	const { orgId, orgName } = route.params || {};
 
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseAssignments", { orgId }],
-		queryFn: () => {
-			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
-			const { start, end } = getYearStartAndEnd();
-			return gqlClient.request(COURSE_ASSIGNMENTS_QUERY, {
-				startDate: start.toISOString(),
-				endDate: end.toISOString(),
-				orgId,
-			});
-		},
+		queryKey: ["courseAssignments", { accessToken: config.accessToken, orgId }],
+		queryFn: fetchCourseAssignments,
 		retry: (failureCount, error) => {
 			return handleErrors({
 				error,
@@ -47,7 +39,7 @@ export function CourseAssignments() {
 		},
 	});
 
-	if (isLoading) {
+	if (isLoading || ((!data?.activities || !data?.userGrades) && !error)) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -137,6 +129,19 @@ export type CourseContent = {
 	children?: Array<CourseContent>;
 };
 
+export function fetchCourseAssignments(
+	{ queryKey: [, { accessToken, orgId }] }: QueryFunctionContext<
+		[string, { accessToken: string; orgId: string }]
+	>,
+) {
+	gqlClient.setHeader("Authorization", "Bearer " + accessToken);
+	const { start, end } = getYearStartAndEnd();
+	return gqlClient.request(COURSE_ASSIGNMENTS_QUERY, {
+		startDate: start.toISOString(),
+		endDate: end.toISOString(),
+		orgId,
+	});
+}
 export const COURSE_ASSIGNMENTS_QUERY = graphql(/* GraphQL */ `
     query CourseAssignments($startDate: String!, $endDate: String!, $orgId: String!) {
         activities(start: $startDate, end: $endDate) {
@@ -148,8 +153,6 @@ export const COURSE_ASSIGNMENTS_QUERY = graphql(/* GraphQL */ `
 			}
 			feedback {
 				text
-				textHtml
-				textHtmlRichContent
 			}
 			value
 		}

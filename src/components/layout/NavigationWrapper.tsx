@@ -14,6 +14,7 @@ import { useStoreRehydrated } from "easy-peasy";
 import * as Linking from "expo-linking";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
+import { View } from "react-native";
 import {
 	CourseNavigation,
 	CourseTabNavigatorParamList,
@@ -23,6 +24,7 @@ import { AuthWebView } from "../../screens/onboarding/AuthWebView";
 import { InstitutionSelection } from "../../screens/onboarding/InstitutionSelection";
 import { Onboarding } from "../../screens/onboarding/Onboarding";
 import { useStoreState } from "../../store/store";
+import { Colors } from "../../styles";
 import { Header } from "./Header";
 
 export type StackParamList = {
@@ -80,7 +82,11 @@ export function NavigationWrapper() {
 							screens: { CourseFeed: "feed", CourseFeedPost: "article/:articleId" },
 						},
 						CourseContent: "content",
-						CourseAssignments: "assignments",
+						CourseAssignmentsStack: {
+							path: "assignments",
+							initialRouteName: "CourseAssignments" as never,
+							screens: { CourseAssignments: "", CourseAssignment: ":assignmentId" },
+						},
 						CourseGrades: "grades",
 					},
 				},
@@ -88,33 +94,35 @@ export function NavigationWrapper() {
 		},
 	};
 	return (
-		<NavigationContainer linking={linking} onReady={onReady}>
-			<Stack.Navigator screenOptions={{ header: Header, headerShown: false }}>
-				<Stack.Group navigationKey="Onboarding">
-					{!config.onboarded && (
-						<>
-							<Stack.Screen name="Onboarding" component={Onboarding} />
-							<Stack.Screen
-								name="InstitutionSelection"
-								component={InstitutionSelection}
-							/>
-						</>
-					)}
-					<Stack.Screen
-						name="AuthWebView"
-						component={AuthWebView}
-						initialParams={{ source: "" }}
-					/>
-				</Stack.Group>
-				<Stack.Group navigationKey="Home">
-					<Stack.Screen
-						name="Home"
-						component={Home}
-						options={{ headerShown: true, title: "Courses", gestureEnabled: false }}
-					/>
-				</Stack.Group>
-				<Stack.Screen name="CourseNavigation" component={CourseNavigation} />
-			</Stack.Navigator>
-		</NavigationContainer>
+		<View style={{ flex: 1, backgroundColor: Colors.Background }}>
+			<NavigationContainer linking={linking} onReady={onReady}>
+				<Stack.Navigator screenOptions={{ header: Header, headerShown: false }}>
+					<Stack.Group navigationKey="Onboarding">
+						{!config.onboarded && (
+							<>
+								<Stack.Screen name="Onboarding" component={Onboarding} />
+								<Stack.Screen
+									name="InstitutionSelection"
+									component={InstitutionSelection}
+								/>
+							</>
+						)}
+						<Stack.Screen
+							name="AuthWebView"
+							component={AuthWebView}
+							initialParams={{ source: "" }}
+						/>
+					</Stack.Group>
+					<Stack.Group navigationKey="Home">
+						<Stack.Screen
+							name="Home"
+							component={Home}
+							options={{ headerShown: true, title: "Courses", gestureEnabled: false }}
+						/>
+					</Stack.Group>
+					<Stack.Screen name="CourseNavigation" component={CourseNavigation} />
+				</Stack.Navigator>
+			</NavigationContainer>
+		</View>
 	);
 }

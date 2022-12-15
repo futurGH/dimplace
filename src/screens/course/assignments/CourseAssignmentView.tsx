@@ -11,9 +11,9 @@ import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
 import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
+import { CoursePageHeaderLeftButton, CoursePageHeaderRightButton } from "../CourseNavigation";
 import { COURSE_ASSIGNMENTS_QUERY } from "./CourseAssignments";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
-import { CoursePageHeaderLeftButton, CoursePageHeaderRightButton } from "../CourseNavigation";
 
 export function CourseAssignmentView() {
 	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignmentView">["route"]>();

@@ -1,11 +1,11 @@
 import { CompositeScreenProps, useRoute } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { CourseAssignments } from "./CourseAssignments";
-import { CourseAssignmentView } from "./CourseAssignmentView";
 import type {
 	CourseTabNavigatorParamList,
 	CourseTabNavigatorScreenProps,
 } from "../CourseNavigation";
+import { CourseAssignments } from "./CourseAssignments";
+import { CourseAssignmentView } from "./CourseAssignmentView";
 
 export type CourseAssignmentsStackParamList = {
 	CourseAssignments: { orgId: string; orgName: string };

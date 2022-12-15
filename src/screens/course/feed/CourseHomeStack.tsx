@@ -1,11 +1,11 @@
 import { CompositeScreenProps, useRoute } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { CourseFeed } from "./CourseFeed";
-import { CourseFeedPost } from "./CourseFeedPost";
 import type {
 	CourseTabNavigatorParamList,
 	CourseTabNavigatorScreenProps,
 } from "../CourseNavigation";
+import { CourseFeed } from "./CourseFeed";
+import { CourseFeedPost } from "./CourseFeedPost";
 
 export type CourseHomeStackParamList = {
 	CourseFeed: {

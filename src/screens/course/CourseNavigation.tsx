@@ -5,7 +5,7 @@ import type {
 	NavigatorScreenParams,
 } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryFunctionContext, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import type { SvgProps } from "react-native-svg";
@@ -28,9 +28,11 @@ import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
+import { fetchCourseAssignments } from "./assignments/CourseAssignments";
 import { CourseAssignmentsStack } from "./assignments/CourseAssignmentsStack";
-import { CourseContent } from "./content/CourseContent";
+import { CourseContent, fetchCourseContent } from "./content/CourseContent";
 import { CourseHomeStack, type CourseHomeStackParamList } from "./feed/CourseHomeStack";
+import { CourseGrades, fetchCourseGrades } from "./grades/CourseGrades";
 
 export type CourseTabNavigatorParamList = {
 	CourseHomeStack:
@@ -56,6 +58,7 @@ export function CourseNavigation() {
 	const navigation = useNavigation<RootStackScreenProps<"CourseNavigation">["navigation"]>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
+	const queryClient = useQueryClient();
 
 	const { id: courseId } = route.params;
 	const id = `https://${config.tenantId}.organizations.api.brightspace.com/${courseId}`;
@@ -76,7 +79,7 @@ export function CourseNavigation() {
 		},
 	});
 
-	if (isLoading) {
+	if (isLoading || (!data?.organization && !error)) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -90,6 +93,9 @@ export function CourseNavigation() {
 		handleErrors({ error, navigation, config, actions: configActions });
 		return null;
 	}
+
+	prefetchCoursePages(queryClient, { orgId: id, accessToken: config.accessToken });
+
 	return (
 		<Tab.Navigator
 			tabBar={TabBar}
@@ -197,6 +203,26 @@ export function fetchCourseFeed(
 ) {
 	const [, { id, courseId }] = queryKey;
 	return gqlClient.request(COURSE_PAGE_QUERY, { id, orgUnitId: courseId });
+}
+
+export function prefetchCoursePages(
+	queryClient: QueryClient,
+	{ orgId, accessToken }: Record<"orgId" | "accessToken", string>,
+) {
+	Promise.allSettled([
+		queryClient.prefetchQuery(["courseContent", { orgId, accessToken }], fetchCourseContent),
+		queryClient.prefetchQuery(
+			["courseAssignments", { orgId, accessToken }],
+			fetchCourseAssignments,
+		),
+		queryClient.prefetchQuery(["courseGrades", { orgId, accessToken }], fetchCourseGrades),
+	]).then((results) => {
+		results.forEach((result) => {
+			if (result.status === "rejected") {
+				console.error("Prefetch failed", result.reason);
+			}
+		});
+	});
 }
 
 const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
