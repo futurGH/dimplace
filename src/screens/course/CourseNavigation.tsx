@@ -39,7 +39,7 @@ export type CourseTabNavigatorParamList = {
 			& Pick<CoursePageQuery, "organization">
 		>;
 	CourseContent: { orgId: string };
-	CourseAssignments: undefined;
+	CourseAssignments: { orgId: string };
 	CourseGrades: undefined;
 };
 export type CourseTabNavigatorScreenProps<T extends keyof CourseTabNavigatorParamList> =
@@ -61,9 +61,18 @@ export function CourseNavigation() {
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
-	const { data, error: errors, isLoading, refetch } = useQuery({
+	const { data, error, isLoading } = useQuery({
 		queryKey: ["course", { id, courseId }],
 		queryFn: fetchCourseFeed,
+		retry: (failureCount, error) => {
+			return handleErrors({
+				error,
+				failureCount,
+				navigation,
+				config,
+				actions: configActions,
+			});
+		},
 	});
 
 	if (isLoading) {
@@ -76,9 +85,9 @@ export function CourseNavigation() {
 		);
 	}
 
-	if (errors) {
-		handleErrors({ errors, refetch, navigation, config, actions: configActions });
-		console.error(errors);
+	if (error) {
+		handleErrors({ error, navigation, config, actions: configActions });
+		return null;
 	}
 	return (
 		<Tab.Navigator
@@ -130,6 +139,7 @@ export function CourseNavigation() {
 						<WriteIcon width={size} height={size} fill={color} />
 					),
 				}}
+				initialParams={{ orgId: id }}
 			/>
 		</Tab.Navigator>
 	);

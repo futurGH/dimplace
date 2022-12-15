@@ -45,14 +45,24 @@ export function CourseFeedPost() {
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
-	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
-
-	const { data: _data, error: errors, isLoading, refetch } = useQuery({
+	const { data: _data, error: error, isLoading } = useQuery({
 		queryKey: ["article", articleId],
-		queryFn: () => gqlClient.request(COURSE_FEED_POST_QUERY, { articleId, commentsId }),
+		queryFn: () => {
+			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
+			return gqlClient.request(COURSE_FEED_POST_QUERY, { articleId, commentsId });
+		},
+		retry: (failureCount, error) => {
+			return handleErrors({
+				error,
+				failureCount,
+				navigation,
+				config,
+				actions: configActions,
+			});
+		},
 	});
 
-	if (isLoading || !_data?.activityFeedArticle || !_data?.activityFeedCommentPage) {
+	if (isLoading) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -62,9 +72,9 @@ export function CourseFeedPost() {
 		);
 	}
 
-	if (errors) {
-		handleErrors({ errors, refetch, navigation, config, actions: configActions });
-		console.error(errors);
+	if (error || !_data?.activityFeedArticle || !_data?.activityFeedCommentPage) {
+		handleErrors({ error, navigation, config, actions: configActions });
+		return null;
 	}
 
 	const { activityFeedComments } = _data.activityFeedCommentPage;

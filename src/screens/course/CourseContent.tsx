@@ -24,9 +24,18 @@ export function CourseContent() {
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
-	const { data, error: errors, isLoading, refetch } = useQuery({
+	const { data, error, isLoading } = useQuery({
 		queryKey: ["courseContent", { orgId }],
 		queryFn: () => gqlClient.request(COURSE_CONTENT_QUERY, { orgId }),
+		retry: (failureCount, error) => {
+			return handleErrors({
+				error,
+				failureCount,
+				navigation,
+				config,
+				actions: configActions,
+			});
+		},
 	});
 
 	if (isLoading) {
@@ -39,9 +48,9 @@ export function CourseContent() {
 		);
 	}
 
-	if (errors || !data?.contentRoot) {
-		// console.error(errors);
-		handleErrors({ errors, refetch, navigation, config, actions: configActions });
+	if (error || !data?.contentRoot) {
+		handleErrors({ error, navigation, config, actions: configActions });
+		return null;
 	}
 
 	const { contentRoot } = data as { contentRoot: { modules: Array<CourseContent> } };

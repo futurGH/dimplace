@@ -9,6 +9,7 @@ import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer
 import { graphql } from "../../gql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { handleErrors } from "../../util/errors";
+import { getYearStartAndEnd } from "../../util/formatDate";
 import { fetchCourseFeed } from "../course/CourseNavigation";
 
 export function Home() {
@@ -19,14 +20,18 @@ export function Home() {
 
 	const config = useStoreState((state) => state.config);
 	const actions = useStoreActions((actions) => actions.config);
-	const { data, error: errors, isLoading, refetch } = useQuery({
+	const { data, error, isLoading } = useQuery({
 		queryKey: ["home"],
 		queryFn: async () => {
-			const currentYear = new Date().getFullYear();
-			const startDate = new Date(currentYear, 0, 1, 0, 0, 0, 0).toISOString();
-			const endDate = new Date(currentYear, 11, 31, 23, 59, 59, 999).toISOString();
 			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
-			return gqlClient.request(COURSE_LIST_QUERY, { startDate, endDate });
+			const { start, end } = getYearStartAndEnd();
+			return gqlClient.request(COURSE_LIST_QUERY, {
+				startDate: start.toISOString(),
+				endDate: end.toISOString(),
+			});
+		},
+		retry: (failureCount, error) => {
+			return handleErrors({ error, failureCount, navigation, config, actions });
 		},
 	});
 
@@ -39,9 +44,8 @@ export function Home() {
 			</HeaderlessContainer>
 		);
 	}
-	if (errors) {
-		handleErrors({ errors, refetch, navigation, config, actions });
-		console.error(errors);
+	if (error) {
+		handleErrors({ error, navigation, config, actions });
 	}
 
 	const courses: Array<CourseCardProps> =
@@ -55,7 +59,10 @@ export function Home() {
 				id: organization.id || "",
 				imageUrl: organization.imageUrl || "",
 				assignments: data.activities.filter((activity) =>
-					activity.organization?.id === organization.id && !activity.completed
+					activity.organization?.id === organization.id
+					&& activity.source?.name
+					&& activity.dueDate
+					&& activity.completed === false
 				).map((activity) => {
 					return {
 						name: activity.source?.name || "Assignment not found",
