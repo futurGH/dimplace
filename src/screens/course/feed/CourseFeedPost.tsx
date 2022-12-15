@@ -11,28 +11,28 @@ import {
 	View,
 } from "react-native";
 import RenderHtml, { defaultSystemFonts } from "react-native-render-html";
-import { gqlClient } from "../../api/gqlClient";
-import { DocumentIcon } from "../../assets/icons/document";
-import { ImageIcon } from "../../assets/icons/image";
-import { LinkIcon } from "../../assets/icons/link";
-import { UserProfileIcon } from "../../assets/icons/user-profile";
-import { Chip } from "../../components/elements/Chip";
-import { Container } from "../../components/layout/Container";
-import { Header } from "../../components/layout/Header";
-import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
-import { graphql } from "../../gql";
+import { gqlClient } from "../../../api/gqlClient";
+import { DocumentIcon } from "../../../assets/icons/document";
+import { ImageIcon } from "../../../assets/icons/image";
+import { LinkIcon } from "../../../assets/icons/link";
+import { UserProfileIcon } from "../../../assets/icons/user-profile";
+import { Chip } from "../../../components/elements/Chip";
+import { Container } from "../../../components/layout/Container";
+import { Header } from "../../../components/layout/Header";
+import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
+import { graphql } from "../../../gql";
 import type {
 	ArticleDetailsFragmentFragment,
 	AssignmentDetailsFragmentFragment,
 	FeedItemFragmentFragment,
 	FeedPostFragmentFragment,
-} from "../../gql/graphql";
-import { useStoreActions, useStoreState } from "../../store/store";
-import { Colors, Typography } from "../../styles";
-import { handleErrors } from "../../util/errors";
-import { formatDate } from "../../util/formatDate";
+} from "../../../gql/graphql";
+import { useStoreActions, useStoreState } from "../../../store/store";
+import { Colors, Typography } from "../../../styles";
+import { handleErrors } from "../../../util/errors";
+import { formatDate } from "../../../util/formatDate";
 import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
-import { CoursePageHeaderLeftButton } from "./CourseNavigation";
+import { CoursePageHeaderLeftButton } from "../CourseNavigation";
 
 export function CourseFeedPost() {
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeedPost">["route"]>();

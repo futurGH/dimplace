@@ -27,9 +27,9 @@ import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
-import { CourseAssignmentsStack } from "./CourseAssignmentsStack";
-import { CourseContent } from "./CourseContent";
-import { CourseHomeStack, type CourseHomeStackParamList } from "./CourseHomeStack";
+import { CourseAssignmentsStack } from "./assignments/CourseAssignmentsStack";
+import { CourseContent } from "./content/CourseContent";
+import { CourseHomeStack, type CourseHomeStackParamList } from "./feed/CourseHomeStack";
 
 export type CourseTabNavigatorParamList = {
 	CourseHomeStack:

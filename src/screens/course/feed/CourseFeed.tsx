@@ -4,9 +4,9 @@ import { Dimensions, FlatList, ImageBackground, StyleSheet, Text, View } from "r
 import {
 	AnnouncementCard,
 	AnnouncementCardProps,
-} from "../../components/course/feed/AnnouncementCard";
-import { Container } from "../../components/layout/Container";
-import { Colors, Typography } from "../../styles";
+} from "../../../components/course/feed/AnnouncementCard";
+import { Container } from "../../../components/layout/Container";
+import { Colors, Typography } from "../../../styles";
 import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 
 export function CourseFeed() {

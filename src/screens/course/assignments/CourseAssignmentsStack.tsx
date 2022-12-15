@@ -5,7 +5,7 @@ import { CourseAssignmentView } from "./CourseAssignmentView";
 import type {
 	CourseTabNavigatorParamList,
 	CourseTabNavigatorScreenProps,
-} from "./CourseNavigation";
+} from "../CourseNavigation";
 
 export type CourseAssignmentsStackParamList = {
 	CourseAssignments: { orgId: string; orgName: string };

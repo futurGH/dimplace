@@ -1,19 +1,19 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { gqlClient } from "../../api/gqlClient";
-import { Container } from "../../components/layout/Container";
-import { Header } from "../../components/layout/Header";
-import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
-import type { AssignmentFragment } from "../../gql/graphql";
-import { useStoreActions, useStoreState } from "../../store/store";
-import { Colors, Typography } from "../../styles";
-import { handleErrors } from "../../util/errors";
-import { formatDate, getYearStartAndEnd } from "../../util/formatDate";
-import { formatGrade } from "../../util/formatGrade";
+import { gqlClient } from "../../../api/gqlClient";
+import { Container } from "../../../components/layout/Container";
+import { Header } from "../../../components/layout/Header";
+import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
+import type { AssignmentFragment } from "../../../gql/graphql";
+import { useStoreActions, useStoreState } from "../../../store/store";
+import { Colors, Typography } from "../../../styles";
+import { handleErrors } from "../../../util/errors";
+import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
+import { formatGrade } from "../../../util/formatGrade";
 import { COURSE_ASSIGNMENTS_QUERY } from "./CourseAssignments";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
-import { CoursePageHeaderLeftButton, CoursePageHeaderRightButton } from "./CourseNavigation";
+import { CoursePageHeaderLeftButton, CoursePageHeaderRightButton } from "../CourseNavigation";
 
 export function CourseAssignmentView() {
 	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignmentView">["route"]>();

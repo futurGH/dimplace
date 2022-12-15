@@ -5,7 +5,7 @@ import { CourseFeedPost } from "./CourseFeedPost";
 import type {
 	CourseTabNavigatorParamList,
 	CourseTabNavigatorScreenProps,
-} from "./CourseNavigation";
+} from "../CourseNavigation";
 
 export type CourseHomeStackParamList = {
 	CourseFeed: {

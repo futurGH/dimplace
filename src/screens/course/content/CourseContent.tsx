@@ -2,16 +2,16 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import * as WebBrowser from "expo-web-browser";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { gqlClient } from "../../api/gqlClient";
-import { SectionList } from "../../components/elements/SectionList";
-import { Container } from "../../components/layout/Container";
-import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
-import { graphql } from "../../gql";
-import { useStoreActions, useStoreState } from "../../store/store";
-import { Colors, Typography } from "../../styles";
-import { handleErrors } from "../../util/errors";
-import { formatDateAndTime } from "../../util/formatDate";
-import type { CourseTabNavigatorScreenProps } from "./CourseNavigation";
+import { gqlClient } from "../../../api/gqlClient";
+import { SectionList } from "../../../components/elements/SectionList";
+import { Container } from "../../../components/layout/Container";
+import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
+import { graphql } from "../../../gql";
+import { useStoreActions, useStoreState } from "../../../store/store";
+import { Colors, Typography } from "../../../styles";
+import { handleErrors } from "../../../util/errors";
+import { formatDateAndTime } from "../../../util/formatDate";
+import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
 export function CourseContent() {
 	const route = useRoute<CourseTabNavigatorScreenProps<"CourseContent">["route"]>();

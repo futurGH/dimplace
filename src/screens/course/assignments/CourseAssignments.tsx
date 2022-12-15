@@ -1,19 +1,19 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { ActivityIndicator, StyleSheet } from "react-native";
-import { gqlClient } from "../../api/gqlClient";
-import { WriteIcon } from "../../assets/icons/write";
-import type { ListItemProps } from "../../components/elements/List";
-import { List } from "../../components/elements/List";
-import { Container } from "../../components/layout/Container";
-import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
-import { graphql } from "../../gql";
-import type { AssignmentFragment } from "../../gql/graphql";
-import { useStoreActions, useStoreState } from "../../store/store";
-import { Colors, Typography } from "../../styles";
-import { handleErrors } from "../../util/errors";
-import { formatDate, getYearStartAndEnd } from "../../util/formatDate";
-import { formatGrade } from "../../util/formatGrade";
+import { gqlClient } from "../../../api/gqlClient";
+import { WriteIcon } from "../../../assets/icons/write";
+import type { ListItemProps } from "../../../components/elements/List";
+import { List } from "../../../components/elements/List";
+import { Container } from "../../../components/layout/Container";
+import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
+import { graphql } from "../../../gql";
+import type { AssignmentFragment } from "../../../gql/graphql";
+import { useStoreActions, useStoreState } from "../../../store/store";
+import { Colors, Typography } from "../../../styles";
+import { handleErrors } from "../../../util/errors";
+import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
+import { formatGrade } from "../../../util/formatGrade";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
 export function CourseAssignments() {
