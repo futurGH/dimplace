@@ -6,9 +6,9 @@ import { Colors, Typography } from "../../styles";
 import { ItemSeparator } from "./ItemSeparator";
 
 export interface ListItemProps {
-	title: string;
+	title: string | ReactNode;
 	icon?: ReactNode;
-	label?: string;
+	label?: string | ReactNode;
 	numberOfLines?: number;
 	onPress?: (event: GestureResponderEvent) => void;
 	onPressIn?: (event: GestureResponderEvent) => void;

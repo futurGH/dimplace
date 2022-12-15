@@ -11,6 +11,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import { gqlClient } from "../../api/gqlClient";
 import { DocumentListIcon } from "../../assets/icons/document-list";
+import { DocumentStackIcon } from "../../assets/icons/document-stack";
 import { ExitIcon } from "../../assets/icons/exit";
 import { ExternalIcon } from "../../assets/icons/external";
 import { MessageWritingIcon } from "../../assets/icons/message-writing";
@@ -40,7 +41,7 @@ export type CourseTabNavigatorParamList = {
 		>;
 	CourseContent: { orgId: string };
 	CourseAssignmentsStack: { orgName: string; orgId: string };
-	CourseGrades: undefined;
+	CourseGrades: { orgId: string };
 };
 export type CourseTabNavigatorScreenProps<T extends keyof CourseTabNavigatorParamList> =
 	CompositeScreenProps<
@@ -140,6 +141,18 @@ export function CourseNavigation() {
 					),
 				}}
 				initialParams={{ orgName: data?.organization?.name, orgId: id }}
+			/>
+			<Tab.Screen
+				name="CourseGrades"
+				component={CourseGrades}
+				options={{
+					headerTitle: data?.organization?.name || "Grades",
+					title: "Grades",
+					tabBarIcon: ({ color, size }) => (
+						<DocumentStackIcon width={size} height={size} fill={color} />
+					),
+				}}
+				initialParams={{ orgId: id }}
 			/>
 		</Tab.Navigator>
 	);
