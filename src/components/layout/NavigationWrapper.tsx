@@ -5,6 +5,7 @@ import {
 	WorkSans_700Bold,
 } from "@expo-google-fonts/work-sans";
 import {
+	createNavigationContainerRef,
 	LinkingOptions,
 	NavigationContainer,
 	NavigatorScreenParams,
@@ -14,12 +15,16 @@ import { useStoreRehydrated } from "easy-peasy";
 import * as Linking from "expo-linking";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
+import { CircleMenuIcon } from "../../assets/icons/circle-menu";
+import { NotificationBellIcon } from "../../assets/icons/notification-bell";
 import {
 	CourseNavigation,
 	CourseTabNavigatorParamList,
 } from "../../screens/course/CourseNavigation";
 import { Home } from "../../screens/home/Home";
+import { Notifications } from "../../screens/home/Notifications";
+import { Settings } from "../../screens/home/Settings";
 import { AuthWebView } from "../../screens/onboarding/AuthWebView";
 import { InstitutionSelection } from "../../screens/onboarding/InstitutionSelection";
 import { Onboarding } from "../../screens/onboarding/Onboarding";
@@ -32,6 +37,8 @@ export type StackParamList = {
 	InstitutionSelection: undefined;
 	AuthWebView: { source: string };
 	Home: undefined;
+	Notifications: undefined;
+	Settings: undefined;
 	CourseNavigation: NavigatorScreenParams<CourseTabNavigatorParamList> & { id: string };
 };
 export type RootStackScreenProps<T extends keyof StackParamList> = NativeStackScreenProps<
@@ -63,6 +70,8 @@ export function NavigationWrapper() {
 		}
 	}, [fontsLoaded, rehydrated]);
 
+	const navRef = createNavigationContainerRef();
+
 	if (!fontsLoaded || !rehydrated) {
 		return null;
 	}
@@ -93,12 +102,14 @@ export function NavigationWrapper() {
 						CourseGrades: "grades",
 					},
 				},
+				Notifications: "notifications",
+				Settings: "settings",
 			},
 		},
 	};
 	return (
 		<View style={{ flex: 1, backgroundColor: Colors.Background }}>
-			<NavigationContainer linking={linking} onReady={onReady}>
+			<NavigationContainer linking={linking} onReady={onReady} ref={navRef}>
 				<Stack.Navigator screenOptions={{ header: Header, headerShown: false }}>
 					<Stack.Group navigationKey="Onboarding">
 						{!config.onboarded && (
@@ -120,7 +131,37 @@ export function NavigationWrapper() {
 						<Stack.Screen
 							name="Home"
 							component={Home}
-							options={{ headerShown: true, title: "Courses", gestureEnabled: false }}
+							options={{
+								headerShown: true,
+								title: "Courses",
+								headerLeft: () => (
+									<Pressable
+										onPress={() =>
+											navRef.isReady() && navRef.navigate("Settings")}
+									>
+										<CircleMenuIcon {...iconStyles} />
+									</Pressable>
+								),
+								headerRight: () => (
+									<Pressable
+										onPress={() =>
+											navRef.isReady() && navRef.navigate("Notifications")}
+									>
+										<NotificationBellIcon {...iconStyles} />
+									</Pressable>
+								),
+								gestureEnabled: false,
+							}}
+						/>
+						<Stack.Screen
+							name="Notifications"
+							component={Notifications}
+							options={{ presentation: "modal" }}
+						/>
+						<Stack.Screen
+							name="Settings"
+							component={Settings}
+							options={{ presentation: "modal" }}
 						/>
 					</Stack.Group>
 					<Stack.Screen name="CourseNavigation" component={CourseNavigation} />
@@ -129,3 +170,5 @@ export function NavigationWrapper() {
 		</View>
 	);
 }
+
+const iconStyles = { width: 24, height: 24, fill: Colors.TextPrimary };
