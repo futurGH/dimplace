@@ -13,9 +13,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	updates: { fallbackToCacheTimeout: 0 },
 	assetBundlePatterns: ["**/*"],
 	jsEngine: "hermes",
-	ios: { supportsTablet: true, userInterfaceStyle: "dark" },
+	ios: { supportsTablet: false, userInterfaceStyle: "dark", bundleIdentifier: "com.dimplace" },
 	android: {
 		adaptiveIcon: { foregroundImage: "./assets/adaptive-icon.png", backgroundColor: "#131720" },
+		package: "com.dimplace",
 	},
 	androidStatusBar: { barStyle: "light-content", backgroundColor: "#131720" },
+	extra: { eas: { projectId: "9392383f-fb3c-4441-9ab9-2fdfd11e4396" } },
 });
