@@ -45,7 +45,7 @@ export function CourseFeedPost() {
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
-	const { data: _data, error: error, isLoading } = useQuery({
+	const { data, error, isLoading } = useQuery({
 		queryKey: ["article", articleId],
 		queryFn: () => {
 			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
@@ -72,13 +72,13 @@ export function CourseFeedPost() {
 		);
 	}
 
-	if (error || !_data?.activityFeedArticle || !_data?.activityFeedCommentPage) {
+	if (error || !data?.activityFeedArticle || !data?.activityFeedCommentPage) {
 		handleErrors({ error, navigation, config, actions: configActions });
 		return null;
 	}
 
-	const { activityFeedComments } = _data.activityFeedCommentPage;
-	const activityFeedArticle = _data.activityFeedArticle as
+	const { activityFeedComments } = data.activityFeedCommentPage;
+	const activityFeedArticle = data.activityFeedArticle as
 		& FeedItemFragmentFragment
 		& FeedPostFragmentFragment
 		& (ArticleDetailsFragmentFragment | AssignmentDetailsFragmentFragment);

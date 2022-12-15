@@ -13,16 +13,17 @@ import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
 import { formatDate, getYearStartAndEnd } from "../../util/formatDate";
-import type { CourseTabNavigatorScreenProps } from "./CourseNavigation";
+import { formatGrade } from "../../util/formatGrade";
+import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
 export function CourseAssignments() {
-	const route = useRoute<CourseTabNavigatorScreenProps<"CourseContent">["route"]>();
+	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignments">["route"]>();
 	const navigation = useNavigation<
-		CourseTabNavigatorScreenProps<"CourseContent">["navigation"]
+		CourseAssignmentsStackScreenProps<"CourseAssignments">["navigation"]
 	>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
-	const { orgId } = route.params || {};
+	const { orgId, orgName } = route.params || {};
 
 	const { data, error, isLoading } = useQuery({
 		queryKey: ["courseAssignments", { orgId }],
@@ -62,13 +63,13 @@ export function CourseAssignments() {
 	}
 
 	const { complete, incomplete } = (data.activities as Array<AssignmentFragment>).reduce<
-		Record<"complete" | "incomplete", Array<ListItemProps>>
+		Record<"complete" | "incomplete", Array<ListItemProps & { date: Date }>>
 	>((acc, activity) => {
 		if (activity.organization?.id !== orgId) return acc;
 		if (!activity.source?.name || !activity.id) return acc;
-		const matchingGrade = data.userGrades.find((grade) =>
-			grade.activity?.id === activity.id
-		)?.value?.replace(/\s/g, "") || "-/-";
+		const matchingGrade = formatGrade(
+			data.userGrades.find((grade) => grade.activity?.id === activity.id)?.value,
+		);
 		let label;
 		if (activity.completed) {
 			label = matchingGrade;
@@ -79,6 +80,7 @@ export function CourseAssignments() {
 			} else label = `Due ${formatDate(new Date(dueDate))}`;
 		}
 		const item = {
+			date: activity.dueDate ? new Date(activity.dueDate) : new Date(),
 			title: activity.source.name,
 			label,
 			icon: (
@@ -94,8 +96,12 @@ export function CourseAssignments() {
 					color: activity.completed ? Colors.TextPrimary : Colors.TextLabel,
 				},
 			},
-			onPress: () => {
-			},
+			onPress: () =>
+				navigation.navigate("CourseAssignmentView", {
+					orgId,
+					orgName,
+					activityId: activity.id,
+				}),
 		};
 		if (activity.completed) {
 			acc.complete.push(item);
@@ -104,7 +110,10 @@ export function CourseAssignments() {
 		}
 		return acc;
 	}, { complete: [], incomplete: [] });
-	const assignments = [...incomplete, ...complete];
+	const assignments = [
+		...incomplete.sort((a, b) => b.date.getTime() - a.date.getTime()),
+		...complete.sort((a, b) => b.date.getTime() - a.date.getTime()),
+	];
 
 	return (
 		<Container>
@@ -128,7 +137,7 @@ export type CourseContent = {
 	children?: Array<CourseContent>;
 };
 
-const COURSE_ASSIGNMENTS_QUERY = graphql(/* GraphQL */ `
+export const COURSE_ASSIGNMENTS_QUERY = graphql(/* GraphQL */ `
     query CourseAssignments($startDate: String!, $endDate: String!, $orgId: String!) {
         activities(start: $startDate, end: $endDate) {
 			...Assignment
@@ -136,6 +145,11 @@ const COURSE_ASSIGNMENTS_QUERY = graphql(/* GraphQL */ `
 		userGrades(organization: $orgId) {
 			activity {
 				id
+			}
+			feedback {
+				text
+				textHtml
+				textHtmlRichContent
 			}
 			value
 		}
@@ -151,5 +165,12 @@ const COURSE_ASSIGNMENTS_QUERY = graphql(/* GraphQL */ `
         }
         dueDate
         completed
+		gradeInfo {
+			type
+			value
+		}
+		feedback {
+			text
+		}
     }
 `);

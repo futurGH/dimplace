@@ -27,9 +27,9 @@ import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
-import { CourseAssignments } from "./CourseAssignments";
+import { CourseAssignmentsStack } from "./CourseAssignmentsStack";
 import { CourseContent } from "./CourseContent";
-import { CourseHomeStack, CourseHomeStackParamList } from "./CourseHomeStack";
+import { CourseHomeStack, type CourseHomeStackParamList } from "./CourseHomeStack";
 
 export type CourseTabNavigatorParamList = {
 	CourseHomeStack:
@@ -39,7 +39,7 @@ export type CourseTabNavigatorParamList = {
 			& Pick<CoursePageQuery, "organization">
 		>;
 	CourseContent: { orgId: string };
-	CourseAssignments: { orgId: string };
+	CourseAssignmentsStack: { orgName: string; orgId: string };
 	CourseGrades: undefined;
 };
 export type CourseTabNavigatorScreenProps<T extends keyof CourseTabNavigatorParamList> =
@@ -130,8 +130,8 @@ export function CourseNavigation() {
 				initialParams={{ orgId: id }}
 			/>
 			<Tab.Screen
-				name="CourseAssignments"
-				component={CourseAssignments}
+				name="CourseAssignmentsStack"
+				component={CourseAssignmentsStack}
 				options={{
 					headerTitle: data?.organization?.name || "Assignments",
 					title: "Assignments",
@@ -139,7 +139,7 @@ export function CourseNavigation() {
 						<WriteIcon width={size} height={size} fill={color} />
 					),
 				}}
-				initialParams={{ orgId: id }}
+				initialParams={{ orgName: data?.organization?.name, orgId: id }}
 			/>
 		</Tab.Navigator>
 	);

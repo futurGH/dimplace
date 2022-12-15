@@ -64,7 +64,11 @@ export const makeListItemStyles = (rightLabel: boolean) =>
 			justifyContent: rightLabel ? "space-between" : "center",
 			paddingLeft: 8,
 		},
-		title: { ...Typography.ListHeading, color: Colors.TextPrimary },
+		title: {
+			...Typography.ListHeading,
+			color: Colors.TextPrimary,
+			maxWidth: rightLabel ? "75%" : "100%",
+		},
 		label: { ...Typography.Label, color: Colors.TextLabel },
 	});
 
