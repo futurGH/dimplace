@@ -44,7 +44,7 @@ export function InstitutionSelection(
 			});
 		},
 		[filter],
-		250,
+		150,
 	);
 
 	if (loadingWebView) {
@@ -73,7 +73,7 @@ export function InstitutionSelection(
 				onItemPress={(item) => {
 					if (!item.label) return;
 					setLoadingWebView(true);
-					getInstitutionInfo(item.label).then((info) => {
+					getInstitutionInfo(`${item.label}`).then((info) => {
 						if (!info?.tenantId) return;
 						configActions.setTenantId(info.tenantId);
 						navigation.navigate("AuthWebView", {
