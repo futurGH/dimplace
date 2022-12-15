@@ -38,7 +38,7 @@ export async function getInstitutionList(contains: string = ""): Promise<Institu
 const institutionInfoValidator = t.object({
 	tenantId: t.string(),
 	domain: t.string(),
-	"_links": t.object({ "self": t.object({ "href": t.string() }) }),
+	_links: t.object({ self: t.object({ href: t.string() }) }),
 });
 
 export type InstitutionInfo = t.Infer<typeof institutionInfoValidator>;

@@ -60,15 +60,12 @@ export const makeListItemStyles = (rightLabel: boolean) =>
 		text: {
 			width: "100%",
 			flex: 1,
+			flexDirection: rightLabel ? "row" : "column",
 			justifyContent: rightLabel ? "space-between" : "center",
 			paddingLeft: 8,
 		},
 		title: { ...Typography.ListHeading, color: Colors.TextPrimary },
-		label: {
-			...Typography.Label,
-			color: Colors.TextLabel,
-			flexDirection: rightLabel ? "row" : "column",
-		},
+		label: { ...Typography.Label, color: Colors.TextLabel },
 	});
 
 interface ListProps<T> extends Partial<FlatListProps<T>> {
@@ -88,11 +85,33 @@ export function List<T extends ListItemProps>(
 			ItemSeparatorComponent={props.ItemSeparatorComponent || ItemSeparator}
 			keyboardShouldPersistTaps="handled"
 			renderItem={({ item }) => {
+				const { styles = {}, ...rest } = item;
 				return (
 					<ListItem
 						onPress={() => onItemPress(item)}
-						styles={{ ...listItemStyles, ...props.itemStyles }}
-						{...item}
+						styles={{
+							container: {
+								...listItemStyles.container,
+								...props.itemStyles?.container,
+								...item.styles?.container,
+							},
+							text: {
+								...listItemStyles.text,
+								...props.itemStyles?.text,
+								...item.styles?.text,
+							},
+							title: {
+								...listItemStyles.title,
+								...props.itemStyles?.title,
+								...item.styles?.title,
+							},
+							label: {
+								...listItemStyles.label,
+								...props.itemStyles?.label,
+								...item.styles?.label,
+							},
+						}}
+						{...rest}
 					/>
 				);
 			}}
