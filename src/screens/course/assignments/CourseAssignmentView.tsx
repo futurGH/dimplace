@@ -17,7 +17,9 @@ import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack
 
 export function CourseAssignmentView() {
 	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignmentView">["route"]>();
-	const navigation = useNavigation();
+	const navigation = useNavigation<
+		CourseAssignmentsStackScreenProps<"CourseAssignmentView">["navigation"]
+	>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
@@ -98,10 +100,16 @@ export function CourseAssignmentView() {
 			<Header
 				route={{ name: orgName }}
 				options={{
-					headerLeft: () => <CoursePageHeaderLeftButton text="" />,
-					headerRight: () => (
-						<CoursePageHeaderRightButton url={assignment?.source?.url} />
+					headerLeft: () => (
+						<CoursePageHeaderLeftButton
+							text=""
+							onPress={() =>
+								navigation.navigate("CourseAssignments", { orgId, orgName })}
+						/>
 					),
+					headerRight: () => <CoursePageHeaderRightButton
+						url={assignment?.source?.url}
+					/>,
 				}}
 				paddingTop={0}
 			/>
