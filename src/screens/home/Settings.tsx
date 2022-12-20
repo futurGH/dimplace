@@ -15,15 +15,13 @@ export function Settings() {
 				</Text>
 				<Pressable
 					style={styles.text}
-					onPress={() => Linking.openURL("mailto:dimplace@abdullahs.ca")}
+					onPress={() => Linking.openURL("mailto:hey@dimplace.com")}
 					onPressIn={() => setLinkColor(Colors.Active)}
 					onPressOut={() => setLinkColor(Colors.TextLabel)}
 				>
 					<Text style={styles.text}>
 						Feedback:{" "}
-						<Text style={[styles.link, { color: linkColor }]}>
-							dimplace@abdullahs.ca
-						</Text>
+						<Text style={[styles.link, { color: linkColor }]}>hey@dimplace.com</Text>
 					</Text>
 				</Pressable>
 			</View>
