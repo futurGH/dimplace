@@ -89,6 +89,10 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 											color: Colors.Active,
 											textDecorationColor: Colors.Active,
 										},
+										li: styles.bodyText,
+										ul: styles.bodyText,
+										ol: styles.bodyText,
+										span: styles.bodyText,
 									}}
 									systemFonts={[
 										"WorkRegular",
