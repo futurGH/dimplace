@@ -5,19 +5,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	name: "dimplace",
 	slug: "dimplace",
 	scheme: "dimplace",
-	version: "0.0.1",
+	version: "1.0.0",
 	orientation: "portrait",
 	icon: "./assets/icon.png",
+
 	userInterfaceStyle: "dark",
 	splash: { image: "./assets/splash.png", resizeMode: "cover", backgroundColor: "#131720" },
 	updates: { fallbackToCacheTimeout: 0 },
 	assetBundlePatterns: ["**/*"],
 	jsEngine: "hermes",
-	ios: { supportsTablet: false, userInterfaceStyle: "dark", bundleIdentifier: "com.dimplace" },
-	android: {
-		adaptiveIcon: { foregroundImage: "./assets/adaptive-icon.png", backgroundColor: "#131720" },
-		package: "com.dimplace",
+	ios: {
+		supportsTablet: false,
+		userInterfaceStyle: "dark",
+		bundleIdentifier: "com.dimplace",
+		buildNumber: "2022.12.22.3",
 	},
+	android: { package: "com.dimplace", versionCode: 202212223 },
 	androidStatusBar: { barStyle: "light-content", backgroundColor: "#131720" },
 	extra: { eas: { projectId: "9392383f-fb3c-4441-9ab9-2fdfd11e4396" } },
 });

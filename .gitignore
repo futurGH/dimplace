@@ -10,8 +10,18 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+*.ipa
 web-build/
+
+assets/screenshots-ios/
+assets/screenshots-android/
+favicon.png
+Banner.png
 
 .DS_Store/
 .vscode/
 .idea/
+
+eas.json
+ios/
+android/

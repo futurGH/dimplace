@@ -23,7 +23,7 @@ export function Header(
 ) {
 	const title = (typeof headerTitle === "function" ? headerTitle({ children: "" }) : headerTitle)
 		?? _title ?? name;
-	paddingTop ??= useSafeAreaInsets().top;
+	paddingTop = paddingTop ?? useSafeAreaInsets().top;
 	const leftIcon = headerLeft?.({ canGoBack: true }) || null;
 	const rightIcon = headerRight?.({ canGoBack: true }) || null;
 	return (

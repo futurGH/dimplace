@@ -28,7 +28,6 @@ import { Settings } from "../../screens/home/Settings";
 import { AuthWebView } from "../../screens/onboarding/AuthWebView";
 import { InstitutionSelection } from "../../screens/onboarding/InstitutionSelection";
 import { Onboarding } from "../../screens/onboarding/Onboarding";
-import { useStoreState } from "../../store/store";
 import { Colors } from "../../styles";
 import { Header } from "./Header";
 
@@ -62,7 +61,6 @@ export function NavigationWrapper() {
 	});
 
 	const rehydrated = useStoreRehydrated();
-	const config = useStoreState((state) => state.config);
 
 	const onReady = useCallback(async () => {
 		if (fontsLoaded && rehydrated) {
@@ -112,15 +110,11 @@ export function NavigationWrapper() {
 			<NavigationContainer linking={linking} onReady={onReady} ref={navRef}>
 				<Stack.Navigator screenOptions={{ header: Header, headerShown: false }}>
 					<Stack.Group navigationKey="Onboarding">
-						{!config.onboarded && (
-							<>
-								<Stack.Screen name="Onboarding" component={Onboarding} />
-								<Stack.Screen
-									name="InstitutionSelection"
-									component={InstitutionSelection}
-								/>
-							</>
-						)}
+						<Stack.Screen name="Onboarding" component={Onboarding} />
+						<Stack.Screen
+							name="InstitutionSelection"
+							component={InstitutionSelection}
+						/>
 						<Stack.Screen
 							name="AuthWebView"
 							component={AuthWebView}

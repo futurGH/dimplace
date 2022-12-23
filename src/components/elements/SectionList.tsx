@@ -92,7 +92,7 @@ export function SectionList<T extends ListItemProps>(
 					<>
 						{index !== 0 ? <ItemSeparator style={{ marginLeft: 24 }} /> : null}
 						<ListItem
-							key={item.title}
+							key={item.title ? String(item.title) : null}
 							icon={icon}
 							onPress={() => onItemPress(item)}
 							onPressIn={(event) => {
