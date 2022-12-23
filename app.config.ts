@@ -19,6 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		userInterfaceStyle: "dark",
 		bundleIdentifier: "com.dimplace",
 		buildNumber: "2022.12.22.4",
+		config: { usesNonExemptEncryption: false },
 	},
 	android: { package: "com.dimplace", versionCode: 202212224 },
 	androidStatusBar: { barStyle: "light-content", backgroundColor: "#131720" },
