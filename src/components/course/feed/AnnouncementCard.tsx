@@ -81,7 +81,9 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 						{cardWidth
 							? (
 								<RenderHtml
-									source={{ html: body }}
+									source={{
+										html: body.startsWith("<") ? body : `<p>${body}</p>`,
+									}}
 									contentWidth={cardWidth - 32}
 									tagsStyles={{
 										p: { marginVertical: 0, ...styles.bodyText },

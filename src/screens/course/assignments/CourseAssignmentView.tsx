@@ -12,7 +12,7 @@ import { handleErrors } from "../../../util/errors";
 import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
 import { CoursePageHeaderLeftButton, CoursePageHeaderRightButton } from "../CourseNavigation";
-import { COURSE_ASSIGNMENTS_QUERY } from "./CourseAssignments";
+import { COURSE_ASSIGNMENTS_QUERY, MOCK_COURSE_ASSIGNMENTS } from "./CourseAssignments";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
 export function CourseAssignmentView() {
@@ -23,7 +23,7 @@ export function CourseAssignmentView() {
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
-	const { orgName, orgId } = route.params;
+	const { orgName, orgId } = route.params || {};
 	let activityId: string;
 	if (route.params.usage && route.params.userId && route.params.activityId) {
 		// Got here via deep link
@@ -32,14 +32,15 @@ export function CourseAssignmentView() {
 	} else if (route.params.activityId) {
 		// Got here via navigator; most likely assignments list
 		activityId = route.params.activityId;
-	} else {
+	} else if (!config.__DEMO__) {
 		navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home");
 		return null;
 	}
 
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseAssignments", { orgId }],
-		queryFn: () => {
+		queryKey: ["courseAssignments", { orgId, demoMode: config.__DEMO__ }] as const,
+		queryFn: ({ queryKey: [, { demoMode }] }) => {
+			if (demoMode) return MOCK_COURSE_ASSIGNMENTS;
 			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 			const { start, end } = getYearStartAndEnd();
 			return gqlClient.request(COURSE_ASSIGNMENTS_QUERY, {

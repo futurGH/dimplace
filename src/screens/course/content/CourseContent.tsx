@@ -1,16 +1,18 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import * as WebBrowser from "expo-web-browser";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
 import { SectionList } from "../../../components/elements/SectionList";
 import { Container } from "../../../components/layout/Container";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
 import { graphql } from "../../../gql";
+import type { CourseContentQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
 import { formatDateAndTime } from "../../../util/formatDate";
+import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
 export function CourseContent() {
@@ -20,12 +22,16 @@ export function CourseContent() {
 	>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
-	const { orgId } = route.params;
+	const { orgId } = route.params || {};
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
-	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseContent", { accessToken: config.accessToken, orgId }],
+	const { data, error, isLoading, refetch, isRefetching } = useQuery({
+		queryKey: ["courseContent", {
+			accessToken: config.accessToken,
+			orgId,
+			demoMode: config.__DEMO__,
+		}],
 		queryFn: fetchCourseContent,
 		retry: (failureCount, error) => {
 			return handleErrors({
@@ -37,8 +43,11 @@ export function CourseContent() {
 			});
 		},
 	});
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
+	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
-	if (isLoading) {
+	if (isLoading && !isRefetching) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -47,10 +56,9 @@ export function CourseContent() {
 			</HeaderlessContainer>
 		);
 	}
-
-	if (error || !data?.contentRoot) {
-		handleErrors({ error, navigation, config, actions: configActions });
-		return null;
+	if (error) {
+		errorHandling(error);
+		refresh();
 	}
 
 	const { contentRoot } = data as { contentRoot: { modules: Array<CourseContent> } };
@@ -79,6 +87,7 @@ export function CourseContent() {
 						() => {}, // top tier error handling
 					);
 				}}
+				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
 			/>
 		</Container>
 	);
@@ -122,10 +131,11 @@ export type CourseContent = {
 };
 
 export function fetchCourseContent(
-	{ queryKey: [, { accessToken, orgId }] }: QueryFunctionContext<
-		[string, { accessToken: string; orgId: string }]
+	{ queryKey: [, { accessToken, orgId, demoMode }] }: QueryFunctionContext<
+		[string, { accessToken: string; orgId: string; demoMode: boolean }]
 	>,
 ) {
+	if (demoMode) return MOCK_COURSE_CONTENT;
 	gqlClient.setHeader("Authorization", "Bearer " + accessToken);
 	return gqlClient.request(COURSE_CONTENT_QUERY, { orgId });
 }
@@ -169,3 +179,17 @@ const COURSE_CONTENT_QUERY = graphql(/* GraphQL */ `
 		}
 	}
 `);
+
+const MOCK_COURSE_CONTENT: CourseContentQuery = {
+	contentRoot: {
+		modules: [{
+			__typename: "ContentModule",
+			title: "Module 1",
+			children: [{
+				__typename: "ContentTopic",
+				title: "Topic 1",
+				viewUrl: "https://www.dimplace.com",
+			}] as Array<CourseContent>,
+		}],
+	},
+} as never;

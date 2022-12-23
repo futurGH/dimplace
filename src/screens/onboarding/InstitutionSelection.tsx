@@ -15,6 +15,8 @@ import { useStoreActions, useStoreState } from "../../store/store";
 import { useDebounce } from "../../util/useDebounce";
 import { buildAuthUrl } from "./AuthWebView";
 
+const DEMO_TITLE = "__DEMO__DO_NOT_USE__";
+
 const fuse = new Fuse<ListItemProps>([], { keys: ["title", "subtitle"] });
 
 const apiInstitutionListToDisplay = (list: InstitutionList): Array<ListItemProps> => {
@@ -38,6 +40,9 @@ export function InstitutionSelection(
 	useDebounce(
 		() => {
 			getInstitutionList(filter).then((data) => {
+				if (filter.startsWith("__")) {
+					data.push({ name: DEMO_TITLE, links: { lms: "For App Store review only" } });
+				}
 				const listToDisplay = apiInstitutionListToDisplay(data);
 				fuse.setCollection(listToDisplay);
 				setInstitutionList(fuse.search(filter).map((result) => result.item));
@@ -71,6 +76,10 @@ export function InstitutionSelection(
 				}
 				data={institutionList}
 				onItemPress={(item) => {
+					if (item.title === DEMO_TITLE) {
+						configActions.__SET_DEMO__(true);
+						navigation.navigate("Home");
+					}
 					if (!item.label) return;
 					setLoadingWebView(true);
 					getInstitutionInfo(`${item.label}`).then((info) => {

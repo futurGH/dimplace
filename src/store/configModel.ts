@@ -12,6 +12,8 @@ export interface ConfigModel {
 	updateAccessToken: Thunk<ConfigModel, string>;
 	refreshToken: string;
 	setRefreshToken: Action<ConfigModel, string>;
+	__DEMO__: boolean;
+	__SET_DEMO__: Action<ConfigModel, boolean>;
 }
 
 export const configModel: ConfigModel = {
@@ -55,5 +57,9 @@ export const configModel: ConfigModel = {
 	refreshToken: "",
 	setRefreshToken: action((state, payload) => {
 		state.refreshToken = payload;
+	}),
+	__DEMO__: false,
+	__SET_DEMO__: action((state, payload) => {
+		state.__DEMO__ = payload;
 	}),
 };

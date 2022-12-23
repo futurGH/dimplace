@@ -1,15 +1,17 @@
 import { useNavigation } from "@react-navigation/native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { gqlClient } from "../../api/gqlClient";
 import type { CourseCardProps } from "../../components/home/CourseCard";
 import { CourseCard } from "../../components/home/CourseCard";
 import { Container } from "../../components/layout/Container";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import { graphql } from "../../gql";
+import type { CourseListQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { handleErrors } from "../../util/errors";
 import { getYearStartAndEnd } from "../../util/formatDate";
+import { useRefreshing } from "../../util/useRefreshing";
 import { fetchCourseFeed } from "../course/CourseNavigation";
 
 export function Home() {
@@ -20,9 +22,11 @@ export function Home() {
 
 	const config = useStoreState((state) => state.config);
 	const actions = useStoreActions((actions) => actions.config);
-	const { data, error, isLoading } = useQuery({
+
+	const { data, error, isLoading, refetch, isRefetching } = useQuery({
 		queryKey: ["home"],
 		queryFn: async () => {
+			if (config.__DEMO__) return MOCK_COURSE_LIST_DATA;
 			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 			const { start, end } = getYearStartAndEnd();
 			return gqlClient.request(COURSE_LIST_QUERY, {
@@ -34,8 +38,10 @@ export function Home() {
 			return handleErrors({ error, failureCount, navigation, config, actions });
 		},
 	});
+	const errorHandling = (error: unknown) => handleErrors({ error, navigation, config, actions });
+	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
-	if (isLoading) {
+	if (isLoading && !isRefetching) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -45,7 +51,8 @@ export function Home() {
 		);
 	}
 	if (error) {
-		handleErrors({ error, navigation, config, actions });
+		errorHandling(error);
+		refresh();
 	}
 
 	const courses: Array<CourseCardProps> =
@@ -79,6 +86,7 @@ export function Home() {
 			queryKey: ["course", {
 				id: `https://${config.tenantId}.organizations.api.brightspace.com/${course.id}`,
 				courseId: course.id,
+				demoMode: config.__DEMO__,
 			}],
 			queryFn: fetchCourseFeed,
 		}).catch(() => {})
@@ -89,6 +97,7 @@ export function Home() {
 				data={courses}
 				renderItem={({ item: props }) => <CourseCard key={props.id} {...props} />}
 				ItemSeparatorComponent={() => <View style={styles.separator} />}
+				refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} />}
 				showsVerticalScrollIndicator={false}
 			/>
 		</Container>
@@ -128,3 +137,24 @@ const COURSE_LIST_QUERY = graphql(/* GraphQL */ `
 		}
 	}
 `);
+
+const MOCK_COURSE_LIST_DATA: CourseListQuery = {
+	enrollmentPage: {
+		enrollments: [{
+			organization: {
+				__typename: "Organization",
+				id: "1",
+				name: "Demo Course",
+				imageUrl: "https://picsum.photos/1080/460.jpg",
+			},
+		}],
+	},
+	activities: [{
+		organization: { id: "1" },
+		id: "1",
+		source: { id: "1", name: "Demo Assignment" },
+		completed: false,
+		completionDate: null,
+		dueDate: "2022-12-23T00:00:00.000Z",
+	}],
+};

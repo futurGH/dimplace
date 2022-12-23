@@ -8,12 +8,13 @@ import { List } from "../../../components/elements/List";
 import { Container } from "../../../components/layout/Container";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
 import { graphql } from "../../../gql";
-import type { AssignmentFragment } from "../../../gql/graphql";
+import type { AssignmentFragment, CourseAssignmentsQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
 import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
+import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
 export function CourseAssignments() {
@@ -25,8 +26,12 @@ export function CourseAssignments() {
 	const configActions = useStoreActions((actions) => actions.config);
 	const { orgId, orgName } = route.params || {};
 
-	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseAssignments", { accessToken: config.accessToken, orgId }],
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey: ["courseAssignments", {
+			accessToken: config.accessToken,
+			orgId,
+			demoMode: config.__DEMO__,
+		}],
 		queryFn: fetchCourseAssignments,
 		retry: (failureCount, error) => {
 			return handleErrors({
@@ -38,8 +43,11 @@ export function CourseAssignments() {
 			});
 		},
 	});
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
+	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
-	if (isLoading || ((!data?.activities || !data?.userGrades) && !error)) {
+	if (isLoading && !isRefreshing) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -48,19 +56,18 @@ export function CourseAssignments() {
 			</HeaderlessContainer>
 		);
 	}
-
-	if (error || !data?.activities || !data?.userGrades) {
-		handleErrors({ error, navigation, config, actions: configActions });
-		return null;
+	if (error) {
+		errorHandling(error);
+		refresh();
 	}
 
-	const { complete, incomplete } = (data.activities as Array<AssignmentFragment>).reduce<
+	const { complete, incomplete } = (data?.activities as Array<AssignmentFragment>).reduce<
 		Record<"complete" | "incomplete", Array<ListItemProps & { date: Date }>>
 	>((acc, activity) => {
 		if (activity.organization?.id !== orgId) return acc;
 		if (!activity.source?.name || !activity.id) return acc;
 		const matchingGrade = formatGrade(
-			data.userGrades.find((grade) => grade.activity?.id === activity.id)?.value,
+			data?.userGrades.find((grade) => grade.activity?.id === activity.id)?.value,
 		);
 		let label;
 		if (activity.completed) {
@@ -130,10 +137,11 @@ export type CourseContent = {
 };
 
 export function fetchCourseAssignments(
-	{ queryKey: [, { accessToken, orgId }] }: QueryFunctionContext<
-		[string, { accessToken: string; orgId: string }]
+	{ queryKey: [, { accessToken, orgId, demoMode }] }: QueryFunctionContext<
+		[string, { accessToken: string; orgId: string; demoMode: boolean }]
 	>,
 ) {
+	if (demoMode) return MOCK_COURSE_ASSIGNMENTS;
 	gqlClient.setHeader("Authorization", "Bearer " + accessToken);
 	const { start, end } = getYearStartAndEnd();
 	return gqlClient.request(COURSE_ASSIGNMENTS_QUERY, {
@@ -177,3 +185,14 @@ export const COURSE_ASSIGNMENTS_QUERY = graphql(/* GraphQL */ `
 		}
     }
 `);
+
+export const MOCK_COURSE_ASSIGNMENTS: CourseAssignmentsQuery = {
+	activities: [{
+		__typename: "Activity",
+		id: "1",
+		organization: { id: "https://.organizations.api.brightspace.com/1" },
+		source: { name: "Assignment 1", url: "https://dimplace.com" },
+		completed: false,
+	}] as Array<AssignmentFragment>,
+	userGrades: [],
+} as never;

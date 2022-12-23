@@ -16,6 +16,7 @@ import { ExitIcon } from "../../assets/icons/exit";
 import { ExternalIcon } from "../../assets/icons/external";
 import { MessageWritingIcon } from "../../assets/icons/message-writing";
 import { WriteIcon } from "../../assets/icons/write";
+import type { AnnouncementCardProps } from "../../components/course/feed/AnnouncementCard";
 import { Header } from "../../components/layout/Header";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type {
@@ -66,13 +67,13 @@ export function CourseNavigation() {
 	const configActions = useStoreActions((actions) => actions.config);
 	const queryClient = useQueryClient();
 
-	const { id: courseId } = route.params;
+	const { id: courseId } = route.params || {};
 	const id = `https://${config.tenantId}.organizations.api.brightspace.com/${courseId}`;
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["course", { id, courseId }],
+		queryKey: ["course", { id, courseId, demoMode: config.__DEMO__ }],
 		queryFn: fetchCourseFeed,
 		retry: (failureCount, error) => {
 			return handleErrors({
@@ -100,7 +101,11 @@ export function CourseNavigation() {
 		return null;
 	}
 
-	prefetchCoursePages(queryClient, { orgId: id, accessToken: config.accessToken });
+	prefetchCoursePages(queryClient, {
+		orgId: id,
+		accessToken: config.accessToken,
+		demoMode: config.__DEMO__,
+	});
 
 	return (
 		<Tab.Navigator
@@ -205,23 +210,25 @@ const styles = StyleSheet.create({
 const iconStyles: SvgProps = { width: 24, height: 24, fill: Colors.TextSecondary };
 
 export function fetchCourseFeed(
-	{ queryKey }: QueryFunctionContext<[string, { id: string; courseId: string }]>,
+	{ queryKey }: QueryFunctionContext<
+		[string, { id: string; courseId: string; demoMode: boolean }]
+	>,
 ) {
-	const [, { id, courseId }] = queryKey;
+	const [, { id, courseId, demoMode }] = queryKey;
+	if (demoMode) {
+		return Promise.resolve(MOCK_COURSE_PAGE_DATA) as unknown as Promise<CoursePageQuery>;
+	}
 	return gqlClient.request(COURSE_PAGE_QUERY, { id, orgUnitId: courseId });
 }
 
 export function prefetchCoursePages(
 	queryClient: QueryClient,
-	{ orgId, accessToken }: Record<"orgId" | "accessToken", string>,
+	key: { [K in "orgId" | "accessToken"]: string } & { [K in "demoMode"]: boolean },
 ) {
 	Promise.allSettled([
-		queryClient.prefetchQuery(["courseContent", { orgId, accessToken }], fetchCourseContent),
-		queryClient.prefetchQuery(
-			["courseAssignments", { orgId, accessToken }],
-			fetchCourseAssignments,
-		),
-		queryClient.prefetchQuery(["courseGrades", { orgId, accessToken }], fetchCourseGrades),
+		queryClient.prefetchQuery(["courseContent", key], fetchCourseContent),
+		queryClient.prefetchQuery(["courseAssignments", key], fetchCourseAssignments),
+		queryClient.prefetchQuery(["courseGrades", key], fetchCourseGrades),
 	]).then((results) => {
 		results.forEach((result) => {
 			if (result.status === "rejected") {
@@ -288,3 +295,24 @@ const COURSE_PAGE_QUERY = graphql(/* GraphQL */ `
         submissionLink
     }
 `);
+
+const MOCK_COURSE_PAGE_DATA: Omit<CoursePageQuery, "activityFeedArticlePage"> & {
+	activityFeedArticlePage: { id: string; activityFeedArticles: Array<AnnouncementCardProps> };
+} = {
+	organization: {
+		name: "Demo Course",
+		imageUrl: "https://picsum.photos/1080/460.jpg",
+		homeUrl: "https://dimplace.com",
+	},
+	activityFeedArticlePage: {
+		id: "1",
+		activityFeedArticles: [{
+			id: "1",
+			author: { displayName: "John Doe", imageUrl: "https://picsum.photos/128.jpg" },
+			publishedDate: "2021-01-01T00:00:00Z",
+			message: "This is an announcement",
+			commentsCount: "0",
+			attachmentLinks: [],
+		}],
+	},
+};

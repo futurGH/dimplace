@@ -83,9 +83,10 @@ export function CourseFeedPost() {
 		& FeedPostFragmentFragment
 		& (ArticleDetailsFragmentFragment | AssignmentDetailsFragmentFragment);
 
-	const body = "message" in activityFeedArticle
-		? activityFeedArticle.message
-		: activityFeedArticle.instructions;
+	const body =
+		("message" in activityFeedArticle
+			? activityFeedArticle.message
+			: activityFeedArticle.instructions) || "Failed to fetch post content.";
 
 	const publishedDate = new Date(activityFeedArticle.publishedDate);
 	const formattedDate = formatDate(isNaN(publishedDate.getTime()) ? new Date() : publishedDate);
@@ -130,7 +131,9 @@ export function CourseFeedPost() {
 							{width
 								? (
 									<RenderHtml
-										source={{ html: body || "Failed to fetch post content." }}
+										source={{
+											html: body.startsWith("<") ? body : `<p>${body}</p>`,
+										}}
 										contentWidth={width - 48}
 										tagsStyles={{
 											p: { marginVertical: 0, ...styles.bodyText },
@@ -227,7 +230,12 @@ export function CourseFeedPost() {
 									? (
 										<RenderHtml
 											source={{
-												html: body || "Failed to fetch comment content.",
+												html: comment.message?.startsWith("<")
+													? comment.message
+													: `<p>${
+														comment.message
+														|| "Failed to fetch comment content."
+													}</p>`,
 											}}
 											contentWidth={width - 48}
 											tagsStyles={{

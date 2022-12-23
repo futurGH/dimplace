@@ -11,7 +11,7 @@ export function handleErrors(
 		actions: RecursiveActions<ConfigModel>;
 	},
 ) {
-	if (failureCount >= 3) {
+	if (failureCount > 1) {
 		navigation.navigate("AuthWebView", { source: buildAuthUrl(config) });
 		return false;
 	}

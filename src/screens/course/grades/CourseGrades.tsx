@@ -6,6 +6,7 @@ import { List, ListItem, makeListItemStyles } from "../../../components/elements
 import { Container } from "../../../components/layout/Container";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
 import { graphql } from "../../../gql";
+import type { CourseGradesQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
@@ -19,7 +20,11 @@ export function CourseGrades() {
 	const { orgId } = route.params || {};
 
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseGrades", { accessToken: config.accessToken, orgId }],
+		queryKey: ["courseGrades", {
+			accessToken: config.accessToken,
+			orgId,
+			demoMode: config.__DEMO__,
+		}],
 		queryFn: fetchCourseGrades,
 		retry: (failureCount, error) => {
 			return handleErrors({
@@ -118,10 +123,11 @@ export type CourseContent = {
 };
 
 export function fetchCourseGrades(
-	{ queryKey: [, { accessToken, orgId }] }: QueryFunctionContext<
-		[string, { accessToken: string; orgId: string }]
+	{ queryKey: [, { accessToken, orgId, demoMode }] }: QueryFunctionContext<
+		[string, { accessToken: string; orgId: string; demoMode: boolean }]
 	>,
 ) {
+	if (demoMode) return MOCK_COURSE_GRADES;
 	gqlClient.setHeader("Authorization", "Bearer " + accessToken);
 	return gqlClient.request(COURSE_GRADES_QUERY, { orgId });
 }
@@ -141,3 +147,11 @@ export const COURSE_GRADES_QUERY = graphql(/* GraphQL */ `
 		}
     }
 `);
+
+const MOCK_COURSE_GRADES: CourseGradesQuery = {
+	userGrades: [{
+		activity: { id: "1", gradeInfo: { type: "weighted", value: 97 } },
+		name: "Assignment 1",
+		value: "34 / 35",
+	}],
+};
