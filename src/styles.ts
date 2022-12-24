@@ -9,7 +9,8 @@ export const Colors = {
 	TextLabel: "#9CA3AF",
 	Inactive: "#6B7280",
 	Active: "#06B6D4",
-} as const;
+	ErrorBackground: "#371F1F",
+} as const satisfies Record<string, string>;
 
 export const Typography = {
 	Caption: { fontSize: 12, fontFamily: "WorkRegular", lineHeight: 16 },
@@ -22,4 +23,4 @@ export const Typography = {
 	Subheading: { fontSize: 17, fontFamily: "WorkMedium", lineHeight: 22 },
 	Heading: { fontSize: 18, fontFamily: "WorkMedium", lineHeight: 24 },
 	Title: { fontSize: 20, fontFamily: "WorkMedium", lineHeight: 25 },
-};
+} as const satisfies Record<string, { fontSize: number; fontFamily: string; lineHeight: number }>;

@@ -6,12 +6,19 @@ export interface CourseCardAssignmentProps {
 	id: string;
 	name: string;
 	dueDate: Date;
+	highlightOverdue?: boolean;
 	onPress?: () => void;
 }
-export function CourseCardAssignment({ name, dueDate, onPress }: CourseCardAssignmentProps) {
+export function CourseCardAssignment(
+	{ name, dueDate, highlightOverdue = false, onPress }: CourseCardAssignmentProps,
+) {
 	const due = formatDate(dueDate);
+	const overdue = highlightOverdue && dueDate < new Date();
 	return (
-		<Pressable style={styles.container} onPress={onPress}>
+		<Pressable
+			style={[styles.container, overdue && { backgroundColor: Colors.ErrorBackground }]}
+			onPress={onPress}
+		>
 			<Text numberOfLines={1} style={styles.name}>{name}</Text>
 			<Text style={styles.dueDate}>Due {due}</Text>
 		</Pressable>

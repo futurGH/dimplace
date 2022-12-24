@@ -23,7 +23,7 @@ export const store = createStore({
 	settings: persist(settingsModel, { storage }),
 	notifications: persist(notificationsModel, { storage }),
 });
-type StoreModel = typeof store extends Store<infer T, any> ? T : never;
+export type StoreModel = typeof store extends Store<infer T, any> ? T : never;
 
 export const { useStoreActions, useStoreState, useStoreDispatch, useStore } = createTypedHooks<
 	StoreModel

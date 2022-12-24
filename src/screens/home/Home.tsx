@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from "r
 import { gqlClient } from "../../api/gqlClient";
 import type { CourseCardProps } from "../../components/home/CourseCard";
 import { CourseCard } from "../../components/home/CourseCard";
+import type { CourseCardAssignmentProps } from "../../components/home/CourseCardAssignment";
 import { Container } from "../../components/layout/Container";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import { graphql } from "../../gql";
@@ -22,6 +23,7 @@ export function Home() {
 
 	const config = useStoreState((state) => state.config);
 	const actions = useStoreActions((actions) => actions.config);
+	const settings = useStoreState((state) => state.settings);
 
 	const { data, error, isLoading, refetch, isRefetching } = useQuery({
 		queryKey: ["home"],
@@ -55,6 +57,7 @@ export function Home() {
 		refresh();
 	}
 
+	const currentDate = new Date();
 	const courses: Array<CourseCardProps> =
 		data?.enrollmentPage?.enrollments?.filter((
 			enrollment,
@@ -65,16 +68,25 @@ export function Home() {
 				name: organization.name || "Course not found",
 				id: organization.id || "",
 				imageUrl: organization.imageUrl || "",
-				assignments: data.activities.filter((activity) =>
-					activity.organization?.id === organization.id
-					&& activity.source?.name
-					&& activity.dueDate
-					&& activity.completed === false
-				).map((activity) => {
+				assignments: data.activities.filter((activity) => {
+					// if the user wants to see overdue assignments,
+					const overdueFilter = settings.showOverdueAssignments
+						// pass filter regardless of due date
+						? true
+						// otherwise, only pass filter if the due date is in the future
+						: activity.dueDate && new Date(activity.dueDate) >= currentDate;
+					return activity.organization?.id === organization.id
+						&& activity.source?.name
+						&& activity.dueDate
+						&& overdueFilter
+						&& activity.completed === false
+						&& (activity.endDate ? new Date(activity.endDate) > currentDate : true);
+				}).map<CourseCardAssignmentProps>((activity) => {
 					return {
 						id: activity.id,
 						name: activity.source?.name || "Assignment not found",
 						dueDate: new Date(activity.dueDate || Date.now()),
+						highlightOverdue: settings.highlightOverdueAssignments.value,
 					};
 				}),
 			};
@@ -123,6 +135,7 @@ const COURSE_LIST_QUERY = graphql(/* GraphQL */ `
             completed
 			completionDate
 			dueDate
+			endDate
         }
 		enrollmentPage {
 			enrollments {

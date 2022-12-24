@@ -1,14 +1,42 @@
+import * as Application from "expo-application";
 import { useState } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { SettingsList } from "../../components/elements/SettingsList";
 import { Container } from "../../components/layout/Container";
+import type { Setting } from "../../store/settingsModel";
+import { useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 
 export function Settings() {
 	const [linkColor, setLinkColor] = useState<string>(Colors.TextLabel);
+	const settings = useStoreState((state) => state.settings);
+	const transformedSettings = Object.entries(settings).reduce<
+		Parameters<typeof SettingsList>[0]["data"]
+	>((acc, [key, value], currentIndex) => {
+		if (!(key in settings)) return acc;
+		const setting = value as Setting;
+		acc.push({
+			key: key as keyof typeof settings,
+			type: setting.type,
+			name: setting.name as never,
+			description: setting.description,
+			value: setting.value,
+			enabled: setting.enabled,
+			first: acc.length > 0 ? !!acc[currentIndex - 1].description : true,
+		});
+		return acc;
+	}, []);
 	return (
 		<Container>
-			<View style={styles.container}>
-				<Text style={styles.text}>Version 1.0.0</Text>
+			<View>
+				<Text style={styles.title}>Settings</Text>
+				<SettingsList data={transformedSettings} />
+			</View>
+			<View style={styles.info}>
+				<Text style={styles.text}>
+					Version {Application.nativeApplicationVersion}{" "}
+					({Application.nativeBuildVersion})
+				</Text>
 				<Text style={styles.text}>
 					With lots of ❤️ {"\n"}
 					<Text style={styles.tiny}>(and a little bit of 😡)</Text>
@@ -29,11 +57,13 @@ export function Settings() {
 	);
 }
 const styles = StyleSheet.create({
-	container: {
+	title: { ...Typography.Title, color: Colors.TextPrimary, textAlign: "center", marginTop: 16 },
+	info: {
 		flex: 1,
-		marginTop: 24,
-		paddingHorizontal: 48,
+		marginVertical: 24,
+		paddingHorizontal: 24,
 		alignItems: "center",
+		justifyContent: "flex-end",
 		width: "100%",
 	},
 	text: { ...Typography.Body, color: Colors.TextLabel, marginBottom: 16, textAlign: "center" },
