@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, RefreshControl, StyleSheet } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
 import { WriteIcon } from "../../../assets/icons/write";
 import type { ListItemProps } from "../../../components/elements/List";
@@ -14,6 +14,7 @@ import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
 import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
+import { query } from "../../../util/query";
 import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
@@ -26,28 +27,19 @@ export function CourseAssignments() {
 	const configActions = useStoreActions((actions) => actions.config);
 	const { orgId, orgName } = route.params || {};
 
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading, refetch } = useQuery({
 		queryKey: ["courseAssignments", {
 			accessToken: config.accessToken,
 			orgId,
 			demoMode: config.__DEMO__,
 		}],
-		queryFn: fetchCourseAssignments,
-		retry: (failureCount, error) => {
-			return handleErrors({
-				error,
-				failureCount,
-				navigation,
-				config,
-				actions: configActions,
-			});
-		},
+		queryFn: query(errorHandling, fetchCourseAssignments),
 	});
-	const errorHandling = (error: unknown) =>
-		handleErrors({ error, navigation, config, actions: configActions });
 	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
-	if (isLoading && !isRefreshing) {
+	if (isLoading && !isRefreshing || error) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -56,12 +48,8 @@ export function CourseAssignments() {
 			</HeaderlessContainer>
 		);
 	}
-	if (error) {
-		errorHandling(error);
-		refresh();
-	}
 
-	const { complete, incomplete } = (data?.activities as Array<AssignmentFragment>).reduce<
+	const { complete, incomplete } = (data?.activities as Array<AssignmentFragment> || []).reduce<
 		Record<"complete" | "incomplete", Array<ListItemProps & { date: Date }>>
 	>((acc, activity) => {
 		if (activity.organization?.id !== orgId) return acc;
@@ -116,7 +104,11 @@ export function CourseAssignments() {
 
 	return (
 		<Container>
-			<List data={assignments} labelAlignment="right" />
+			<List
+				data={assignments}
+				labelAlignment="right"
+				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
+			/>
 		</Container>
 	);
 }

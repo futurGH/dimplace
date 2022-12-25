@@ -7,7 +7,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationWrapper } from "./src/components/layout/NavigationWrapper";
 import { store } from "./src/store/store";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: { queries: { retry: true, retryDelay: 3000 } },
+});
 
 SplashScreen.preventAutoHideAsync();
 

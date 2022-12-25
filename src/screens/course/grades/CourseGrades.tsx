@@ -10,6 +10,7 @@ import type { CourseGradesQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
+import { query } from "../../../util/query";
 import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
 export function CourseGrades() {
@@ -19,25 +20,18 @@ export function CourseGrades() {
 	const configActions = useStoreActions((actions) => actions.config);
 	const { orgId } = route.params || {};
 
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading } = useQuery({
 		queryKey: ["courseGrades", {
 			accessToken: config.accessToken,
 			orgId,
 			demoMode: config.__DEMO__,
 		}],
-		queryFn: fetchCourseGrades,
-		retry: (failureCount, error) => {
-			return handleErrors({
-				error,
-				failureCount,
-				navigation,
-				config,
-				actions: configActions,
-			});
-		},
+		queryFn: query(errorHandling, fetchCourseGrades),
 	});
 
-	if (isLoading) {
+	if (isLoading || error || !data) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -45,11 +39,6 @@ export function CourseGrades() {
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
-	}
-
-	if (error || !data?.userGrades) {
-		handleErrors({ error, navigation, config, actions: configActions });
-		return null;
 	}
 
 	const grades = data.userGrades.map((grade) => {

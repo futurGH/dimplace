@@ -29,6 +29,7 @@ import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { Colors, Typography } from "../../styles";
 import { handleErrors } from "../../util/errors";
+import { query } from "../../util/query";
 import { fetchCourseAssignments } from "./assignments/CourseAssignments";
 import {
 	CourseAssignmentsStack,
@@ -72,21 +73,14 @@ export function CourseNavigation() {
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading } = useQuery({
 		queryKey: ["course", { id, courseId, demoMode: config.__DEMO__ }],
-		queryFn: fetchCourseFeed,
-		retry: (failureCount, error) => {
-			return handleErrors({
-				error,
-				failureCount,
-				navigation,
-				config,
-				actions: configActions,
-			});
-		},
+		queryFn: query(errorHandling, fetchCourseFeed),
 	});
 
-	if (isLoading || (!data?.organization && !error)) {
+	if (isLoading || error) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -94,11 +88,6 @@ export function CourseNavigation() {
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
-	}
-
-	if (error) {
-		handleErrors({ error, navigation, config, actions: configActions });
-		return null;
 	}
 
 	prefetchCoursePages(queryClient, {

@@ -12,6 +12,7 @@ import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
 import { formatDateAndTime } from "../../../util/formatDate";
+import { query } from "../../../util/query";
 import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
@@ -26,28 +27,19 @@ export function CourseContent() {
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading, refetch, isRefetching } = useQuery({
 		queryKey: ["courseContent", {
 			accessToken: config.accessToken,
 			orgId,
 			demoMode: config.__DEMO__,
 		}],
-		queryFn: fetchCourseContent,
-		retry: (failureCount, error) => {
-			return handleErrors({
-				error,
-				failureCount,
-				navigation,
-				config,
-				actions: configActions,
-			});
-		},
+		queryFn: query(errorHandling, fetchCourseContent),
 	});
-	const errorHandling = (error: unknown) =>
-		handleErrors({ error, navigation, config, actions: configActions });
 	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
-	if (isLoading && !isRefetching) {
+	if (isLoading && !isRefetching || error || !data) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -55,10 +47,6 @@ export function CourseContent() {
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
-	}
-	if (error) {
-		errorHandling(error);
-		refresh();
 	}
 
 	const { contentRoot } = data as { contentRoot: { modules: Array<CourseContent> } };

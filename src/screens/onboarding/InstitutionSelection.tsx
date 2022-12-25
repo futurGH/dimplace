@@ -12,7 +12,7 @@ import { List, type ListItemProps } from "../../components/elements/List";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type { StackParamList } from "../../components/layout/NavigationWrapper";
 import { useStoreActions, useStoreState } from "../../store/store";
-import { useDebounce } from "../../util/useDebounce";
+import { useDebounce } from "../../util/debounce";
 import { buildAuthUrl } from "./AuthWebView";
 
 const DEMO_TITLE = "__DEMO__DO_NOT_USE__";

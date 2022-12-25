@@ -12,3 +12,17 @@ export function useDebounce(
 		return () => clearTimeout(timeout);
 	}, [callback, delay]);
 }
+
+export function debounce<T extends ReadonlyArray<any>>(
+	callback: (...args: T) => unknown,
+	delay: number,
+) {
+	let timeout: ReturnType<typeof setTimeout> | undefined;
+	return (...args: T) => {
+		if (timeout) return;
+		timeout = setTimeout(() => {
+			callback(...args);
+			timeout = undefined;
+		}, delay);
+	};
+}

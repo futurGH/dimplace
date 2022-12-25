@@ -2,23 +2,29 @@ import type { NavigationProp } from "@react-navigation/native";
 import type { ActionTypes, RecursiveActions, StateMapper } from "easy-peasy";
 import { buildAuthUrl } from "../screens/onboarding/AuthWebView";
 import type { ConfigModel } from "../store/configModel";
-export function handleErrors(
-	{ error: _error, failureCount = 0, navigation, config, actions }: {
+import { debounce } from "./debounce";
+
+type Config = StateMapper<Pick<ConfigModel, FilterKeysByValue<ConfigModel, ActionTypes>>>;
+
+let authing = false;
+const authWebView = debounce((navigation: NavigationProp<any>, config: Config) => {
+	navigation.navigate("AuthWebView", { source: buildAuthUrl(config) });
+}, 5000);
+
+export async function handleErrors(
+	{ error: _error, navigation, config, actions }: {
 		error: unknown;
-		failureCount?: number;
 		navigation: NavigationProp<any>;
-		config: StateMapper<Pick<ConfigModel, FilterKeysByValue<ConfigModel, ActionTypes>>>;
+		config: Config;
 		actions: RecursiveActions<ConfigModel>;
 	},
 ) {
-	if (failureCount > 1) {
-		navigation.navigate("AuthWebView", { source: buildAuthUrl(config) });
-		return false;
-	}
-	const error = (Array.isArray(_error) && _error.length) ? _error[0] : _error;
-	const errorCode = error?.response?.status;
-	if (errorCode === 401) {
-		actions.updateAccessToken(config.refreshToken);
-	}
+	const [token, error] = await actions.updateAccessToken();
+	console.log("token", token, "error", error);
+	if (error) {
+		if (authing) return true;
+		authing = true;
+		authWebView(navigation, config);
+	} else authing = false;
 	return true;
 }

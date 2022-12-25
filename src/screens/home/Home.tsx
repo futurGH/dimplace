@@ -12,6 +12,7 @@ import type { CourseListQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
 import { handleErrors } from "../../util/errors";
 import { getYearStartAndEnd } from "../../util/formatDate";
+import { query } from "../../util/query";
 import { useRefreshing } from "../../util/useRefreshing";
 import { fetchCourseFeed } from "../course/CourseNavigation";
 
@@ -25,25 +26,22 @@ export function Home() {
 	const actions = useStoreActions((actions) => actions.config);
 	const settings = useStoreState((state) => state.settings);
 
+	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
+	const errorHandling = (error: any) => handleErrors({ error, navigation, config, actions });
 	const { data, error, isLoading, refetch, isRefetching } = useQuery({
 		queryKey: ["home"],
-		queryFn: async () => {
+		queryFn: query(errorHandling, async () => {
 			if (config.__DEMO__) return MOCK_COURSE_LIST_DATA;
-			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 			const { start, end } = getYearStartAndEnd();
-			return gqlClient.request(COURSE_LIST_QUERY, {
+			return await gqlClient.request(COURSE_LIST_QUERY, {
 				startDate: start.toISOString(),
 				endDate: end.toISOString(),
 			});
-		},
-		retry: (failureCount, error) => {
-			return handleErrors({ error, failureCount, navigation, config, actions });
-		},
+		}),
 	});
-	const errorHandling = (error: unknown) => handleErrors({ error, navigation, config, actions });
 	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
-	if (isLoading && !isRefetching) {
+	if (isLoading && !isRefetching || error) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -51,10 +49,6 @@ export function Home() {
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
-	}
-	if (error) {
-		errorHandling(error);
-		refresh();
 	}
 
 	const currentDate = new Date();
