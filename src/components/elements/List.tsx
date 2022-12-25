@@ -48,7 +48,7 @@ export function ListItem(
 	);
 }
 
-export const makeListItemStyles = (rightLabel: boolean) =>
+export const makeListItemStyles = (rightLabel: boolean): Record<string, ViewStyle | TextStyle> =>
 	StyleSheet.create({
 		container: {
 			maxWidth: "100%",
