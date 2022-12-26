@@ -1,17 +1,11 @@
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import RenderHtml, {
-	type CustomRendererProps,
-	defaultSystemFonts,
-	type TBlock,
-	type TDefaultRenderer,
-	TNodeChildrenRenderer,
-} from "react-native-render-html";
 import { LinkIcon } from "../../../assets/icons/link";
 import { UserProfileIcon } from "../../../assets/icons/user-profile";
 import { Colors, Typography } from "../../../styles";
 import { formatDate } from "../../../util/formatDate";
 import { Card } from "../../elements/Card";
+import { Html } from "../../elements/Html";
 
 export interface FeedArticleCardProps {
 	message: string;
@@ -78,57 +72,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 						{"name" in props
 							? <Text style={styles.bodyTitle}>{props.name}</Text>
 							: null}
-						{cardWidth
-							? (
-								<RenderHtml
-									source={{
-										html: body.startsWith("<") ? body : `<p>${body}</p>`,
-									}}
-									contentWidth={cardWidth - 32}
-									tagsStyles={{
-										p: { marginVertical: 0, ...styles.bodyText },
-										a: {
-											color: Colors.Active,
-											textDecorationColor: Colors.Active,
-										},
-										li: styles.bodyText,
-										ul: styles.bodyText,
-										ol: styles.bodyText,
-										span: styles.bodyText,
-									}}
-									systemFonts={[
-										"WorkRegular",
-										"WorkMedium",
-										...defaultSystemFonts,
-									]}
-									renderers={{
-										// https://github.com/meliorence/react-native-render-html/issues/94
-										p: (
-											{ TDefaultRenderer, ...props }: CustomRendererProps<
-												TBlock
-											>,
-										) => {
-											const tchildrenAreText = props.tnode.children.every((
-												t,
-											) => t.type === "text" || t.type === "phrasing");
-											const children = (
-												<TNodeChildrenRenderer tnode={props.tnode} />
-											);
-											return (
-												<TDefaultRenderer {...props}>
-													{tchildrenAreText
-														? <Text numberOfLines={4}>{children}</Text>
-														: children}
-												</TDefaultRenderer>
-											);
-										},
-									}}
-									enableExperimentalGhostLinesPrevention={true}
-									enableExperimentalBRCollapsing={true}
-									enableExperimentalMarginCollapsing={true}
-								/>
-							)
-							: null}
+						<Html width={cardWidth} body={body} />
 						{"dueDate" in props
 							? <Text style={styles.bodyFootnote}>{props.dueDate}</Text>
 							: null}
@@ -175,7 +119,6 @@ const styles = StyleSheet.create({
 	authorDate: { ...Typography.Footnote, color: Colors.TextLabel },
 	body: { width: "100%", marginTop: 16 },
 	bodyTitle: { ...Typography.ListHeading, color: Colors.TextPrimary, marginBottom: 8 },
-	bodyText: { ...Typography.Body, color: Colors.TextPrimary },
 	bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
 	attachments: { width: "100%", flex: 1, flexDirection: "row", marginTop: 16 },
 	attachmentsIcon: { width: 18, height: 18, fill: Colors.TextSecondary },

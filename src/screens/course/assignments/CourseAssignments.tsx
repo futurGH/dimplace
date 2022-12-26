@@ -115,19 +115,6 @@ export function CourseAssignments() {
 
 const styles = StyleSheet.create({ icon: { width: 24, height: 24 }, labelIncomplete: {} });
 
-export type CourseContent = {
-	__typename?: string;
-	title: string;
-	viewUrl?: string;
-	downloadHref?: string;
-	pdfHref?: string;
-	modifiedDate?: string;
-	type?: string;
-	showCount?: boolean;
-	collapsed?: boolean;
-	children?: Array<CourseContent>;
-};
-
 export function fetchCourseAssignments(
 	{ queryKey: [, { accessToken, orgId, demoMode }] }: QueryFunctionContext<
 		[string, { accessToken: string; orgId: string; demoMode: boolean }]

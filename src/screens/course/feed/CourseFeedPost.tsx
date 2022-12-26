@@ -10,13 +10,13 @@ import {
 	Text,
 	View,
 } from "react-native";
-import RenderHtml, { defaultSystemFonts } from "react-native-render-html";
 import { gqlClient } from "../../../api/gqlClient";
 import { DocumentIcon } from "../../../assets/icons/document";
 import { ImageIcon } from "../../../assets/icons/image";
 import { LinkIcon } from "../../../assets/icons/link";
 import { UserProfileIcon } from "../../../assets/icons/user-profile";
 import { Chip } from "../../../components/elements/Chip";
+import { Html } from "../../../components/elements/Html";
 import { Container } from "../../../components/layout/Container";
 import { Header } from "../../../components/layout/Header";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
@@ -63,7 +63,7 @@ export function CourseFeedPost() {
 		}),
 	});
 
-	if (isLoading) {
+	if (isLoading || error || !data?.activityFeedCommentPage) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -71,11 +71,6 @@ export function CourseFeedPost() {
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
-	}
-
-	if (error || !data?.activityFeedArticle || !data?.activityFeedCommentPage) {
-		handleErrors({ error, navigation, config, actions: configActions });
-		return null;
 	}
 
 	const { activityFeedComments } = data.activityFeedCommentPage;
@@ -126,35 +121,7 @@ export function CourseFeedPost() {
 							{"name" in activityFeedArticle
 								? <Text style={styles.bodyTitle}>{activityFeedArticle.name}</Text>
 								: null}
-							{width
-								? (
-									<RenderHtml
-										source={{
-											html: body.startsWith("<") ? body : `<p>${body}</p>`,
-										}}
-										contentWidth={width - 48}
-										tagsStyles={{
-											p: { marginVertical: 0, ...styles.bodyText },
-											a: {
-												color: Colors.Active,
-												textDecorationColor: Colors.Active,
-											},
-											li: styles.bodyText,
-											ul: styles.bodyText,
-											ol: styles.bodyText,
-											span: styles.bodyText,
-										}}
-										systemFonts={[
-											"WorkRegular",
-											"WorkMedium",
-											...defaultSystemFonts,
-										]}
-										enableExperimentalGhostLinesPrevention={true}
-										enableExperimentalBRCollapsing={true}
-										enableExperimentalMarginCollapsing={true}
-									/>
-								)
-								: null}
+							<Html width={width} body={body} />
 							{"dueDate" in activityFeedArticle
 								? (
 									<Text style={styles.bodyFootnote}>
@@ -224,40 +191,7 @@ export function CourseFeedPost() {
 								</View>
 							</View>
 							<View style={styles.body}>
-								{width
-									? (
-										<RenderHtml
-											source={{
-												html: comment.message?.startsWith("<")
-													? comment.message
-													: `<p>${
-														comment.message
-														|| "Failed to fetch comment content."
-													}</p>`,
-											}}
-											contentWidth={width - 48}
-											tagsStyles={{
-												p: { marginVertical: 0, ...styles.bodyText },
-												a: {
-													color: Colors.Active,
-													textDecorationColor: Colors.Active,
-												},
-												li: styles.bodyText,
-												ul: styles.bodyText,
-												ol: styles.bodyText,
-												span: styles.bodyText,
-											}}
-											systemFonts={[
-												"WorkRegular",
-												"WorkMedium",
-												...defaultSystemFonts,
-											]}
-											enableExperimentalGhostLinesPrevention={true}
-											enableExperimentalBRCollapsing={true}
-											enableExperimentalMarginCollapsing={true}
-										/>
-									)
-									: null}
+								<Html width={width} body={comment.message} />
 							</View>
 						</View>
 					);
@@ -285,7 +219,6 @@ const styles = StyleSheet.create({
 	authorDate: { ...Typography.Footnote, color: Colors.TextLabel },
 	body: { width: "100%", marginTop: 16 },
 	bodyTitle: { ...Typography.ListHeading, color: Colors.TextPrimary, marginBottom: 8 },
-	bodyText: { ...Typography.Body, color: Colors.TextPrimary },
 	bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
 	attachments: { alignItems: "flex-start", marginTop: 24 },
 	separator: { height: 16 },

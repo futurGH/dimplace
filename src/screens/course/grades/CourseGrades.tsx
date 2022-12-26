@@ -98,19 +98,6 @@ export function CourseGrades() {
 
 const styles = StyleSheet.create({ weight: { ...Typography.Body, color: Colors.TextLabel } });
 
-export type CourseContent = {
-	__typename?: string;
-	title: string;
-	viewUrl?: string;
-	downloadHref?: string;
-	pdfHref?: string;
-	modifiedDate?: string;
-	type?: string;
-	showCount?: boolean;
-	collapsed?: boolean;
-	children?: Array<CourseContent>;
-};
-
 export function fetchCourseGrades(
 	{ queryKey: [, { accessToken, orgId, demoMode }] }: QueryFunctionContext<
 		[string, { accessToken: string; orgId: string; demoMode: boolean }]
