@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
 	},
 	countText: { ...Typography.Caption, fontFamily: "WorkMedium", color: Colors.TextLabel },
 	icon: { width: 20, height: 20, marginTop: 3, fill: Colors.TextPrimary },
-	link: { color: Colors.Active, textDecorationLine: "underline" },
+	link: { color: Colors.Active, textDecorationLine: "underline", opacity: 0.75 },
 });
 
 export interface SectionHeaderProps {

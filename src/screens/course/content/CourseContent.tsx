@@ -93,12 +93,11 @@ function transformSections(
 		if (item.modifiedDate) {
 			item.label = formatDate(new Date(item.modifiedDate));
 		}
+		if (item.descriptionHtml && (!item.modifiedDate || item.__typename === "ContentModule")) {
+			item.label = item.descriptionHtml;
+		}
 		if (section.__typename === "ContentModule") {
-			return {
-				...item,
-				label: item.descriptionHtml?.trim(),
-				data: children?.length ? transformSections(children) : [],
-			};
+			return { ...item, data: children?.length ? transformSections(children) : [] };
 		}
 		return item;
 	}) || [];
@@ -141,32 +140,26 @@ const COURSE_CONTENT_QUERY = graphql(/* GraphQL */ `
                 ...CourseContent
 				... on ContentModule {
 					__typename
-					descriptionHtml
 					children {
 						...CourseContent
 						... on ContentModule {
 							__typename
-							descriptionHtml
 							children {
 								...CourseContent
 								... on ContentModule {
 									__typename
-									descriptionHtml
 									children {
                                         ...CourseContent
                                         ... on ContentModule {
                                             __typename
-                                            descriptionHtml
                                             children {
                                                 ...CourseContent
                                                 ... on ContentModule {
                                                     __typename
-                                                    descriptionHtml
                                                     children {
                                                         ...CourseContent
                                                         ... on ContentModule {
                                                             __typename
-                                                            descriptionHtml
                                                             children {
                                                                 ...CourseContent
                                                             }
@@ -187,13 +180,14 @@ const COURSE_CONTENT_QUERY = graphql(/* GraphQL */ `
 	fragment CourseContent on ContentItem {
 		__typename
 		title
+		descriptionHtml
 		... on ContentTopic {
-			viewUrl
-			downloadHref
-			pdfHref
-			modifiedDate
-			type
-		}
+            viewUrl
+            downloadHref
+            pdfHref
+            modifiedDate
+            type
+        }
 	}
 `);
 

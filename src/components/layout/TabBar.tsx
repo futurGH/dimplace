@@ -13,6 +13,7 @@ export function TabBar({ navigation, state, descriptors }: BottomTabBarProps) {
 						color: isFocused ? Colors.Active : Colors.TextLabel,
 						focused: isFocused,
 						position: "below-icon",
+						children: "",
 					})
 					: potentiallyLabel;
 				const icon = options.tabBarIcon?.({
