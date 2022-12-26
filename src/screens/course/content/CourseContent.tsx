@@ -11,7 +11,7 @@ import type { CourseContentQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
-import { formatDateAndTime } from "../../../util/formatDate";
+import { formatDate } from "../../../util/formatDate";
 import { query } from "../../../util/query";
 import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
@@ -51,10 +51,12 @@ export function CourseContent() {
 
 	const { contentRoot } = data as { contentRoot: { modules: Array<CourseContent> } };
 
+	const collapsedSections: Array<string> = [];
 	return (
 		<Container>
 			<SectionList
 				sections={transformSections(contentRoot.modules)}
+				collapsedSections={collapsedSections}
 				ListEmptyComponent={() => (
 					<View style={styles.noContentContainer}>
 						<Text style={styles.noContentTitle}>It's a ghost town! 👻</Text>
@@ -88,9 +90,8 @@ function transformSections(
 		const { children, ...props } = section;
 		const item: CourseContent & { label?: string } = props;
 		item.showCount = true;
-		item.collapsed = false;
 		if (item.modifiedDate) {
-			item.label = formatDateAndTime(new Date(item.modifiedDate));
+			item.label = formatDate(new Date(item.modifiedDate));
 		}
 		if (section.__typename === "ContentModule") {
 			return { ...item, data: children?.length ? transformSections(children) : [] };
@@ -114,7 +115,6 @@ export type CourseContent = {
 	modifiedDate?: string;
 	type?: string;
 	showCount?: boolean;
-	collapsed?: boolean;
 	children?: Array<CourseContent>;
 };
 

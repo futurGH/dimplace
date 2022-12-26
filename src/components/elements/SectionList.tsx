@@ -20,38 +20,53 @@ export type Section<T> = { title: string; data?: Array<T> | Array<Section<T>> };
 export interface SectionListProps<T extends ListItemProps>
 	extends Omit<Partial<NativeSectionListProps<T>>, "sections">
 {
-	sections: Array<Section<T> & { collapsed?: boolean; showCount?: boolean }>;
+	sections: Array<Section<T> & { showCount?: boolean }>;
 	itemStyles?: ListItemProps["styles"];
 	labelAlignment?: "bottom" | "right";
 	onItemPress?: (item: T) => void;
 	onItemPressIn?: (event: GestureResponderEvent) => void;
 	onItemPressOut?: (event: GestureResponderEvent) => void;
 	nested?: boolean;
+	collapsedSections: Array<string>;
 }
 export function SectionList<T extends ListItemProps>(
-	{ onItemPress = () => {}, onItemPressIn, onItemPressOut, sections, nested = false, ...props }:
-		SectionListProps<T>,
+	{
+		onItemPress = () => {},
+		onItemPressIn,
+		onItemPressOut,
+		sections,
+		nested = false,
+		collapsedSections,
+		...props
+	}: SectionListProps<T>,
 ) {
 	const [collapseMarker, setCollapseMarker] = useState(0);
 	const listItemStyles = makeListItemStyles(props.labelAlignment === "right");
+
 	return (
 		<NativeSectionList
 			renderSectionHeader={({ section }) => {
+				const collapsed = collapsedSections.includes(section.title);
 				return (
 					<SectionHeader
 						title={section.title}
-						collapsed={section.collapsed}
+						collapsed={collapsed}
 						style={{
 							marginTop: 8,
 							marginBottom: 8,
 							...(nested ? Typography.Subheading : Typography.Heading),
 						}}
 						onPress={() => {
-							const sect = sections.find((s) => s.title === section.title);
-							if (sect) {
-								setCollapseMarker(collapseMarker + 1);
-								sect.collapsed = !section.collapsed;
+							const collapsed = collapsedSections.includes(section.title);
+							if (collapsed) {
+								collapsedSections.splice(
+									collapsedSections.indexOf(section.title),
+									1,
+								);
+							} else {
+								collapsedSections.push(section.title);
 							}
+							setCollapseMarker(collapseMarker + 1);
 						}}
 						{...(section.showCount && { count: section.data?.length })}
 					/>
@@ -59,18 +74,15 @@ export function SectionList<T extends ListItemProps>(
 			}}
 			renderItem={({ item: _item, section, index }) => {
 				const [backgroundColor, setBackground] = useState("transparent");
-				const { collapsed, showCount } = section;
+				const { showCount } = section;
+				const collapsed = collapsedSections.includes(section.title);
 				if (collapsed) return null;
 				if (isSection(_item)) {
 					const item = _item as Section<T>;
 					return (
 						<SectionList
-							sections={[{
-								title: item.title,
-								data: item.data,
-								collapsed,
-								showCount,
-							}]}
+							sections={[{ title: item.title, data: item.data, showCount }]}
+							collapsedSections={collapsedSections}
 							nested={true}
 							{...props}
 							style={[props.style, { marginLeft: 16 }]}
@@ -92,7 +104,7 @@ export function SectionList<T extends ListItemProps>(
 					<>
 						{index !== 0 ? <ItemSeparator style={{ marginLeft: 24 }} /> : null}
 						<ListItem
-							key={item.title ? String(item.title) : null}
+							key={item.title ? `${item.title}` : null}
 							icon={icon}
 							onPress={() => onItemPress(item)}
 							onPressIn={(event) => {
@@ -109,12 +121,12 @@ export function SectionList<T extends ListItemProps>(
 									...(props.itemStyles?.container || {}),
 									backgroundColor,
 									marginHorizontal: 16,
-									paddingVertical: 16,
+									paddingVertical: 12,
 								},
 								title: {
 									...listItemStyles.title,
 									...(props.itemStyles?.title || {}),
-									...Typography.Callout,
+									...Typography.Body,
 									color: Colors.TextSecondary,
 								},
 								text: { ...listItemStyles.text, ...(props.itemStyles?.text || {}) },
@@ -122,7 +134,6 @@ export function SectionList<T extends ListItemProps>(
 									...listItemStyles.label,
 									...(props.itemStyles?.label || {}),
 								},
-								icon: props.itemStyles?.icon,
 							}}
 							{...item}
 						/>
@@ -130,7 +141,7 @@ export function SectionList<T extends ListItemProps>(
 				);
 			}}
 			sections={sections as never}
-			keyExtractor={(item, index) => `${item.title}-${index}`}
+			keyExtractor={(item) => `${item.title}-${item.label}`}
 			getItemCount={(items) => items?.data?.length || items?.length || 0}
 			keyboardShouldPersistTaps="handled"
 			stickySectionHeadersEnabled={false}
@@ -169,7 +180,7 @@ const styles = StyleSheet.create({
 		borderRadius: 99,
 	},
 	countText: { ...Typography.Caption, fontFamily: "WorkMedium", color: Colors.TextLabel },
-	icon: { width: 24, height: 24, fill: Colors.TextPrimary },
+	icon: { width: 20, height: 20, marginTop: 3, fill: Colors.TextPrimary },
 });
 
 export interface SectionHeaderProps {
