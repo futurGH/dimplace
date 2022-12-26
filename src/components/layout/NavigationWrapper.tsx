@@ -6,6 +6,7 @@ import {
 } from "@expo-google-fonts/work-sans";
 import {
 	createNavigationContainerRef,
+	DefaultTheme,
 	LinkingOptions,
 	NavigationContainer,
 	NavigatorScreenParams,
@@ -107,7 +108,15 @@ export function NavigationWrapper() {
 	};
 	return (
 		<View style={{ flex: 1, backgroundColor: Colors.Background }}>
-			<NavigationContainer linking={linking} onReady={onReady} ref={navRef}>
+			<NavigationContainer
+				linking={linking}
+				onReady={onReady}
+				ref={navRef}
+				theme={{
+					dark: true,
+					colors: { ...DefaultTheme.colors, background: Colors.Background },
+				}}
+			>
 				<Stack.Navigator screenOptions={{ header: Header, headerShown: false }}>
 					<Stack.Group navigationKey="Onboarding">
 						<Stack.Screen name="Onboarding" component={Onboarding} />
