@@ -19,8 +19,7 @@ export async function handleErrors(
 		actions: RecursiveActions<ConfigModel>;
 	},
 ) {
-	const [token, error] = await actions.updateAccessToken();
-	console.log("token", token, "error", error);
+	const [, error] = await actions.updateAccessToken();
 	if (error) {
 		if (authing) return true;
 		authing = true;

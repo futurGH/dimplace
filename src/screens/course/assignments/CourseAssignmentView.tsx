@@ -1,7 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { gqlClient } from "../../../api/gqlClient";
 import { Container } from "../../../components/layout/Container";
 import { Header } from "../../../components/layout/Header";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
@@ -9,10 +8,11 @@ import type { AssignmentFragment } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
-import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
+import { formatDate } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
+import { query } from "../../../util/query";
 import { CoursePageHeaderLeftButton, CoursePageHeaderRightButton } from "../CourseNavigation";
-import { COURSE_ASSIGNMENTS_QUERY, MOCK_COURSE_ASSIGNMENTS } from "./CourseAssignments";
+import { fetchCourseAssignments } from "./CourseAssignments";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
 export function CourseAssignmentView() {
@@ -37,30 +37,18 @@ export function CourseAssignmentView() {
 		return null;
 	}
 
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseAssignments", { orgId, demoMode: config.__DEMO__ }] as const,
-		queryFn: ({ queryKey: [, { demoMode }] }) => {
-			if (demoMode) return MOCK_COURSE_ASSIGNMENTS;
-			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
-			const { start, end } = getYearStartAndEnd();
-			return gqlClient.request(COURSE_ASSIGNMENTS_QUERY, {
-				startDate: start.toISOString(),
-				endDate: end.toISOString(),
-				orgId,
-			});
-		},
-		retry: (failureCount, error) => {
-			return handleErrors({
-				error,
-				failureCount,
-				navigation,
-				config,
-				actions: configActions,
-			});
-		},
+		queryKey: ["courseAssignments", {
+			accessToken: config.accessToken,
+			orgId,
+			demoMode: config.__DEMO__,
+		}],
+		queryFn: query(errorHandling, fetchCourseAssignments),
 	});
 
-	if (isLoading) {
+	if (isLoading || error || !data) {
 		return (
 			<HeaderlessContainer
 				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
@@ -68,11 +56,6 @@ export function CourseAssignmentView() {
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
-	}
-
-	if (error || !data?.activities || !data?.userGrades) {
-		handleErrors({ error, navigation, config, actions: configActions });
-		return null;
 	}
 
 	const assignment = (data.activities as Array<AssignmentFragment>).find((a) =>

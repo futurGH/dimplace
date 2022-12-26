@@ -22,6 +22,7 @@ import { Header } from "../../../components/layout/Header";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
 import { graphql } from "../../../gql";
 import type {
+	ActivityFeedCommentPage,
 	ArticleDetailsFragmentFragment,
 	AssignmentDetailsFragmentFragment,
 	FeedItemFragmentFragment,
@@ -31,8 +32,14 @@ import { useStoreActions, useStoreState } from "../../../store/store";
 import { Colors, Typography } from "../../../styles";
 import { handleErrors } from "../../../util/errors";
 import { formatDate } from "../../../util/formatDate";
+import { query } from "../../../util/query";
 import { CoursePageHeaderLeftButton } from "../CourseNavigation";
 import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
+
+type ActivityFeedArticle =
+	& FeedItemFragmentFragment
+	& FeedPostFragmentFragment
+	& (ArticleDetailsFragmentFragment | AssignmentDetailsFragmentFragment);
 
 export function CourseFeedPost() {
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeedPost">["route"]>();
@@ -45,21 +52,15 @@ export function CourseFeedPost() {
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
+	const errorHandling = (error: unknown) =>
+		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading } = useQuery({
 		queryKey: ["article", articleId],
-		queryFn: () => {
+		queryFn: query(errorHandling, async () => {
+			if (config.__DEMO__) return MOCK_COURSE_FEED_POST;
 			gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 			return gqlClient.request(COURSE_FEED_POST_QUERY, { articleId, commentsId });
-		},
-		retry: (failureCount, error) => {
-			return handleErrors({
-				error,
-				failureCount,
-				navigation,
-				config,
-				actions: configActions,
-			});
-		},
+		}),
 	});
 
 	if (isLoading) {
@@ -78,10 +79,7 @@ export function CourseFeedPost() {
 	}
 
 	const { activityFeedComments } = data.activityFeedCommentPage;
-	const activityFeedArticle = data.activityFeedArticle as
-		& FeedItemFragmentFragment
-		& FeedPostFragmentFragment
-		& (ArticleDetailsFragmentFragment | AssignmentDetailsFragmentFragment);
+	const activityFeedArticle = data.activityFeedArticle as ActivityFeedArticle;
 
 	const body =
 		("message" in activityFeedArticle
@@ -324,3 +322,21 @@ const COURSE_FEED_POST_QUERY = graphql(/* GraphQL */ `
         }
     }
 `);
+
+const MOCK_COURSE_FEED_POST: {
+	activityFeedArticle: ActivityFeedArticle;
+	activityFeedCommentPage: ActivityFeedCommentPage;
+} = {
+	activityFeedArticle: {
+		type: "article",
+		author: { displayName: "John Doe", imageUrl: "https://i.pravatar.cc/128" },
+		id: "1",
+		message: "This is an announcement",
+		publishedDate: "2020-12-31T00:00:00.000Z",
+		commentsCount: 0,
+		isPinned: false,
+		commentsLink: "https://dimplace.com",
+		attachmentLinks: [],
+	},
+	activityFeedCommentPage: { id: "1", activityFeedComments: [] },
+};
