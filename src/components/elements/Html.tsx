@@ -12,15 +12,15 @@ interface HtmlProps extends Partial<RenderHTMLProps> {
 	width: number;
 	body: string;
 	bodyStyle?: MixedStyleDeclaration;
+	numberOfLines?: number;
 }
-export function Html(
-	{ width, body, bodyStyle = { ...Typography.Body, color: Colors.TextPrimary }, ...props }:
-		HtmlProps,
-) {
+const defaultBodyStyle: MixedStyleDeclaration = { ...Typography.Body, color: Colors.TextPrimary };
+export function Html({ width, body, bodyStyle = {}, numberOfLines = 4, ...props }: HtmlProps) {
+	bodyStyle = { ...defaultBodyStyle, ...bodyStyle };
 	return width
 		? (
 			<RenderHtml
-				source={{ html: body.startsWith("<") ? body : `<p>${body}</p>` }}
+				source={{ html: body.startsWith("<") ? body : `<p>${body.trim()}</p>` }}
 				contentWidth={width - 32}
 				tagsStyles={{
 					p: { marginVertical: 0, ...bodyStyle },
@@ -41,7 +41,7 @@ export function Html(
 						return (
 							<TDefaultRenderer {...props}>
 								{tchildrenAreText
-									? <Text numberOfLines={4}>{children}</Text>
+									? <Text numberOfLines={numberOfLines}>{children}</Text>
 									: children}
 							</TDefaultRenderer>
 						);

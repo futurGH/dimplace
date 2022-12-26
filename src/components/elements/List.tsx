@@ -41,8 +41,12 @@ export function ListItem(
 					onPressOut?.(event);
 				}}
 			>
-				<Text numberOfLines={numberOfLines} style={styles.title}>{title}</Text>
-				{label && <Text style={styles.label}>{label}</Text>}
+				{title && (typeof title === "string" || typeof title === "number")
+					? <Text numberOfLines={numberOfLines} style={styles.title}>{title}</Text>
+					: title}
+				{label && (typeof label === "string" || typeof label === "number")
+					? <Text style={styles.label}>{label}</Text>
+					: label}
 			</Pressable>
 		</View>
 	);
@@ -56,6 +60,7 @@ export const makeListItemStyles = (rightLabel: boolean): Record<string, ViewStyl
 			flexDirection: "row",
 			paddingVertical: 16,
 			backgroundColor: "transparent",
+			borderRadius: 16,
 		},
 		text: {
 			width: "100%",

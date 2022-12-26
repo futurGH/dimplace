@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import {
+	Dimensions,
 	type GestureResponderEvent,
 	Pressable,
 	SectionList as NativeSectionList,
@@ -12,11 +13,12 @@ import { ChevronUpIcon } from "../../assets/icons/chevron-up";
 import { DocumentIcon } from "../../assets/icons/document";
 import { LinkIcon } from "../../assets/icons/link";
 import { Colors, Typography } from "../../styles";
+import { Html } from "./Html";
 import { ItemSeparator } from "./ItemSeparator";
 import type { ListItemProps } from "./List";
 import { ListItem, makeListItemStyles } from "./List";
 
-export type Section<T> = { title: string; data?: Array<T> | Array<Section<T>> };
+export type Section<T> = { title: string; label?: ReactNode; data?: Array<T> | Array<Section<T>> };
 export interface SectionListProps<T extends ListItemProps>
 	extends Omit<Partial<NativeSectionListProps<T>>, "sections">
 {
@@ -41,35 +43,110 @@ export function SectionList<T extends ListItemProps>(
 	}: SectionListProps<T>,
 ) {
 	const [collapseMarker, setCollapseMarker] = useState(0);
-	const listItemStyles = makeListItemStyles(props.labelAlignment === "right");
+	const itemStyles = makeListItemStyles(props.labelAlignment === "right");
+	const listItemStyles = {
+		container: {
+			...itemStyles.container,
+			...(props.itemStyles?.container || {}),
+			marginHorizontal: 16,
+			paddingVertical: 12,
+		},
+		title: {
+			...itemStyles.title,
+			...(props.itemStyles?.title || {}),
+			...Typography.Body,
+			color: Colors.TextSecondary,
+		},
+		text: { ...itemStyles.text, ...(props.itemStyles?.text || {}) },
+		label: { ...itemStyles.label, ...(props.itemStyles?.label || {}) },
+	};
 
 	return (
 		<NativeSectionList
 			renderSectionHeader={({ section }) => {
 				const collapsed = collapsedSections.includes(section.title);
+				const descriptionExpanded = collapsedSections.includes(
+					`${section.title}-description`,
+				);
+				const descriptionStyle: ViewStyle = descriptionExpanded
+					? { height: "auto" }
+					: { flexDirection: "row", height: 22, overflow: "hidden" };
+				let description: ReactNode = section.label || null;
+				if (typeof description === "string") {
+					if (description.startsWith("<")) {
+						description = (
+							<Html
+								body={description}
+								width={Dimensions.get("window").width}
+								numberOfLines={descriptionExpanded ? undefined : 1}
+								bodyStyle={{ color: Colors.TextSecondary }}
+								baseStyle={{ flexShrink: 1 }}
+							/>
+						);
+					} else description = <Text style={listItemStyles.text}>{description}</Text>;
+					description = (
+						<View style={descriptionStyle}>
+							{description}
+							<Pressable
+								onPress={() => {
+									const index = collapsedSections.indexOf(
+										`${section.title}-description`,
+									);
+									if (index === -1) {
+										collapsedSections.push(`${section.title}-description`);
+									} else collapsedSections.splice(index, 1);
+									setCollapseMarker(collapseMarker + 1);
+								}}
+							>
+								<Text style={[listItemStyles.title, styles.link]}>
+									View {descriptionExpanded ? "less" : "more"}
+								</Text>
+							</Pressable>
+						</View>
+					);
+				}
 				return (
-					<SectionHeader
-						title={section.title}
-						collapsed={collapsed}
-						style={{
-							marginTop: 8,
-							marginBottom: 8,
-							...(nested ? Typography.Subheading : Typography.Heading),
-						}}
-						onPress={() => {
-							const collapsed = collapsedSections.includes(section.title);
-							if (collapsed) {
-								collapsedSections.splice(
-									collapsedSections.indexOf(section.title),
-									1,
-								);
-							} else {
-								collapsedSections.push(section.title);
-							}
-							setCollapseMarker(collapseMarker + 1);
-						}}
-						{...(section.showCount && { count: section.data?.length })}
-					/>
+					<>
+						<SectionHeader
+							title={section.title}
+							collapsed={collapsed}
+							style={{
+								marginTop: 8,
+								marginBottom: 8,
+								...(nested ? Typography.Subheading : Typography.Heading),
+							}}
+							onPress={() => {
+								const collapsedIndex = collapsedSections.indexOf(section.title);
+								if (collapsedIndex !== -1) {
+									collapsedSections.splice(
+										collapsedSections.indexOf(section.title),
+										1,
+									);
+								} else {
+									collapsedSections.push(section.title);
+								}
+								setCollapseMarker(collapseMarker + 1);
+							}}
+							{...(section.showCount && { count: section.data?.length })}
+						/>
+						{description
+							? (
+								<>
+									<ListItem
+										title={description}
+										styles={{
+											...listItemStyles,
+											container: {
+												...listItemStyles.container,
+												paddingTop: 8,
+											},
+										}}
+									/>
+									{section.data.length ? <ItemSeparator /> : null}
+								</>
+							)
+							: null}
+					</>
 				);
 			}}
 			renderItem={({ item: _item, section, index }) => {
@@ -116,24 +193,8 @@ export function SectionList<T extends ListItemProps>(
 								onItemPressOut?.(event);
 							}}
 							styles={{
-								container: {
-									...listItemStyles.container,
-									...(props.itemStyles?.container || {}),
-									backgroundColor,
-									marginHorizontal: 16,
-									paddingVertical: 12,
-								},
-								title: {
-									...listItemStyles.title,
-									...(props.itemStyles?.title || {}),
-									...Typography.Body,
-									color: Colors.TextSecondary,
-								},
-								text: { ...listItemStyles.text, ...(props.itemStyles?.text || {}) },
-								label: {
-									...listItemStyles.label,
-									...(props.itemStyles?.label || {}),
-								},
+								...listItemStyles,
+								container: { ...listItemStyles.container, backgroundColor },
 							}}
 							{...item}
 						/>
@@ -181,6 +242,7 @@ const styles = StyleSheet.create({
 	},
 	countText: { ...Typography.Caption, fontFamily: "WorkMedium", color: Colors.TextLabel },
 	icon: { width: 20, height: 20, marginTop: 3, fill: Colors.TextPrimary },
+	link: { color: Colors.Active, textDecorationLine: "underline" },
 });
 
 export interface SectionHeaderProps {

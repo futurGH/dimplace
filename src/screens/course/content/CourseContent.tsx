@@ -94,7 +94,11 @@ function transformSections(
 			item.label = formatDate(new Date(item.modifiedDate));
 		}
 		if (section.__typename === "ContentModule") {
-			return { ...item, data: children?.length ? transformSections(children) : [] };
+			return {
+				...item,
+				label: item.descriptionHtml?.trim(),
+				data: children?.length ? transformSections(children) : [],
+			};
 		}
 		return item;
 	}) || [];
@@ -109,6 +113,7 @@ const styles = StyleSheet.create({
 export type CourseContent = {
 	__typename?: string;
 	title: string;
+	descriptionHtml?: string;
 	viewUrl?: string;
 	downloadHref?: string;
 	pdfHref?: string;
@@ -130,22 +135,46 @@ export function fetchCourseContent(
 
 const COURSE_CONTENT_QUERY = graphql(/* GraphQL */ `
     query CourseContent($orgId: String!) {
+		# I do not look forward to maintaining this
         contentRoot(organizationId: $orgId) {
             modules {
                 ...CourseContent
 				... on ContentModule {
 					__typename
+					descriptionHtml
 					children {
 						...CourseContent
 						... on ContentModule {
 							__typename
+							descriptionHtml
 							children {
-								# If your course content needs to be nested more than 3 levels, that's a you problem
 								...CourseContent
 								... on ContentModule {
 									__typename
+									descriptionHtml
 									children {
-										...CourseContent
+                                        ...CourseContent
+                                        ... on ContentModule {
+                                            __typename
+                                            descriptionHtml
+                                            children {
+                                                ...CourseContent
+                                                ... on ContentModule {
+                                                    __typename
+                                                    descriptionHtml
+                                                    children {
+                                                        ...CourseContent
+                                                        ... on ContentModule {
+                                                            __typename
+                                                            descriptionHtml
+                                                            children {
+                                                                ...CourseContent
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
