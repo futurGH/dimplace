@@ -41,12 +41,8 @@ export function ListItem(
 					onPressOut?.(event);
 				}}
 			>
-				{title && (typeof title === "string" || typeof title === "number")
-					? <Text numberOfLines={numberOfLines} style={styles.title}>{title}</Text>
-					: title}
-				{label && (typeof label === "string" || typeof label === "number")
-					? <Text style={styles.label}>{label}</Text>
-					: label}
+				<Text numberOfLines={numberOfLines} style={styles.title}>{title}</Text>
+				{label ? <Text style={styles.label}>{label}</Text> : null}
 			</Pressable>
 		</View>
 	);

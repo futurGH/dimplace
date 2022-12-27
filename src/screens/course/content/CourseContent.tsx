@@ -57,6 +57,14 @@ export function CourseContent() {
 			<SectionList
 				sections={transformSections(contentRoot.modules)}
 				collapsedSections={collapsedSections}
+				keyExtractor={(item) =>
+					`${item.title}-${
+						// one of these has got to exist, right?
+						item.modifiedDate
+						|| item.viewUrl
+						|| item.pdfHref
+						|| item.downloadHref
+						|| item.descriptionHtml}`}
 				ListEmptyComponent={() => (
 					<View style={styles.noContentContainer}>
 						<Text style={styles.noContentTitle}>It's a ghost town! 👻</Text>
@@ -87,17 +95,16 @@ function transformSections(
 	sections: Array<CourseContent>,
 ): Array<{ title: string; label?: string; data?: Array<CourseContent> }> {
 	return sections?.map((section) => {
-		const { children, ...props } = section;
+		const { children = [], descriptionHtml, ...props } = section;
 		const item: CourseContent & { label?: string } = props;
 		item.showCount = true;
 		if (item.modifiedDate) {
 			item.label = formatDate(new Date(item.modifiedDate));
+		} else if (descriptionHtml) {
+			item.label = descriptionHtml;
 		}
-		if (item.descriptionHtml && (!item.modifiedDate || item.__typename === "ContentModule")) {
-			item.label = item.descriptionHtml;
-		}
-		if (section.__typename === "ContentModule") {
-			return { ...item, data: children?.length ? transformSections(children) : [] };
+		if (item.__typename === "ContentModule") {
+			return { ...item, data: transformSections(children) };
 		}
 		return item;
 	}) || [];

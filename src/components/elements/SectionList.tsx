@@ -5,15 +5,17 @@ import {
 	Pressable,
 	SectionList as NativeSectionList,
 	type SectionListProps as NativeSectionListProps,
+	TouchableOpacity,
 	ViewStyle,
 } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
+import type { MixedStyleDeclaration } from "react-native-render-html";
 import { ChevronDownIcon } from "../../assets/icons/chevron-down";
 import { ChevronUpIcon } from "../../assets/icons/chevron-up";
 import { DocumentIcon } from "../../assets/icons/document";
 import { LinkIcon } from "../../assets/icons/link";
 import { Colors, Typography } from "../../styles";
-import { Html } from "./Html";
+import { Html, stripTags } from "./Html";
 import { ItemSeparator } from "./ItemSeparator";
 import type { ListItemProps } from "./List";
 import { ListItem, makeListItemStyles } from "./List";
@@ -65,43 +67,69 @@ export function SectionList<T extends ListItemProps>(
 		<NativeSectionList
 			renderSectionHeader={({ section }) => {
 				const collapsed = collapsedSections.includes(section.title);
-				const descriptionExpanded = collapsedSections.includes(
-					`${section.title}-description`,
-				);
+				const truncateDescription = !!section.data?.length;
+				const descriptionExpanded = truncateDescription
+					? collapsedSections.includes(`${section.title}-description`)
+					: true;
 				const descriptionStyle: ViewStyle = descriptionExpanded
 					? { height: "auto" }
-					: { flexDirection: "row", height: 22, overflow: "hidden" };
+					: { flexDirection: "row", height: 24, overflow: "hidden" };
 				let description: ReactNode = section.label || null;
 				if (typeof description === "string") {
+					const descriptionText = descriptionExpanded
+						? description
+						: stripTags(description);
 					if (description.startsWith("<")) {
 						description = (
 							<Html
-								body={description}
+								body={descriptionText}
 								width={Dimensions.get("window").width}
 								numberOfLines={descriptionExpanded ? undefined : 1}
-								bodyStyle={{ color: Colors.TextSecondary }}
+								bodyStyle={{
+									...listItemStyles.title as MixedStyleDeclaration,
+									color: Colors.TextSecondary,
+								}}
 								baseStyle={{ flexShrink: 1 }}
 							/>
 						);
-					} else description = <Text style={listItemStyles.text}>{description}</Text>;
-					description = (
-						<View style={descriptionStyle}>
-							{description}
-							<Pressable
-								onPress={() => {
-									const index = collapsedSections.indexOf(
-										`${section.title}-description`,
-									);
-									if (index === -1) {
-										collapsedSections.push(`${section.title}-description`);
-									} else collapsedSections.splice(index, 1);
-									setCollapseMarker(collapseMarker + 1);
-								}}
+					} else {
+						description = (
+							<Text
+								style={listItemStyles.title}
+								numberOfLines={descriptionExpanded ? undefined : 1}
 							>
-								<Text style={[listItemStyles.title, styles.link]}>
-									View {descriptionExpanded ? "less" : "more"}
-								</Text>
-							</Pressable>
+								{descriptionText}
+							</Text>
+						);
+					}
+					description = (
+						<View style={[descriptionStyle, { marginVertical: 12 }]}>
+							{description}
+							{truncateDescription && (
+								<TouchableOpacity
+									onPress={() => {
+										const index = collapsedSections.indexOf(
+											`${section.title}-description`,
+										);
+										if (index === -1) {
+											collapsedSections.push(`${section.title}-description`);
+										} else collapsedSections.splice(index, 1);
+										setCollapseMarker(collapseMarker + 1);
+									}}
+								>
+									<Text
+										style={[
+											listItemStyles.title,
+											styles.link,
+											!descriptionExpanded
+												? { marginLeft: 12 }
+												: { marginTop: 8 },
+										]}
+									>
+										View {descriptionExpanded ? "less" : "more"}
+									</Text>
+								</TouchableOpacity>
+							)}
 						</View>
 					);
 				}
@@ -111,8 +139,7 @@ export function SectionList<T extends ListItemProps>(
 							title={section.title}
 							collapsed={collapsed}
 							style={{
-								marginTop: 8,
-								marginBottom: 8,
+								marginBottom: description ? 0 : 8,
 								...(nested ? Typography.Subheading : Typography.Heading),
 							}}
 							onPress={() => {
@@ -131,19 +158,18 @@ export function SectionList<T extends ListItemProps>(
 						/>
 						{description
 							? (
-								<>
-									<ListItem
-										title={description}
-										styles={{
-											...listItemStyles,
-											container: {
-												...listItemStyles.container,
-												paddingTop: 8,
-											},
-										}}
-									/>
-									{section.data.length ? <ItemSeparator /> : null}
-								</>
+								<View
+									style={{
+										paddingLeft: 24,
+										paddingRight: 8,
+										backgroundColor: Colors.Background,
+									}}
+								>
+									{description}
+									{section.data.length && section.data.some((i) => !isSection(i))
+										? <ItemSeparator />
+										: null}
+								</View>
 							)
 							: null}
 					</>
@@ -158,7 +184,7 @@ export function SectionList<T extends ListItemProps>(
 					const item = _item as Section<T>;
 					return (
 						<SectionList
-							sections={[{ title: item.title, data: item.data, showCount }]}
+							sections={[{ ...item, showCount }]}
 							collapsedSections={collapsedSections}
 							nested={true}
 							{...props}
@@ -176,6 +202,9 @@ export function SectionList<T extends ListItemProps>(
 					) {
 						icon = <DocumentIcon {...styles.icon} />;
 					}
+				}
+				if (typeof item.label === "string" && item.label.startsWith("<")) {
+					item.label = stripTags(item.label);
 				}
 				return (
 					<>
@@ -205,7 +234,7 @@ export function SectionList<T extends ListItemProps>(
 			keyExtractor={(item) => `${item.title}-${item.label}`}
 			getItemCount={(items) => items?.data?.length || items?.length || 0}
 			keyboardShouldPersistTaps="handled"
-			stickySectionHeadersEnabled={false}
+			stickySectionHeadersEnabled={true}
 			extraData={{ collapseMarker }}
 			{...props}
 		/>
@@ -229,6 +258,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 		paddingVertical: 8,
 	},
+	sectionHeaderContainer: { backgroundColor: Colors.Background, paddingTop: 8 },
 	titleContainer: { flexDirection: "row", alignItems: "center", maxWidth: "80%" },
 	sectionTitle: { ...Typography.Heading, color: Colors.TextPrimary },
 	countBadge: {
@@ -242,7 +272,7 @@ const styles = StyleSheet.create({
 	},
 	countText: { ...Typography.Caption, fontFamily: "WorkMedium", color: Colors.TextLabel },
 	icon: { width: 20, height: 20, marginTop: 3, fill: Colors.TextPrimary },
-	link: { color: Colors.Active, textDecorationLine: "underline", opacity: 0.75 },
+	link: { color: Colors.Active },
 });
 
 export interface SectionHeaderProps {
@@ -257,23 +287,25 @@ function SectionHeader({ title, count, collapsed, style, onPress }: SectionHeade
 	const containerStyle = { ...styles.sectionHeader, ...(style || {}) };
 	const [backgroundColor, setBgColor] = useState(containerStyle.backgroundColor);
 	return (
-		<Pressable
-			style={[containerStyle, { backgroundColor }]}
-			onPress={onPress}
-			onPressIn={() => setBgColor(Colors.Button)}
-			onPressOut={() => setBgColor(containerStyle.backgroundColor)}
-		>
-			<View style={styles.titleContainer}>
-				<Text numberOfLines={1} style={styles.sectionTitle}>{title}</Text>
-				{count
-					? (
-						<View style={styles.countBadge}>
-							<Text style={styles.countText}>{count}</Text>
-						</View>
-					)
-					: null}
-			</View>
-			{count ? <ChevronIcon {...styles.icon} /> : null}
-		</Pressable>
+		<View style={styles.sectionHeaderContainer}>
+			<Pressable
+				style={[containerStyle, { backgroundColor }]}
+				onPress={onPress}
+				onPressIn={() => setBgColor(Colors.Button)}
+				onPressOut={() => setBgColor(containerStyle.backgroundColor)}
+			>
+				<View style={styles.titleContainer}>
+					<Text numberOfLines={1} style={styles.sectionTitle}>{title}</Text>
+					{count
+						? (
+							<View style={styles.countBadge}>
+								<Text style={styles.countText}>{count}</Text>
+							</View>
+						)
+						: null}
+				</View>
+				{count ? <ChevronIcon {...styles.icon} /> : null}
+			</Pressable>
+		</View>
 	);
 }

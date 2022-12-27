@@ -22,6 +22,13 @@ export function Html({ width, body, bodyStyle = {}, numberOfLines = 4, ...props 
 			<RenderHtml
 				source={{ html: body.startsWith("<") ? body : `<p>${body.trim()}</p>` }}
 				contentWidth={width - 32}
+				baseStyle={bodyStyle}
+				systemFonts={["WorkRegular", "WorkMedium", ...defaultSystemFonts]}
+				enableExperimentalGhostLinesPrevention={true}
+				enableExperimentalBRCollapsing={true}
+				enableExperimentalMarginCollapsing={true}
+				enableCSSInlineProcessing={false}
+				{...props}
 				tagsStyles={{
 					p: { marginVertical: 0, ...bodyStyle },
 					a: { color: Colors.Active, textDecorationColor: Colors.Active },
@@ -29,8 +36,8 @@ export function Html({ width, body, bodyStyle = {}, numberOfLines = 4, ...props 
 					ul: bodyStyle,
 					ol: bodyStyle,
 					span: bodyStyle,
+					...props.tagsStyles,
 				}}
-				systemFonts={["WorkRegular", "WorkMedium", ...defaultSystemFonts]}
 				renderers={{
 					// https://github.com/meliorence/react-native-render-html/issues/94
 					p: ({ TDefaultRenderer, ...props }: CustomRendererProps<TBlock>) => {
@@ -46,12 +53,16 @@ export function Html({ width, body, bodyStyle = {}, numberOfLines = 4, ...props 
 							</TDefaultRenderer>
 						);
 					},
+					...props.renderers,
 				}}
-				enableExperimentalGhostLinesPrevention={true}
-				enableExperimentalBRCollapsing={true}
-				enableExperimentalMarginCollapsing={true}
-				{...props}
 			/>
 		)
 		: null;
+}
+
+export function stripTags(html: string) {
+	return html.replace(/<br\s*\/?>/g, "\n").replace(
+		/<([\w\-/]+)( +[\w\-]+(=(('[^']*')|("[^"]*")))?)* *>/g,
+		"",
+	);
 }
