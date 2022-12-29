@@ -98,11 +98,9 @@ function transformSections(
 		const { children = [], descriptionHtml, ...props } = section;
 		const item: CourseContent & { label?: string } = props;
 		item.showCount = true;
-		if (item.modifiedDate) {
-			item.label = formatDate(new Date(item.modifiedDate));
-		} else if (descriptionHtml) {
-			item.label = descriptionHtml;
-		}
+		item.label = descriptionHtml
+			|| (item.modifiedDate ? formatDate(new Date(item.modifiedDate)) : null)
+			|| undefined;
 		if (item.__typename === "ContentModule") {
 			return { ...item, data: transformSections(children) };
 		}

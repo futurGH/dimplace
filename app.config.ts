@@ -18,10 +18,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		supportsTablet: false,
 		userInterfaceStyle: "dark",
 		bundleIdentifier: "com.dimplace",
-		buildNumber: "2022.12.27.1",
+		buildNumber: "2022.12.29.1",
 		config: { usesNonExemptEncryption: false },
 	},
-	android: { package: "com.dimplace", versionCode: 202212271 },
+	android: { package: "com.dimplace", versionCode: 202212291 },
 	androidStatusBar: { barStyle: "light-content", backgroundColor: "#131720" },
 	plugins: ["sentry-expo"],
 	hooks: {
