@@ -1,8 +1,13 @@
 import { Action, action, Computed, computed } from "easy-peasy";
+import type { ColorThemes } from "../style/colorThemes";
 
 export const TimeUnits = { Minutes: 60, Hours: 3600, Days: 86400 } as const;
 export type TimeUnits = typeof TimeUnits[keyof typeof TimeUnits];
-export type SettingsTypeMap = { boolean: boolean; time: { number: number; unit: TimeUnits } };
+export type SettingsTypeMap = {
+	boolean: boolean;
+	time: { number: number; unit: TimeUnits };
+	colorTheme: keyof typeof ColorThemes;
+};
 export type Setting<T extends keyof SettingsTypeMap = keyof SettingsTypeMap> = {
 	name: string;
 	type: T;
@@ -14,7 +19,11 @@ export type TransformSettings<T extends Record<string, keyof SettingsTypeMap>> =
 	[K in keyof T]: Setting<T[K]>;
 };
 export type Settings = TransformSettings<
-	{ highlightOverdueAssignments: "boolean"; showOverdueAssignments: "boolean" }
+	{
+		highlightOverdueAssignments: "boolean";
+		showOverdueAssignments: "boolean";
+		colorTheme: "colorTheme";
+	}
 >;
 
 export type SettingsModel = Settings & {
@@ -41,6 +50,7 @@ export const settingsModel = {
 		value: true,
 		enabled: true,
 	},
+	colorTheme: { name: "Color theme", type: "colorTheme", value: "Sapphire", enabled: true },
 	// @ts-expect-error
 	set: action((settings, [name, value]) => {
 		settings[name].value = value;

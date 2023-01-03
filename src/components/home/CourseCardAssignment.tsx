@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text } from "react-native";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 import { formatDate } from "../../util/formatDate";
 
 export interface CourseCardAssignmentProps {
@@ -12,6 +14,8 @@ export interface CourseCardAssignmentProps {
 export function CourseCardAssignment(
 	{ name, dueDate, highlightOverdue = false, onPress }: CourseCardAssignmentProps,
 ) {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
 	const due = formatDate(dueDate);
 	const overdue = highlightOverdue && dueDate < new Date();
 	return (
@@ -25,15 +29,16 @@ export function CourseCardAssignment(
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		paddingHorizontal: 16,
-		paddingVertical: 12,
-	},
-	name: { ...Typography.Footnote, color: Colors.TextPrimary, maxWidth: "80%" },
-	dueDate: { ...Typography.Label, color: Colors.TextLabel },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		container: {
+			flex: 1,
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			paddingHorizontal: 16,
+			paddingVertical: 12,
+		},
+		name: { ...Typography.Footnote, color: Colors.TextPrimary, maxWidth: "80%" },
+		dueDate: { ...Typography.Label, color: Colors.TextLabel },
+	});

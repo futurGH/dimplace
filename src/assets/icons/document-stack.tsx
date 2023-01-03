@@ -1,7 +1,6 @@
 import Svg, { Path, type SvgProps } from "react-native-svg";
-import { Colors } from "../../styles";
 
-export const DocumentStackIcon = ({ fill = Colors.TextPrimary, ...props }: SvgProps) => (
+export const DocumentStackIcon = ({ fill, ...props }: SvgProps) => (
 	<Svg fill="none" viewBox="0 0 24 24" {...props}>
 		<Path
 			d="M6.56 3.13a2.85 2.85 0 0 1 2.01-.83h9.14a2.85 2.85 0 0 1 2.85 2.84v11.43a2.85 2.85 0 0 1-2.85 2.85H8.57a2.85 2.85 0 0 1-2.84-2.85V5.14c0-.75.3-1.48.83-2Zm2.01.29a1.73 1.73 0 0 0-1.72 1.72v11.43a1.73 1.73 0 0 0 1.72 1.73h9.14a1.73 1.73 0 0 0 1.73-1.73V5.14a1.73 1.73 0 0 0-1.73-1.72H8.57Z"

@@ -8,6 +8,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Sentry from "sentry-expo";
 import { NavigationWrapper } from "./src/components/layout/NavigationWrapper";
 import { store } from "./src/store/store";
+import { ColorThemeProvider } from "./src/style/ColorThemeProvider";
 
 Sentry.init({ enableInExpoDevelopment: true, dsn: Constants.expoConfig?.extra?.sentry.dsn });
 
@@ -26,7 +27,9 @@ export default Sentry.Native.wrap(function App() {
 			<SafeAreaProvider>
 				<QueryClientProvider client={queryClient}>
 					<StoreProvider store={store}>
-						<NavigationWrapper />
+						<ColorThemeProvider>
+							<NavigationWrapper />
+						</ColorThemeProvider>
 					</StoreProvider>
 				</QueryClientProvider>
 			</SafeAreaProvider>

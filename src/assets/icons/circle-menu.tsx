@@ -1,7 +1,6 @@
 import Svg, { Path, type SvgProps } from "react-native-svg";
-import { Colors } from "../../styles";
 
-export const CircleMenuIcon = ({ fill = Colors.TextPrimary, ...props }: SvgProps) => (
+export const CircleMenuIcon = ({ fill, ...props }: SvgProps) => (
 	<Svg fill="none" viewBox="0 0 24 24" {...props}>
 		<Path
 			d="M12 3.428a8.571 8.571 0 1 0 0 17.143 8.571 8.571 0 0 0 0-17.143Zm-9.714 8.571c0-5.365 4.349-9.714 9.714-9.714s9.714 4.35 9.714 9.714c0 5.365-4.35 9.715-9.714 9.715-5.365 0-9.714-4.35-9.714-9.715Z"

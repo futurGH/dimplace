@@ -10,7 +10,8 @@ import { HeaderlessContainer } from "../../../components/layout/HeaderlessContai
 import { graphql } from "../../../gql";
 import type { AssignmentFragment, CourseAssignmentsQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
-import { Colors, Typography } from "../../../styles";
+import { useColorTheme } from "../../../style/ColorThemeProvider";
+import { Typography } from "../../../style/typography";
 import { handleErrors } from "../../../util/errors";
 import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
@@ -19,6 +20,8 @@ import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
 export function CourseAssignments() {
+	const { Colors } = useColorTheme();
+
 	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignments">["route"]>();
 	const navigation = useNavigation<
 		CourseAssignmentsStackScreenProps<"CourseAssignments">["navigation"]
@@ -113,7 +116,7 @@ export function CourseAssignments() {
 	);
 }
 
-const styles = StyleSheet.create({ icon: { width: 24, height: 24 }, labelIncomplete: {} });
+const styles = StyleSheet.create({ icon: { width: 24, height: 24 } });
 
 export function fetchCourseAssignments(
 	{ queryKey: [, { accessToken, orgId, demoMode }] }: QueryFunctionContext<

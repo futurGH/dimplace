@@ -6,7 +6,9 @@ import RenderHtml, {
 	TBlock,
 	TNodeChildrenRenderer,
 } from "react-native-render-html";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 
 interface HtmlProps extends Partial<RenderHTMLProps> {
 	width: number;
@@ -14,8 +16,9 @@ interface HtmlProps extends Partial<RenderHTMLProps> {
 	bodyStyle?: MixedStyleDeclaration;
 	numberOfLines?: number;
 }
-const defaultBodyStyle: MixedStyleDeclaration = { ...Typography.Body, color: Colors.TextPrimary };
 export function Html({ width, body, bodyStyle = {}, numberOfLines = 4, ...props }: HtmlProps) {
+	const { Colors } = useColorTheme();
+	const defaultBodyStyle = createStyles(Colors);
 	bodyStyle = { ...defaultBodyStyle, ...bodyStyle };
 	return width
 		? (
@@ -59,6 +62,8 @@ export function Html({ width, body, bodyStyle = {}, numberOfLines = 4, ...props 
 		)
 		: null;
 }
+
+const createStyles = (Colors: ColorTheme) => ({ ...Typography.Body, color: Colors.TextPrimary });
 
 export function stripTags(html: string) {
 	return html.replace(/<br\s*\/?>/g, "\n").replace(

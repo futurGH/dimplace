@@ -9,7 +9,9 @@ import { HeaderlessContainer } from "../../../components/layout/HeaderlessContai
 import { graphql } from "../../../gql";
 import type { CourseContentQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
-import { Colors, Typography } from "../../../styles";
+import { useColorTheme } from "../../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../../style/colorThemes";
+import { Typography } from "../../../style/typography";
 import { handleErrors } from "../../../util/errors";
 import { formatDate } from "../../../util/formatDate";
 import { query } from "../../../util/query";
@@ -17,6 +19,9 @@ import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
 export function CourseContent() {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+
 	const route = useRoute<CourseTabNavigatorScreenProps<"CourseContent">["route"]>();
 	const navigation = useNavigation<
 		CourseTabNavigatorScreenProps<"CourseContent">["navigation"]
@@ -108,11 +113,12 @@ function transformSections(
 	}) || [];
 }
 
-const styles = StyleSheet.create({
-	noContentContainer: { width: "100%", flex: 1, alignItems: "center" },
-	noContentTitle: { ...Typography.Subheading, color: Colors.TextPrimary, marginBottom: 12 },
-	noContentText: { ...Typography.Body, color: Colors.TextLabel, textAlign: "center" },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		noContentContainer: { width: "100%", flex: 1, alignItems: "center" },
+		noContentTitle: { ...Typography.Subheading, color: Colors.TextPrimary, marginBottom: 12 },
+		noContentText: { ...Typography.Body, color: Colors.TextLabel, textAlign: "center" },
+	});
 
 export type CourseContent = {
 	__typename?: string;

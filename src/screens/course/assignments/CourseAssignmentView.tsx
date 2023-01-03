@@ -6,7 +6,9 @@ import { Header } from "../../../components/layout/Header";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
 import type { AssignmentFragment } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
-import { Colors, Typography } from "../../../styles";
+import { useColorTheme } from "../../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../../style/colorThemes";
+import { Typography } from "../../../style/typography";
 import { handleErrors } from "../../../util/errors";
 import { formatDate } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
@@ -16,6 +18,9 @@ import { fetchCourseAssignments } from "./CourseAssignments";
 import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
 export function CourseAssignmentView() {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+
 	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignmentView">["route"]>();
 	const navigation = useNavigation<
 		CourseAssignmentsStackScreenProps<"CourseAssignmentView">["navigation"]
@@ -117,19 +122,25 @@ export function CourseAssignmentView() {
 	);
 }
 
-const styles = StyleSheet.create({
-	content: { marginTop: 24 },
-	title: { ...Typography.Subheading, color: Colors.TextPrimary },
-	dueDate: { ...Typography.Body, color: Colors.TextLabel, marginTop: 4 },
-	grade: {
-		fontSize: 28,
-		lineHeight: 34,
-		fontFamily: "WorkMedium",
-		color: Colors.Active,
-		marginTop: 10,
-	},
-	weight: { ...Typography.Body, color: Colors.TextLabel },
-	feedbackContainer: { marginTop: 32 },
-	feedbackTitle: { ...Typography.Subheading, color: Colors.TextLabel },
-	feedbackText: { ...Typography.Body, lineHeight: 22, color: Colors.TextPrimary, marginTop: 16 },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		content: { marginTop: 24 },
+		title: { ...Typography.Subheading, color: Colors.TextPrimary },
+		dueDate: { ...Typography.Body, color: Colors.TextLabel, marginTop: 4 },
+		grade: {
+			fontSize: 28,
+			lineHeight: 34,
+			fontFamily: "WorkMedium",
+			color: Colors.Active,
+			marginTop: 10,
+		},
+		weight: { ...Typography.Body, color: Colors.TextLabel },
+		feedbackContainer: { marginTop: 32 },
+		feedbackTitle: { ...Typography.Subheading, color: Colors.TextLabel },
+		feedbackText: {
+			...Typography.Body,
+			lineHeight: 22,
+			color: Colors.TextPrimary,
+			marginTop: 16,
+		},
+	});

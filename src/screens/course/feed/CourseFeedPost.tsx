@@ -29,7 +29,9 @@ import type {
 	FeedPostFragmentFragment,
 } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
-import { Colors, Typography } from "../../../styles";
+import { useColorTheme } from "../../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../../style/colorThemes";
+import { Typography } from "../../../style/typography";
 import { handleErrors } from "../../../util/errors";
 import { formatDate } from "../../../util/formatDate";
 import { query } from "../../../util/query";
@@ -42,6 +44,9 @@ type ActivityFeedArticle =
 	& (ArticleDetailsFragmentFragment | AssignmentDetailsFragmentFragment);
 
 export function CourseFeedPost() {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeedPost">["route"]>();
 	const navigation = useNavigation();
 	const { articleId, orgName } = route.params;
@@ -203,27 +208,28 @@ export function CourseFeedPost() {
 	);
 }
 
-const styles = StyleSheet.create({
-	post: { marginTop: 24 },
-	author: {
-		width: "100%",
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "flex-start",
-		alignItems: "center",
-	},
-	authorIcon: { width: 32, height: 32 },
-	authorImageIcon: { borderRadius: 32, overflow: "hidden" },
-	authorText: { flex: 1, marginLeft: 12 },
-	authorName: { ...Typography.Callout, color: Colors.TextPrimary },
-	authorDate: { ...Typography.Footnote, color: Colors.TextLabel },
-	body: { width: "100%", marginTop: 16 },
-	bodyTitle: { ...Typography.ListHeading, color: Colors.TextPrimary, marginBottom: 8 },
-	bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
-	attachments: { alignItems: "flex-start", marginTop: 24 },
-	separator: { height: 16 },
-	commentsTitle: { ...Typography.Subheading, color: Colors.TextLabel, marginTop: 32 },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		post: { marginTop: 24 },
+		author: {
+			width: "100%",
+			flex: 1,
+			flexDirection: "row",
+			justifyContent: "flex-start",
+			alignItems: "center",
+		},
+		authorIcon: { width: 32, height: 32 },
+		authorImageIcon: { borderRadius: 32, overflow: "hidden" },
+		authorText: { flex: 1, marginLeft: 12 },
+		authorName: { ...Typography.Callout, color: Colors.TextPrimary },
+		authorDate: { ...Typography.Footnote, color: Colors.TextLabel },
+		body: { width: "100%", marginTop: 16 },
+		bodyTitle: { ...Typography.ListHeading, color: Colors.TextPrimary, marginBottom: 8 },
+		bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
+		attachments: { alignItems: "flex-start", marginTop: 24 },
+		separator: { height: 16 },
+		commentsTitle: { ...Typography.Subheading, color: Colors.TextLabel, marginTop: 32 },
+	});
 
 const COURSE_FEED_POST_QUERY = graphql(/* GraphQL */ `
 	query CourseFeedPost($articleId: String!, $commentsId: String!) {

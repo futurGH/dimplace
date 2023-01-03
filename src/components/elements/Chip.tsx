@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { SvgProps } from "react-native-svg";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 
 export interface ChipProps {
 	text: ReactNode;
@@ -11,12 +13,15 @@ export interface ChipProps {
 	style?: View["props"]["style"];
 }
 export function Chip({ text, icon: Icon = () => null, onPress, style }: ChipProps) {
-	const [backgroundColor, setBackground] = useState<string>(styles.container.backgroundColor);
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+	const [pressed, setPressed] = useState(false);
+	const backgroundColor = pressed ? Colors.Button : Colors.Card;
 	return (
 		<Pressable
 			onPress={onPress}
-			onPressIn={() => setBackground(Colors.Button)}
-			onPressOut={() => setBackground(styles.container.backgroundColor)}
+			onPressIn={() => setPressed(true)}
+			onPressOut={() => setPressed(false)}
 			style={[styles.container, style, { backgroundColor }]}
 		>
 			<Icon style={styles.icon} fill={Colors.TextLabel} />
@@ -25,18 +30,19 @@ export function Chip({ text, icon: Icon = () => null, onPress, style }: ChipProp
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		backgroundColor: Colors.Card,
-		borderRadius: 99,
-		borderWidth: 1,
-		borderColor: Colors.Border,
-		overflow: "hidden",
-		flexDirection: "row",
-		alignItems: "center",
-		paddingHorizontal: 16,
-		paddingVertical: 10,
-	},
-	icon: { width: 18, height: 18, marginRight: 8 },
-	text: { ...Typography.Label, color: Colors.TextLabel },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		container: {
+			backgroundColor: Colors.Card,
+			borderRadius: 99,
+			borderWidth: 1,
+			borderColor: Colors.Border,
+			overflow: "hidden",
+			flexDirection: "row",
+			alignItems: "center",
+			paddingHorizontal: 16,
+			paddingVertical: 10,
+		},
+		icon: { width: 18, height: 18, marginRight: 8 },
+		text: { ...Typography.Label, color: Colors.TextLabel },
+	});

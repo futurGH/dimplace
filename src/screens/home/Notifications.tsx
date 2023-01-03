@@ -1,8 +1,12 @@
 import { StyleSheet, Text } from "react-native";
 import { Container } from "../../components/layout/Container";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 
 export function Notifications() {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
 	return (
 		<Container>
 			<Text style={styles.text}>
@@ -13,12 +17,13 @@ export function Notifications() {
 	);
 }
 
-const styles = StyleSheet.create({
-	text: {
-		...Typography.Body,
-		color: Colors.TextLabel,
-		marginHorizontal: 32,
-		marginTop: 32,
-		textAlign: "center",
-	},
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		text: {
+			...Typography.Body,
+			color: Colors.TextLabel,
+			marginHorizontal: 32,
+			marginTop: 32,
+			textAlign: "center",
+		},
+	});

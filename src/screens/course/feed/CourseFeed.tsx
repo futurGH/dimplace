@@ -6,10 +6,15 @@ import {
 	AnnouncementCardProps,
 } from "../../../components/course/feed/AnnouncementCard";
 import { Container } from "../../../components/layout/Container";
-import { Colors, Typography } from "../../../styles";
+import { useColorTheme } from "../../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../../style/colorThemes";
+import { Typography } from "../../../style/typography";
 import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 
 export function CourseFeed() {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+
 	const route = useRoute<CourseHomeStackScreenProps<"CourseFeed">["route"]>();
 	const navigation = useNavigation<CourseHomeStackScreenProps<"CourseFeed">["navigation"]>();
 	const { activityFeedArticles, organization } = route.params;
@@ -56,34 +61,36 @@ export function CourseFeed() {
 					</View>
 				)}
 				showsVerticalScrollIndicator={false}
+				extraData={Colors.Active}
 			/>
 		</Container>
 	);
 }
 
-const styles = StyleSheet.create({
-	imageContainer: {
-		width: "100%",
-		height: 144,
-		flex: 1,
-		justifyContent: "center",
-		borderRadius: 16,
-		overflow: "hidden",
-		marginBottom: 32,
-	},
-	image: { flex: 1, justifyContent: "center", resizeMode: "cover" },
-	gradient: { width: "100%", height: "100%" },
-	title: {
-		...Typography.Title,
-		color: Colors.TextPrimary,
-		position: "absolute",
-		bottom: 16,
-		left: 24,
-		right: 24,
-	},
-	feed: { width: "100%", flex: 1, flexGrow: 1 },
-	separator: { height: 24 },
-	noFeedContainer: { width: "100%", flex: 1, alignItems: "center" },
-	noFeedTitle: { ...Typography.Subheading, color: Colors.TextPrimary, marginBottom: 12 },
-	noFeedText: { ...Typography.Body, color: Colors.TextLabel, textAlign: "center" },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		imageContainer: {
+			width: "100%",
+			height: 144,
+			flex: 1,
+			justifyContent: "center",
+			borderRadius: 16,
+			overflow: "hidden",
+			marginBottom: 32,
+		},
+		image: { flex: 1, justifyContent: "center", resizeMode: "cover" },
+		gradient: { width: "100%", height: "100%" },
+		title: {
+			...Typography.Title,
+			color: Colors.TextPrimary,
+			position: "absolute",
+			bottom: 16,
+			left: 24,
+			right: 24,
+		},
+		feed: { width: "100%", flex: 1, flexGrow: 1 },
+		separator: { height: 24 },
+		noFeedContainer: { width: "100%", flex: 1, alignItems: "center" },
+		noFeedTitle: { ...Typography.Subheading, color: Colors.TextPrimary, marginBottom: 12 },
+		noFeedText: { ...Typography.Body, color: Colors.TextLabel, textAlign: "center" },
+	});

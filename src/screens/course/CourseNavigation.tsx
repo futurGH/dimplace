@@ -27,7 +27,9 @@ import { TabBar } from "../../components/layout/TabBar";
 import { graphql } from "../../gql";
 import type { CoursePageQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 import { handleErrors } from "../../util/errors";
 import { query } from "../../util/query";
 import { fetchCourseAssignments } from "./assignments/CourseAssignments";
@@ -62,6 +64,7 @@ export type CourseTabNavigatorScreenProps<T extends keyof CourseTabNavigatorPara
 const Tab = createBottomTabNavigator<CourseTabNavigatorParamList>();
 
 export function CourseNavigation() {
+	const { Colors } = useColorTheme();
 	const route = useRoute<RootStackScreenProps<"CourseNavigation">["route"]>();
 	const navigation = useNavigation<RootStackScreenProps<"CourseNavigation">["navigation"]>();
 	const config = useStoreState((state) => state.config);
@@ -98,7 +101,7 @@ export function CourseNavigation() {
 
 	return (
 		<Tab.Navigator
-			tabBar={TabBar}
+			tabBar={(props) => <TabBar {...props} Colors={Colors} />}
 			screenOptions={{
 				header: Header,
 				headerLeft: () => <CoursePageHeaderLeftButton />,
@@ -175,6 +178,9 @@ export function CoursePageHeaderLeftButton(
 		text?: string;
 	},
 ) {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+	const iconStyles = createIconStyles(Colors);
 	const navigation = useNavigation();
 	return (
 		<Pressable style={styles.leftButton} onPress={() => onPress(navigation)}>
@@ -185,6 +191,8 @@ export function CoursePageHeaderLeftButton(
 }
 
 export function CoursePageHeaderRightButton({ url }: { url?: string | undefined | null }) {
+	const { Colors } = useColorTheme();
+	const iconStyles = createIconStyles(Colors);
 	return (
 		<Pressable onPress={() => url && Linking.openURL(url)}>
 			<ExternalIcon {...iconStyles} />
@@ -192,11 +200,16 @@ export function CoursePageHeaderRightButton({ url }: { url?: string | undefined 
 	);
 }
 
-const styles = StyleSheet.create({
-	leftButton: { flexDirection: "row", alignItems: "center", height: 24 },
-	leftButtonText: { ...Typography.Body, color: Colors.TextSecondary, marginLeft: 8 },
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		leftButton: { flexDirection: "row", alignItems: "center", height: 24 },
+		leftButtonText: { ...Typography.Body, color: Colors.TextSecondary, marginLeft: 8 },
+	});
+const createIconStyles = (Colors: ColorTheme) => ({
+	width: 24,
+	height: 24,
+	fill: Colors.TextSecondary,
 });
-const iconStyles: SvgProps = { width: 24, height: 24, fill: Colors.TextSecondary };
 
 export function fetchCourseFeed(
 	{ queryKey }: QueryFunctionContext<

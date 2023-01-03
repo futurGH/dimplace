@@ -8,12 +8,17 @@ import { HeaderlessContainer } from "../../../components/layout/HeaderlessContai
 import { graphql } from "../../../gql";
 import type { CourseGradesQuery } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
-import { Colors, Typography } from "../../../styles";
+import { useColorTheme } from "../../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../../style/colorThemes";
+import { Typography } from "../../../style/typography";
 import { handleErrors } from "../../../util/errors";
 import { query } from "../../../util/query";
 import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
 export function CourseGrades() {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+
 	const route = useRoute<CourseTabNavigatorScreenProps<"CourseGrades">["route"]>();
 	const navigation = useNavigation<CourseTabNavigatorScreenProps<"CourseGrades">["navigation"]>();
 	const config = useStoreState((state) => state.config);
@@ -55,7 +60,7 @@ export function CourseGrades() {
 		};
 	});
 
-	const listItemStyles = makeListItemStyles(false);
+	const listItemStyles = makeListItemStyles(Colors, false);
 	listItemStyles.title = {
 		...listItemStyles.title,
 		...Typography.Heading,
@@ -96,7 +101,8 @@ export function CourseGrades() {
 	);
 }
 
-const styles = StyleSheet.create({ weight: { ...Typography.Body, color: Colors.TextLabel } });
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({ weight: { ...Typography.Body, color: Colors.TextLabel } });
 
 export function fetchCourseGrades(
 	{ queryKey: [, { accessToken, orgId, demoMode }] }: QueryFunctionContext<

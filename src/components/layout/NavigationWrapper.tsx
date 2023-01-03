@@ -29,7 +29,8 @@ import { Settings } from "../../screens/home/Settings";
 import { AuthWebView } from "../../screens/onboarding/AuthWebView";
 import { InstitutionSelection } from "../../screens/onboarding/InstitutionSelection";
 import { Onboarding } from "../../screens/onboarding/Onboarding";
-import { Colors } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
 import { Header } from "./Header";
 
 export type StackParamList = {
@@ -55,6 +56,8 @@ declare global {
 }
 
 export function NavigationWrapper() {
+	const { Colors } = useColorTheme();
+
 	const [fontsLoaded] = useFonts({
 		WorkRegular: WorkSans_400Regular,
 		WorkMedium: WorkSans_500Medium,
@@ -71,9 +74,11 @@ export function NavigationWrapper() {
 
 	const navRef = createNavigationContainerRef();
 
-	if (!fontsLoaded || !rehydrated) {
+	if (!fontsLoaded || !rehydrated || !Colors) {
 		return null;
 	}
+
+	const iconStyles = createIconStyles(Colors);
 
 	const linking: LinkingOptions<StackParamList> = {
 		prefixes: [Linking.createURL("/")],
@@ -174,4 +179,8 @@ export function NavigationWrapper() {
 	);
 }
 
-const iconStyles = { width: 24, height: 24, fill: Colors.TextPrimary };
+const createIconStyles = (Colors: ColorTheme) => ({
+	width: 24,
+	height: 24,
+	fill: Colors.TextPrimary,
+});

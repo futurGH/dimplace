@@ -1,7 +1,6 @@
 import Svg, { Path, type SvgProps } from "react-native-svg";
-import { Colors } from "../../styles";
 
-export const ExternalIcon = ({ fill = Colors.TextPrimary, ...props }: SvgProps) => (
+export const ExternalIcon = ({ fill, ...props }: SvgProps) => (
 	<Svg fill="none" viewBox="0 0 24 24" {...props}>
 		<Path
 			d="M4.265 4.719a2.857 2.857 0 0 1 2.02-.837H12a.571.571 0 1 1 0 1.143H6.286A1.714 1.714 0 0 0 4.57 6.739v11.428a1.714 1.714 0 0 0 1.715 1.715h12.571a1.714 1.714 0 0 0 1.714-1.715v-4.57a.571.571 0 0 1 1.143 0v4.57a2.857 2.857 0 0 1-2.857 2.858H6.286a2.857 2.857 0 0 1-2.857-2.857V6.739c0-.758.3-1.485.836-2.02Zm11.164.306a.571.571 0 1 1 0-1.143h5.714a.57.57 0 0 1 .571.571v5.715a.571.571 0 0 1-1.143 0V5.833l-7.024 7.024a.571.571 0 1 1-.808-.808l7.024-7.024H15.43Z"

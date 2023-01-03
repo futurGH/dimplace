@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import type { FlatListProps, GestureResponderEvent, TextStyle, ViewStyle } from "react-native";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 import { ItemSeparator } from "./ItemSeparator";
 
 export interface ListItemProps {
@@ -25,19 +27,21 @@ export function ListItem(
 	{ icon = null, title, label, numberOfLines, onPress, onPressIn, onPressOut, styles = {} }:
 		ListItemProps,
 ) {
-	const [backgroundColor, setBackground] = useState("transparent");
+	const { Colors } = useColorTheme();
+	const [pressed, setPressed] = useState(false);
+	const backgroundColor = pressed ? Colors.Card : "transparent";
 	return (
-		<View style={{ ...styles.container, backgroundColor }}>
+		<View style={[styles.container, { backgroundColor }]}>
 			{icon}
 			<Pressable
 				style={styles.text}
 				onPress={onPress}
 				onPressIn={(event) => {
-					setBackground(Colors.Card);
+					setPressed(true);
 					onPressIn?.(event);
 				}}
 				onPressOut={(event) => {
-					setBackground("transparent");
+					setPressed(false);
 					onPressOut?.(event);
 				}}
 			>
@@ -48,7 +52,10 @@ export function ListItem(
 	);
 }
 
-export const makeListItemStyles = (rightLabel: boolean): Record<string, ViewStyle | TextStyle> =>
+export const makeListItemStyles = (
+	Colors: ColorTheme,
+	rightLabel: boolean,
+): Record<string, ViewStyle | TextStyle> =>
 	StyleSheet.create({
 		container: {
 			maxWidth: "100%",
@@ -84,7 +91,8 @@ interface ListProps<T> extends Partial<FlatListProps<T>> {
 export function List<T extends ListItemProps>(
 	{ onItemPress = () => {}, onItemPressIn, onItemPressOut, ...props }: ListProps<T>,
 ) {
-	const listItemStyles = makeListItemStyles(props.labelAlignment === "right");
+	const { Colors } = useColorTheme();
+	const listItemStyles = makeListItemStyles(Colors, props.labelAlignment === "right");
 	return (
 		<FlatList
 			ItemSeparatorComponent={props.ItemSeparatorComponent || ItemSeparator}

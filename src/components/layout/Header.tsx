@@ -1,7 +1,9 @@
 import type { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 
 // Written out for assignability to (from? parameter variance is confusing) BottomTabHeaderProps
 export type HeaderProps = {
@@ -21,9 +23,13 @@ export function Header(
 		paddingTop,
 	}: HeaderProps,
 ) {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+
 	const title = (typeof headerTitle === "function" ? headerTitle({ children: "" }) : headerTitle)
 		?? _title ?? name;
-	paddingTop = paddingTop ?? useSafeAreaInsets().top;
+	paddingTop = paddingTop ?? useSafeAreaInsets().top; // ??= doesn't seem to be supported by Expo yet
+
 	const leftIcon = headerLeft?.({ canGoBack: true }) || null;
 	const rightIcon = headerRight?.({ canGoBack: true }) || null;
 	return (
@@ -37,23 +43,24 @@ export function Header(
 	);
 }
 
-const styles = StyleSheet.create({
-	paddingWrapper: { backgroundColor: Colors.Background, width: "100%", height: "auto" },
-	container: {
-		width: "100%",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		paddingHorizontal: "5%",
-		paddingVertical: 16,
-	},
-	title: {
-		...Typography.Heading,
-		color: Colors.TextPrimary,
-		textAlign: "center",
-		width: "50%",
-		marginHorizontal: 32,
-		flex: 1,
-	},
-	icon: { maxHeight: 28 },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		paddingWrapper: { backgroundColor: Colors.Background, width: "100%", height: "auto" },
+		container: {
+			width: "100%",
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			paddingHorizontal: "5%",
+			paddingVertical: 16,
+		},
+		title: {
+			...Typography.Heading,
+			color: Colors.TextPrimary,
+			textAlign: "center",
+			width: "50%",
+			marginHorizontal: 32,
+			flex: 1,
+		},
+		icon: { maxHeight: 28 },
+	});

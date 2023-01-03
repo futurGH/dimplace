@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { LinkIcon } from "../../../assets/icons/link";
 import { UserProfileIcon } from "../../../assets/icons/user-profile";
-import { Colors, Typography } from "../../../styles";
+import { useColorTheme } from "../../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../../style/colorThemes";
+import { Typography } from "../../../style/typography";
 import { formatDate } from "../../../util/formatDate";
 import { Card } from "../../elements/Card";
 import { Html } from "../../elements/Html";
@@ -25,8 +27,10 @@ export type AnnouncementCardProps = (FeedArticleCardProps | FeedAssignmentCardPr
 };
 export function AnnouncementCard(props: AnnouncementCardProps) {
 	const { id, author, publishedDate: _publishedDate, attachmentLinks, commentsCount } = props;
-
 	const body = "message" in props ? props.message : props.instructions;
+
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
 
 	const publishedDate = new Date(_publishedDate);
 	const formattedDate = formatDate(isNaN(publishedDate.getTime()) ? new Date() : publishedDate);
@@ -43,7 +47,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 	const attachments = attachmentLinks?.length
 		? (
 			<View style={styles.attachments}>
-				<LinkIcon style={styles.attachmentsIcon} />
+				<LinkIcon style={styles.attachmentsIcon} fill={Colors.TextSecondary} />
 				<Text style={styles.attachmentsText}>
 					{attachmentLinks.length} attachment{attachmentLinks.length > 1 ? "s" : ""}
 				</Text>
@@ -97,38 +101,39 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 	);
 }
 
-const styles = StyleSheet.create({
-	content: {
-		width: "100%",
-		flex: 1,
-		justifyContent: "center",
-		paddingHorizontal: 16,
-		paddingVertical: 24,
-	},
-	author: {
-		width: "100%",
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "flex-start",
-		alignItems: "center",
-	},
-	authorIcon: { width: 32, height: 32 },
-	authorImageIcon: { borderRadius: 32, overflow: "hidden" },
-	authorText: { flex: 1, marginLeft: 12 },
-	authorName: { ...Typography.Callout, color: Colors.TextPrimary },
-	authorDate: { ...Typography.Footnote, color: Colors.TextLabel },
-	body: { width: "100%", marginTop: 16 },
-	bodyTitle: { ...Typography.ListHeading, color: Colors.TextPrimary, marginBottom: 8 },
-	bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
-	attachments: { width: "100%", flex: 1, flexDirection: "row", marginTop: 16 },
-	attachmentsIcon: { width: 18, height: 18, fill: Colors.TextSecondary },
-	attachmentsText: { ...Typography.Label, color: Colors.TextSecondary, marginLeft: 2 },
-	footer: {
-		width: "100%",
-		borderTopWidth: 1,
-		borderTopColor: Colors.Border,
-		paddingHorizontal: 16,
-		paddingVertical: 12,
-	},
-	footerText: { ...Typography.Label, color: Colors.TextLabel },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		content: {
+			width: "100%",
+			flex: 1,
+			justifyContent: "center",
+			paddingHorizontal: 16,
+			paddingVertical: 24,
+		},
+		author: {
+			width: "100%",
+			flex: 1,
+			flexDirection: "row",
+			justifyContent: "flex-start",
+			alignItems: "center",
+		},
+		authorIcon: { width: 32, height: 32 },
+		authorImageIcon: { borderRadius: 32, overflow: "hidden" },
+		authorText: { flex: 1, marginLeft: 12 },
+		authorName: { ...Typography.Callout, color: Colors.TextPrimary },
+		authorDate: { ...Typography.Footnote, color: Colors.TextLabel },
+		body: { width: "100%", marginTop: 16 },
+		bodyTitle: { ...Typography.ListHeading, color: Colors.TextPrimary, marginBottom: 8 },
+		bodyFootnote: { ...Typography.Footnote, color: Colors.TextLabel },
+		attachments: { width: "100%", flex: 1, flexDirection: "row", marginTop: 16 },
+		attachmentsIcon: { width: 18, height: 18 },
+		attachmentsText: { ...Typography.Label, color: Colors.TextSecondary, marginLeft: 2 },
+		footer: {
+			width: "100%",
+			borderTopWidth: 1,
+			borderTopColor: Colors.Border,
+			paddingHorizontal: 16,
+			paddingVertical: 12,
+		},
+		footerText: { ...Typography.Label, color: Colors.TextLabel },
+	});

@@ -10,6 +10,7 @@ import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer
 import { graphql } from "../../gql";
 import type { CourseListQuery } from "../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../store/store";
+import { useColorTheme } from "../../style/ColorThemeProvider";
 import { handleErrors } from "../../util/errors";
 import { getYearStartAndEnd } from "../../util/formatDate";
 import { query } from "../../util/query";
@@ -17,6 +18,8 @@ import { useRefreshing } from "../../util/useRefreshing";
 import { fetchCourseFeed } from "../course/CourseNavigation";
 
 export function Home() {
+	const { Colors } = useColorTheme();
+
 	const navigation = useNavigation();
 	navigation.addListener("beforeRemove", (e) => e.preventDefault());
 
@@ -105,6 +108,7 @@ export function Home() {
 				ItemSeparatorComponent={() => <View style={styles.separator} />}
 				refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} />}
 				showsVerticalScrollIndicator={false}
+				extraData={Colors.Active}
 			/>
 		</Container>
 	);

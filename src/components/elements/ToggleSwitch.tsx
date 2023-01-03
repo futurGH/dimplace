@@ -1,5 +1,5 @@
 import { Switch } from "react-native";
-import { Colors } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
 
 export interface ToggleSwitchProps {
 	value: boolean;
@@ -7,6 +7,7 @@ export interface ToggleSwitchProps {
 	onToggle: (enabled: boolean) => void;
 }
 export function ToggleSwitch({ value, disabled, onToggle }: ToggleSwitchProps) {
+	const { Colors } = useColorTheme();
 	return (
 		<Switch
 			trackColor={{ false: Colors.Border, true: Colors.Active }}

@@ -5,11 +5,15 @@ import Button from "../../components/elements/Button";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
 import type { StackParamList } from "../../components/layout/NavigationWrapper";
 import { useStoreState } from "../../store/store";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 
 export function Onboarding({ navigation }: NativeStackScreenProps<StackParamList, "Onboarding">) {
 	const config = useStoreState((state) => state.config);
+	const { Colors } = useColorTheme();
 	if (config.onboarded) navigation.navigate("Home");
+	const styles = createStyles(Colors);
 	return (
 		<HeaderlessContainer style={styles.content}>
 			<BrokenLightbulb />
@@ -26,16 +30,17 @@ export function Onboarding({ navigation }: NativeStackScreenProps<StackParamList
 	);
 }
 
-const styles = StyleSheet.create({
-	content: { flex: 1, justifyContent: "center", alignItems: "center" },
-	title: {
-		...Typography.Title,
-		color: Colors.TextPrimary,
-		textAlign: "center",
-		letterSpacing: -0.25,
-		paddingTop: 16,
-		paddingBottom: 8,
-	},
-	body: { ...Typography.Body, color: Colors.TextPrimary, textAlign: "center" },
-	button: { marginTop: 32 },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		content: { flex: 1, justifyContent: "center", alignItems: "center" },
+		title: {
+			...Typography.Title,
+			color: Colors.TextPrimary,
+			textAlign: "center",
+			letterSpacing: -0.25,
+			paddingTop: 16,
+			paddingBottom: 8,
+		},
+		body: { ...Typography.Body, color: Colors.TextPrimary, textAlign: "center" },
+		button: { marginTop: 32 },
+	});

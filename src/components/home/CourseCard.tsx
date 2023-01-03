@@ -1,7 +1,9 @@
 import { useLinkTo } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 import { Card } from "../elements/Card";
 import type { CourseCardAssignmentProps } from "./CourseCardAssignment";
 import { CourseCardAssignment } from "./CourseCardAssignment";
@@ -13,6 +15,9 @@ export interface CourseCardProps {
 	assignments: Array<CourseCardAssignmentProps>;
 }
 export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps) {
+	const { Colors } = useColorTheme();
+	console.log(Colors.Active);
+	const styles = createStyles(Colors);
 	const linkTo = useLinkTo();
 	const courseIdFragments = id.split("/");
 	const courseId = courseIdFragments[courseIdFragments.length - 1];
@@ -63,18 +68,24 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 	);
 }
 
-const styles = StyleSheet.create({
-	content: { width: "100%", flex: 1, justifyContent: "center", paddingHorizontal: 16 },
-	image: {
-		height: 96,
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		resizeMode: "cover",
-		borderRadius: 16,
-		overflow: "hidden",
-	},
-	gradient: { width: "100%", height: "100%" },
-	title: { ...Typography.Subheading, color: Colors.TextPrimary, maxWidth: "100%", marginTop: 16 },
-	footer: { backgroundColor: Colors.Button, width: "100%", flex: 1, flexShrink: 1 },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		content: { width: "100%", flex: 1, justifyContent: "center", paddingHorizontal: 16 },
+		image: {
+			height: 96,
+			flex: 1,
+			justifyContent: "center",
+			alignItems: "center",
+			resizeMode: "cover",
+			borderRadius: 16,
+			overflow: "hidden",
+		},
+		gradient: { width: "100%", height: "100%" },
+		title: {
+			...Typography.Subheading,
+			color: Colors.TextPrimary,
+			maxWidth: "100%",
+			marginTop: 16,
+		},
+		footer: { backgroundColor: Colors.Button, width: "100%", flex: 1, flexShrink: 1 },
+	});

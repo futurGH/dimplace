@@ -1,7 +1,11 @@
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors, Typography } from "../../styles";
-export function TabBar({ navigation, state, descriptors }: BottomTabBarProps) {
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
+export function TabBar(
+	{ navigation, state, descriptors, Colors }: BottomTabBarProps & { Colors: ColorTheme },
+) {
+	const styles = createStyles(Colors);
 	return (
 		<View style={styles.container}>
 			{state.routes.map((route, index) => {
@@ -55,18 +59,19 @@ export function TabBar({ navigation, state, descriptors }: BottomTabBarProps) {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		backgroundColor: Colors.Background,
-		width: "100%",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		paddingHorizontal: 32,
-		paddingTop: 20,
-		paddingBottom: 40,
-	},
-	tab: { justifyContent: "center", alignItems: "center", color: Colors.TextLabel },
-	tabLabel: { ...Typography.Caption, color: Colors.TextLabel, marginTop: 4 },
-	activeTab: { color: Colors.Active, fontFamily: "WorkMedium" },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		container: {
+			backgroundColor: Colors.Background,
+			width: "100%",
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			paddingHorizontal: 32,
+			paddingTop: 20,
+			paddingBottom: 40,
+		},
+		tab: { justifyContent: "center", alignItems: "center", color: Colors.TextLabel },
+		tabLabel: { ...Typography.Caption, color: Colors.TextLabel, marginTop: 4 },
+		activeTab: { color: Colors.Active, fontFamily: "WorkMedium" },
+	});

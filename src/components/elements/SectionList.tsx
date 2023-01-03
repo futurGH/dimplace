@@ -14,7 +14,9 @@ import { ChevronDownIcon } from "../../assets/icons/chevron-down";
 import { ChevronUpIcon } from "../../assets/icons/chevron-up";
 import { DocumentIcon } from "../../assets/icons/document";
 import { LinkIcon } from "../../assets/icons/link";
-import { Colors, Typography } from "../../styles";
+import { useColorTheme } from "../../style/ColorThemeProvider";
+import type { ColorTheme } from "../../style/colorThemes";
+import { Typography } from "../../style/typography";
 import { Html, stripTags } from "./Html";
 import { ItemSeparator } from "./ItemSeparator";
 import type { ListItemProps } from "./List";
@@ -44,8 +46,10 @@ export function SectionList<T extends ListItemProps>(
 		...props
 	}: SectionListProps<T>,
 ) {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
 	const [collapseMarker, setCollapseMarker] = useState(0);
-	const itemStyles = makeListItemStyles(props.labelAlignment === "right");
+	const itemStyles = makeListItemStyles(Colors, props.labelAlignment === "right");
 	const listItemStyles = {
 		container: {
 			...itemStyles.container,
@@ -176,7 +180,8 @@ export function SectionList<T extends ListItemProps>(
 				);
 			}}
 			renderItem={({ item: _item, section, index }) => {
-				const [backgroundColor, setBackground] = useState("transparent");
+				const [pressed, setPressed] = useState(false);
+				const backgroundColor = pressed ? Colors.Card : "transparent";
 				const { showCount } = section;
 				const collapsed = collapsedSections.includes(section.title);
 				if (collapsed) return null;
@@ -214,11 +219,11 @@ export function SectionList<T extends ListItemProps>(
 							icon={icon}
 							onPress={() => onItemPress(item)}
 							onPressIn={(event) => {
-								setBackground(Colors.Card);
+								setPressed(true);
 								onItemPressIn?.(event);
 							}}
 							onPressOut={(event) => {
-								setBackground("transparent");
+								setPressed(false);
 								onItemPressOut?.(event);
 							}}
 							styles={{
@@ -245,35 +250,36 @@ export function SectionList<T extends ListItemProps>(
 	}
 }
 
-const styles = StyleSheet.create({
-	sectionList: { width: "100%", marginBottom: 32 },
-	sectionHeader: {
-		backgroundColor: Colors.Card,
-		borderColor: Colors.Border,
-		borderWidth: 1,
-		borderRadius: 32,
-		maxWidth: "100%",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		paddingHorizontal: 16,
-		paddingVertical: 8,
-	},
-	sectionHeaderContainer: { backgroundColor: Colors.Background, paddingTop: 8 },
-	titleContainer: { flexDirection: "row", alignItems: "center", maxWidth: "80%" },
-	sectionTitle: { ...Typography.Heading, color: Colors.TextPrimary },
-	countBadge: {
-		backgroundColor: Colors.Border,
-		width: 18,
-		height: 18,
-		justifyContent: "center",
-		alignItems: "center",
-		marginLeft: 12,
-		borderRadius: 99,
-	},
-	countText: { ...Typography.Caption, fontFamily: "WorkMedium", color: Colors.TextLabel },
-	icon: { width: 20, height: 20, marginTop: 3, fill: Colors.TextPrimary },
-	link: { color: Colors.Active },
-});
+const createStyles = (Colors: ColorTheme) =>
+	StyleSheet.create({
+		sectionList: { width: "100%", marginBottom: 32 },
+		sectionHeader: {
+			backgroundColor: Colors.Card,
+			borderColor: Colors.Border,
+			borderWidth: 1,
+			borderRadius: 32,
+			maxWidth: "100%",
+			flexDirection: "row",
+			justifyContent: "space-between",
+			paddingHorizontal: 16,
+			paddingVertical: 8,
+		},
+		sectionHeaderContainer: { backgroundColor: Colors.Background, paddingTop: 8 },
+		titleContainer: { flexDirection: "row", alignItems: "center", maxWidth: "80%" },
+		sectionTitle: { ...Typography.Heading, color: Colors.TextPrimary },
+		countBadge: {
+			backgroundColor: Colors.Border,
+			width: 18,
+			height: 18,
+			justifyContent: "center",
+			alignItems: "center",
+			marginLeft: 12,
+			borderRadius: 99,
+		},
+		countText: { ...Typography.Caption, fontFamily: "WorkMedium", color: Colors.TextLabel },
+		icon: { width: 20, height: 20, marginTop: 3, fill: Colors.TextPrimary },
+		link: { color: Colors.Active },
+	});
 
 export interface SectionHeaderProps {
 	title: string;
@@ -283,16 +289,21 @@ export interface SectionHeaderProps {
 	onPress?: () => void;
 }
 function SectionHeader({ title, count, collapsed, style, onPress }: SectionHeaderProps) {
+	const { Colors } = useColorTheme();
+	const styles = createStyles(Colors);
+
 	const ChevronIcon = collapsed ? ChevronDownIcon : ChevronUpIcon;
 	const containerStyle = { ...styles.sectionHeader, ...(style || {}) };
-	const [backgroundColor, setBgColor] = useState(containerStyle.backgroundColor);
+
+	const [pressed, setPressed] = useState(false);
+	const backgroundColor = pressed ? Colors.Button : containerStyle.backgroundColor;
 	return (
 		<View style={styles.sectionHeaderContainer}>
 			<Pressable
 				style={[containerStyle, { backgroundColor }]}
 				onPress={onPress}
-				onPressIn={() => setBgColor(Colors.Button)}
-				onPressOut={() => setBgColor(containerStyle.backgroundColor)}
+				onPressIn={() => setPressed(true)}
+				onPressOut={() => setPressed(false)}
 			>
 				<View style={styles.titleContainer}>
 					<Text numberOfLines={1} style={styles.sectionTitle}>{title}</Text>
