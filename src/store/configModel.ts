@@ -9,13 +9,7 @@ export interface ConfigModel {
 	clientId: string;
 	accessToken: string;
 	setAccessToken: Action<ConfigModel, string>;
-	updateAccessToken: Thunk<
-		ConfigModel,
-		undefined,
-		any,
-		{},
-		Promise<[string, null] | [null, unknown]>
-	>;
+	updateAccessToken: Thunk<ConfigModel, undefined, any, {}, Promise<[string, null] | [null, unknown]>>;
 	refreshToken: string;
 	setRefreshToken: Action<ConfigModel, string>;
 	__DEMO__: boolean;
@@ -36,40 +30,38 @@ export const configModel: ConfigModel = {
 	setAccessToken: action((state, payload) => {
 		state.accessToken = payload;
 	}),
-	updateAccessToken: thunk(
-		async (actions, _, { getState }): Promise<[string, null] | [null, unknown]> => {
-			const state = getState();
-			const body = {
-				grant_type: "refresh_token",
-				refresh_token: state.refreshToken,
-				client_id: state.clientId,
-			};
-			const form = Object.entries(body).map(([key, value]) =>
-				`${encodeURIComponent(key)}=${encodeURIComponent(value)}`
-			).join("&");
-			const response = await fetch("https://auth.brightspace.com/core/connect/token", {
-				method: "POST",
-				headers: { "Content-Type": "application/x-www-form-urlencoded" },
-				body: form,
-			});
-			try {
-				const data = await response.json();
+	updateAccessToken: thunk(async (actions, _, { getState }): Promise<[string, null] | [null, unknown]> => {
+		const state = getState();
+		const body = {
+			grant_type: "refresh_token",
+			refresh_token: state.refreshToken,
+			client_id: state.clientId,
+		};
+		const form = Object.entries(body).map(([key, value]) =>
+			`${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+		).join("&");
+		const response = await fetch("https://auth.brightspace.com/core/connect/token", {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: form,
+		});
+		try {
+			const data = await response.json();
 
-				if (!response.ok || !data.access_token) return [null, data];
-				if (!data.access_token) return [null, data];
+			if (!response.ok || !data.access_token) return [null, data];
+			if (!data.access_token) return [null, data];
 
-				gqlClient.setHeader("Authorization", "Bearer " + data.access_token);
-				actions.setAccessToken(data.access_token);
-				if (data.refresh_token && data.refresh_token !== state.refreshToken) {
-					actions.setRefreshToken(data.refresh_token);
-				}
-
-				return [data.access_token, null];
-			} catch (e) {
-				return [null, e];
+			gqlClient.setHeader("Authorization", "Bearer " + data.access_token);
+			actions.setAccessToken(data.access_token);
+			if (data.refresh_token && data.refresh_token !== state.refreshToken) {
+				actions.setRefreshToken(data.refresh_token);
 			}
-		},
-	),
+
+			return [data.access_token, null];
+		} catch (e) {
+			return [null, e];
+		}
+	}),
 	refreshToken: "",
 	setRefreshToken: action((state, payload) => {
 		state.refreshToken = payload;

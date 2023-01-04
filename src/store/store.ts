@@ -25,6 +25,4 @@ export const store = createStore({
 });
 export type StoreModel = typeof store extends Store<infer T, any> ? T : never;
 
-export const { useStoreActions, useStoreState, useStoreDispatch, useStore } = createTypedHooks<
-	StoreModel
->();
+export const { useStoreActions, useStoreState, useStoreDispatch, useStore } = createTypedHooks<StoreModel>();

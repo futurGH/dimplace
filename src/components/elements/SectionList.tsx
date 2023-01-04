@@ -80,9 +80,7 @@ export function SectionList<T extends ListItemProps>(
 					: { flexDirection: "row", height: 24, overflow: "hidden" };
 				let description: ReactNode = section.label || null;
 				if (typeof description === "string") {
-					const descriptionText = descriptionExpanded
-						? description
-						: stripTags(description);
+					const descriptionText = descriptionExpanded ? description : stripTags(description);
 					if (description.startsWith("<")) {
 						description = (
 							<Html
@@ -125,9 +123,7 @@ export function SectionList<T extends ListItemProps>(
 										style={[
 											listItemStyles.title,
 											styles.link,
-											!descriptionExpanded
-												? { marginLeft: 12 }
-												: { marginTop: 8 },
+											!descriptionExpanded ? { marginLeft: 12 } : { marginTop: 8 },
 										]}
 									>
 										View {descriptionExpanded ? "less" : "more"}
@@ -149,10 +145,7 @@ export function SectionList<T extends ListItemProps>(
 							onPress={() => {
 								const collapsedIndex = collapsedSections.indexOf(section.title);
 								if (collapsedIndex !== -1) {
-									collapsedSections.splice(
-										collapsedSections.indexOf(section.title),
-										1,
-									);
+									collapsedSections.splice(collapsedSections.indexOf(section.title), 1);
 								} else {
 									collapsedSections.push(section.title);
 								}

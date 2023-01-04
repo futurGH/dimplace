@@ -20,6 +20,7 @@ import { Html } from "../../../components/elements/Html";
 import { Container } from "../../../components/layout/Container";
 import { Header } from "../../../components/layout/Header";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
+import type { RootStackScreenProps } from "../../../components/layout/NavigationWrapper";
 import { graphql } from "../../../gql";
 import type {
 	ActivityFeedCommentPage,
@@ -36,18 +37,17 @@ import { handleErrors } from "../../../util/errors";
 import { formatDate } from "../../../util/formatDate";
 import { query } from "../../../util/query";
 import { CoursePageHeaderLeftButton } from "../CourseNavigation";
-import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
 
 type ActivityFeedArticle =
 	& FeedItemFragmentFragment
 	& FeedPostFragmentFragment
 	& (ArticleDetailsFragmentFragment | AssignmentDetailsFragmentFragment);
 
-export function CourseFeedPost() {
+export function CourseFeedPostModal() {
 	const { Colors } = useColorTheme();
 	const styles = createStyles(Colors);
 
-	const route = useRoute<CourseHomeStackScreenProps<"CourseFeedPost">["route"]>();
+	const route = useRoute<RootStackScreenProps<"CourseFeedPostModal">["route"]>();
 	const navigation = useNavigation();
 	const { articleId, orgName } = route.params;
 	if (!articleId) {
@@ -70,9 +70,7 @@ export function CourseFeedPost() {
 
 	if (isLoading || error || !data?.activityFeedCommentPage) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
@@ -82,9 +80,8 @@ export function CourseFeedPost() {
 	const activityFeedArticle = data.activityFeedArticle as ActivityFeedArticle;
 
 	const body =
-		("message" in activityFeedArticle
-			? activityFeedArticle.message
-			: activityFeedArticle.instructions) || "Failed to fetch post content.";
+		("message" in activityFeedArticle ? activityFeedArticle.message : activityFeedArticle.instructions)
+		|| "Failed to fetch post content.";
 
 	const publishedDate = new Date(activityFeedArticle.publishedDate);
 	const formattedDate = formatDate(isNaN(publishedDate.getTime()) ? new Date() : publishedDate);
@@ -128,11 +125,7 @@ export function CourseFeedPost() {
 								: null}
 							<Html width={width} body={body} />
 							{"dueDate" in activityFeedArticle
-								? (
-									<Text style={styles.bodyFootnote}>
-										{activityFeedArticle.dueDate}
-									</Text>
-								)
+								? <Text style={styles.bodyFootnote}>{activityFeedArticle.dueDate}</Text>
 								: null}
 							<FlatList
 								style={styles.attachments}
@@ -171,15 +164,14 @@ export function CourseFeedPost() {
 					</View>
 				)}
 				renderItem={({ item: comment }) => {
-					const authorIcon =
-						comment.author?.imageUrl?.includes("Framework.UserProfileBadge")
-							? <UserProfileIcon style={styles.authorIcon} fill={Colors.Inactive} />
-							: (
-								<Image
-									style={[styles.authorIcon, styles.authorImageIcon]}
-									source={{ uri: comment.author.imageUrl || undefined }}
-								/>
-							);
+					const authorIcon = comment.author?.imageUrl?.includes("Framework.UserProfileBadge")
+						? <UserProfileIcon style={styles.authorIcon} fill={Colors.Inactive} />
+						: (
+							<Image
+								style={[styles.authorIcon, styles.authorImageIcon]}
+								source={{ uri: comment.author.imageUrl || undefined }}
+							/>
+						);
 					const publishedDate = new Date(comment.publishedDate);
 					const formattedDate = formatDate(
 						isNaN(publishedDate.getTime()) ? new Date() : publishedDate,

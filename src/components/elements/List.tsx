@@ -24,8 +24,7 @@ export interface ListItemProps {
 	};
 }
 export function ListItem(
-	{ icon = null, title, label, numberOfLines, onPress, onPressIn, onPressOut, styles = {} }:
-		ListItemProps,
+	{ icon = null, title, label, numberOfLines, onPress, onPressIn, onPressOut, styles = {} }: ListItemProps,
 ) {
 	const { Colors } = useColorTheme();
 	const [pressed, setPressed] = useState(false);
@@ -108,11 +107,7 @@ export function List<T extends ListItemProps>(
 								...props.itemStyles?.container,
 								...item.styles?.container,
 							},
-							text: {
-								...listItemStyles.text,
-								...props.itemStyles?.text,
-								...item.styles?.text,
-							},
+							text: { ...listItemStyles.text, ...props.itemStyles?.text, ...item.styles?.text },
 							title: {
 								...listItemStyles.title,
 								...props.itemStyles?.title,

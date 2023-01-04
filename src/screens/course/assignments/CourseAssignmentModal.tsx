@@ -4,6 +4,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Container } from "../../../components/layout/Container";
 import { Header } from "../../../components/layout/Header";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
+import type { RootStackScreenProps } from "../../../components/layout/NavigationWrapper";
 import type { AssignmentFragment } from "../../../gql/graphql";
 import { useStoreActions, useStoreState } from "../../../store/store";
 import { useColorTheme } from "../../../style/ColorThemeProvider";
@@ -15,16 +16,13 @@ import { formatGrade } from "../../../util/formatGrade";
 import { query } from "../../../util/query";
 import { CoursePageHeaderLeftButton, CoursePageHeaderRightButton } from "../CourseNavigation";
 import { fetchCourseAssignments } from "./CourseAssignments";
-import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
 
-export function CourseAssignmentView() {
+export function CourseAssignmentModal() {
 	const { Colors } = useColorTheme();
 	const styles = createStyles(Colors);
 
-	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignmentView">["route"]>();
-	const navigation = useNavigation<
-		CourseAssignmentsStackScreenProps<"CourseAssignmentView">["navigation"]
-	>();
+	const route = useRoute<RootStackScreenProps<"CourseAssignmentModal">["route"]>();
+	const navigation = useNavigation<RootStackScreenProps<"CourseAssignmentModal">["navigation"]>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 
@@ -55,17 +53,13 @@ export function CourseAssignmentView() {
 
 	if (isLoading || error || !data) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
 	}
 
-	const assignment = (data.activities as Array<AssignmentFragment>).find((a) =>
-		a.id === activityId
-	);
+	const assignment = (data.activities as Array<AssignmentFragment>).find((a) => a.id === activityId);
 	if (!assignment) {
 		navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Home");
 		return null;
@@ -78,9 +72,7 @@ export function CourseAssignmentView() {
 	const feedbackText = grade?.feedback?.text || assignment.feedback?.text;
 	const weight = assignment.gradeInfo?.type === "weighted"
 		? assignment.gradeInfo?.value
-			? new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(
-				assignment.gradeInfo.value,
-			)
+			? new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(assignment.gradeInfo.value)
 			: null
 		: null;
 
@@ -93,12 +85,14 @@ export function CourseAssignmentView() {
 						<CoursePageHeaderLeftButton
 							text=""
 							onPress={() =>
-								navigation.navigate("CourseAssignments", { orgId, orgName })}
+								navigation.navigate("CourseNavigation", {
+									screen: "CourseAssignments",
+									params: { orgId, orgName },
+									id: orgId,
+								})}
 						/>
 					),
-					headerRight: () => <CoursePageHeaderRightButton
-						url={assignment?.source?.url}
-					/>,
+					headerRight: () => <CoursePageHeaderRightButton url={assignment?.source?.url} />,
 				}}
 				paddingTop={0}
 			/>
@@ -137,10 +131,5 @@ const createStyles = (Colors: ColorTheme) =>
 		weight: { ...Typography.Body, color: Colors.TextLabel },
 		feedbackContainer: { marginTop: 32 },
 		feedbackTitle: { ...Typography.Subheading, color: Colors.TextLabel },
-		feedbackText: {
-			...Typography.Body,
-			lineHeight: 22,
-			color: Colors.TextPrimary,
-			marginTop: 16,
-		},
+		feedbackText: { ...Typography.Body, lineHeight: 22, color: Colors.TextPrimary, marginTop: 16 },
 	});

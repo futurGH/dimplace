@@ -10,8 +10,8 @@ export function Notifications() {
 	return (
 		<Container>
 			<Text style={styles.text}>
-				Notifications are next up on the to-do list. For now, you might want to stick to
-				Pulse for that.{"\n\n"}❤️
+				Notifications are next up on the to-do list. For now, you might want to stick to Pulse for
+				that.{"\n\n"}❤️
 			</Text>
 		</Container>
 	);

@@ -28,7 +28,7 @@ export const ColorThemes = {
 	},
 	Amethyst: {
 		Background: "#19121D",
-		Card: "#201921",
+		Card: "#1B161D",
 		Input: "#201A24",
 		Button: "#27212D",
 		Border: "#302834",

@@ -11,7 +11,13 @@ import {
 	NavigationContainer,
 	NavigatorScreenParams,
 } from "@react-navigation/native";
-import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
+import {
+	CardStyleInterpolators,
+	createStackNavigator,
+	StackNavigationOptions,
+	StackScreenProps,
+	TransitionSpecs,
+} from "@react-navigation/stack";
 import { useStoreRehydrated } from "easy-peasy";
 import * as Linking from "expo-linking";
 import * as SplashScreen from "expo-splash-screen";
@@ -19,10 +25,9 @@ import { useCallback } from "react";
 import { Pressable, View } from "react-native";
 import { CircleMenuIcon } from "../../assets/icons/circle-menu";
 import { NotificationBellIcon } from "../../assets/icons/notification-bell";
-import {
-	CourseNavigation,
-	CourseTabNavigatorParamList,
-} from "../../screens/course/CourseNavigation";
+import { CourseAssignmentModal } from "../../screens/course/assignments/CourseAssignmentModal";
+import { CourseNavigation, CourseTabNavigatorParamList } from "../../screens/course/CourseNavigation";
+import { CourseFeedPostModal } from "../../screens/course/feed/CourseFeedPostModal";
 import { Home } from "../../screens/home/Home";
 import { Notifications } from "../../screens/home/Notifications";
 import { Settings } from "../../screens/home/Settings";
@@ -38,16 +43,21 @@ export type StackParamList = {
 	InstitutionSelection: undefined;
 	AuthWebView: { source: string };
 	Home: undefined;
-	Notifications: undefined;
-	Settings: undefined;
 	CourseNavigation: NavigatorScreenParams<CourseTabNavigatorParamList> & { id: string };
+	CourseFeedPostModal: { articleId: string; orgName: string };
+	CourseAssignmentModal: {
+		orgId: string;
+		orgName: string;
+		activityId: string;
+		usage?: string;
+		userId?: string;
+	};
+	SettingsModal: undefined;
+	NotificationsModal: undefined;
 };
-export type RootStackScreenProps<T extends keyof StackParamList> = NativeStackScreenProps<
-	StackParamList,
-	T
->;
+export type RootStackScreenProps<T extends keyof StackParamList> = StackScreenProps<StackParamList, T>;
 
-const Stack = createNativeStackNavigator<StackParamList>();
+const Stack = createStackNavigator<StackParamList>();
 
 declare global {
 	namespace ReactNavigation {
@@ -84,30 +94,21 @@ export function NavigationWrapper() {
 		prefixes: [Linking.createURL("/")],
 		config: {
 			screens: {
-				Home: { path: "courses" },
+				Home: "",
 				CourseNavigation: {
 					path: "courses/:id",
 					initialRouteName: "CourseHomeStack" as never,
 					screens: {
-						CourseHomeStack: {
-							path: "",
-							initialRouteName: "CourseFeed" as never,
-							screens: { CourseFeed: "feed", CourseFeedPost: "article/:articleId" },
-						},
+						CourseFeed: "feed",
 						CourseContent: "content",
-						CourseAssignmentsStack: {
-							path: "assignments",
-							initialRouteName: "CourseAssignments" as never,
-							screens: {
-								CourseAssignments: "",
-								CourseAssignmentView: ":activityId/usages/:usage/users/:userId",
-							},
-						},
+						CourseAssignments: "assignments",
 						CourseGrades: "grades",
 					},
 				},
-				Notifications: "notifications",
-				Settings: "settings",
+				CourseFeedPostModal: "courses/:id/article/:articleId",
+				CourseAssignmentModal: "courses/:id/assignments/:activityId/usages/:usage/users/:userId",
+				SettingsModal: "settings",
+				NotificationsModal: "notifications",
 			},
 		},
 	};
@@ -117,70 +118,61 @@ export function NavigationWrapper() {
 				linking={linking}
 				onReady={onReady}
 				ref={navRef}
-				theme={{
-					dark: true,
-					colors: { ...DefaultTheme.colors, background: Colors.Background },
-				}}
+				theme={{ dark: true, colors: { ...DefaultTheme.colors, background: Colors.Background } }}
 			>
 				<Stack.Navigator screenOptions={{ header: Header, headerShown: false }}>
 					<Stack.Group navigationKey="Onboarding">
 						<Stack.Screen name="Onboarding" component={Onboarding} />
-						<Stack.Screen
-							name="InstitutionSelection"
-							component={InstitutionSelection}
-						/>
+						<Stack.Screen name="InstitutionSelection" component={InstitutionSelection} />
 						<Stack.Screen
 							name="AuthWebView"
 							component={AuthWebView}
 							initialParams={{ source: "" }}
 						/>
 					</Stack.Group>
-					<Stack.Group navigationKey="Home">
-						<Stack.Screen
-							name="Home"
-							component={Home}
-							options={{
-								headerShown: true,
-								title: "Courses",
-								headerLeft: () => (
-									<Pressable
-										onPress={() =>
-											navRef.isReady() && navRef.navigate("Settings")}
-									>
-										<CircleMenuIcon {...iconStyles} />
-									</Pressable>
-								),
-								headerRight: () => (
-									<Pressable
-										onPress={() =>
-											navRef.isReady() && navRef.navigate("Notifications")}
-									>
-										<NotificationBellIcon {...iconStyles} />
-									</Pressable>
-								),
-								gestureEnabled: false,
-							}}
-						/>
-						<Stack.Screen
-							name="Notifications"
-							component={Notifications}
-							options={{ presentation: "modal" }}
-						/>
-						<Stack.Screen
-							name="Settings"
-							component={Settings}
-							options={{ presentation: "modal" }}
-						/>
-					</Stack.Group>
+					<Stack.Screen
+						name="Home"
+						component={Home}
+						options={{
+							headerShown: true,
+							title: "Courses",
+							headerLeft: () => (
+								<Pressable
+									onPress={() => navRef.isReady() && navRef.navigate("SettingsModal")}
+								>
+									<CircleMenuIcon {...iconStyles} />
+								</Pressable>
+							),
+							headerRight: () => (
+								<Pressable
+									onPress={() => navRef.isReady() && navRef.navigate("NotificationsModal")}
+								>
+									<NotificationBellIcon {...iconStyles} />
+								</Pressable>
+							),
+							gestureEnabled: false,
+						}}
+					/>
 					<Stack.Screen name="CourseNavigation" component={CourseNavigation} />
+
+					<Stack.Group navigationKey="Modals" screenOptions={modalOptions}>
+						<Stack.Screen name="CourseFeedPostModal" component={CourseFeedPostModal} />
+						<Stack.Screen name="CourseAssignmentModal" component={CourseAssignmentModal} />
+						<Stack.Screen name="SettingsModal" component={Settings} />
+						<Stack.Screen name="NotificationsModal" component={Notifications} />
+					</Stack.Group>
 				</Stack.Navigator>
 			</NavigationContainer>
 		</View>
 	);
 }
 
-const createIconStyles = (Colors: ColorTheme) => ({
-	width: 24,
-	height: 24,
-	fill: Colors.TextPrimary,
-});
+const modalOptions: StackNavigationOptions = {
+	presentation: "modal",
+	gestureEnabled: true,
+	gestureVelocityImpact: 0.5,
+	cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
+	transitionSpec: { open: TransitionSpecs.TransitionIOSSpec, close: TransitionSpecs.TransitionIOSSpec },
+};
+
+const createIconStyles = (Colors: ColorTheme) => ({ width: 24, height: 24, fill: Colors.TextPrimary });

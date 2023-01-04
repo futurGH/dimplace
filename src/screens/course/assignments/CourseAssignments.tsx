@@ -17,15 +17,13 @@ import { formatDate, getYearStartAndEnd } from "../../../util/formatDate";
 import { formatGrade } from "../../../util/formatGrade";
 import { query } from "../../../util/query";
 import { useRefreshing } from "../../../util/useRefreshing";
-import type { CourseAssignmentsStackScreenProps } from "./CourseAssignmentsStack";
+import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
 export function CourseAssignments() {
 	const { Colors } = useColorTheme();
 
-	const route = useRoute<CourseAssignmentsStackScreenProps<"CourseAssignments">["route"]>();
-	const navigation = useNavigation<
-		CourseAssignmentsStackScreenProps<"CourseAssignments">["navigation"]
-	>();
+	const route = useRoute<CourseTabNavigatorScreenProps<"CourseAssignments">["route"]>();
+	const navigation = useNavigation<CourseTabNavigatorScreenProps<"CourseAssignments">["navigation"]>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 	const { orgId, orgName } = route.params || {};
@@ -44,9 +42,7 @@ export function CourseAssignments() {
 
 	if (isLoading && !isRefreshing || error) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
@@ -74,10 +70,7 @@ export function CourseAssignments() {
 			title: activity.source.name,
 			label,
 			icon: (
-				<WriteIcon
-					{...styles.icon}
-					fill={activity.completed ? Colors.TextPrimary : Colors.Active}
-				/>
+				<WriteIcon {...styles.icon} fill={activity.completed ? Colors.TextPrimary : Colors.Active} />
 			),
 			numberOfLines: 1,
 			styles: {
@@ -87,11 +80,7 @@ export function CourseAssignments() {
 				},
 			},
 			onPress: () =>
-				navigation.navigate("CourseAssignmentView", {
-					orgId,
-					orgName,
-					activityId: activity.id,
-				}),
+				navigation.navigate("CourseAssignmentModal", { orgId, orgName, activityId: activity.id }),
 		};
 		if (activity.completed) {
 			acc.complete.push(item);

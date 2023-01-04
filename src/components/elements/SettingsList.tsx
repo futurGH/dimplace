@@ -51,12 +51,7 @@ export function SettingsListItem<T extends keyof SettingsTypeMap>(
 						<Pressable
 							key={themeName}
 							style={[
-								{
-									width: 28,
-									height: 28,
-									borderRadius: 999,
-									backgroundColor: theme.Active,
-								},
+								{ width: 28, height: 28, borderRadius: 999, backgroundColor: theme.Active },
 								themeName === currentThemeName
 								&& { borderWidth: 2, borderColor: currentTheme.TextPrimary },
 								index !== 0 && { marginLeft: 16 },

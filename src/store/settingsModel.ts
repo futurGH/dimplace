@@ -19,11 +19,7 @@ export type TransformSettings<T extends Record<string, keyof SettingsTypeMap>> =
 	[K in keyof T]: Setting<T[K]>;
 };
 export type Settings = TransformSettings<
-	{
-		highlightOverdueAssignments: "boolean";
-		showOverdueAssignments: "boolean";
-		colorTheme: "colorTheme";
-	}
+	{ highlightOverdueAssignments: "boolean"; showOverdueAssignments: "boolean"; colorTheme: "colorTheme" }
 >;
 
 export type SettingsModel = Settings & {

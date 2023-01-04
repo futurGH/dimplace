@@ -1530,6 +1530,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@egjs/hammerjs@npm:^2.0.17":
+  version: 2.0.17
+  resolution: "@egjs/hammerjs@npm:2.0.17"
+  dependencies:
+    "@types/hammerjs": ^2.0.36
+  checksum: 8945137cec5837edd70af3f2e0ea621543eb0aa3b667e6269ec6485350f4d120c2434b37c7c30b1cf42a65275dd61c1f24626749c616696d3956ac0c008c4766
+  languageName: node
+  linkType: hard
+
 "@expo-google-fonts/work-sans@npm:^0.2.2":
   version: 0.2.2
   resolution: "@expo-google-fonts/work-sans@npm:0.2.2"
@@ -3428,6 +3437,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/stack@npm:^6.3.10":
+  version: 6.3.10
+  resolution: "@react-navigation/stack@npm:6.3.10"
+  dependencies:
+    "@react-navigation/elements": ^1.3.12
+    color: ^4.2.3
+    warn-once: ^0.1.0
+  peerDependencies:
+    "@react-navigation/native": ^6.0.0
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: ">= 1.0.0"
+    react-native-safe-area-context: ">= 3.0.0"
+    react-native-screens: ">= 3.0.0"
+  checksum: 6efac9780dceeb0de65e69634ea75b955fdc9ebab6807f455d60c1037b67bf5a0cb5708790cf7808616a2ec53159822bba766c719648fb91a2c7fd9e4cd5f51a
+  languageName: node
+  linkType: hard
+
 "@repeaterjs/repeater@npm:3.0.4":
   version: 3.0.4
   resolution: "@repeaterjs/repeater@npm:3.0.4"
@@ -3709,6 +3736,13 @@ __metadata:
   version: 1.0.3
   resolution: "@tsconfig/node16@npm:1.0.3"
   checksum: 3a8b657dd047495b7ad23437d6afd20297ce90380ff0bdee93fc7d39a900dbd8d9e26e53ff6b465e7967ce2adf0b218782590ce9013285121e6a5928fbd6819f
+  languageName: node
+  linkType: hard
+
+"@types/hammerjs@npm:^2.0.36":
+  version: 2.0.41
+  resolution: "@types/hammerjs@npm:2.0.41"
+  checksum: d16fbd688fc9b18cc270abe8dea8d4c50ef7bd8375e593d92c233d299387933a6b003c8db69819344833052458bc5f9ef1b472001277a49f095928d184356006
   languageName: node
   linkType: hard
 
@@ -5964,6 +5998,7 @@ __metadata:
     "@react-navigation/bottom-tabs": ^6.4.1
     "@react-navigation/native": ^6.0.13
     "@react-navigation/native-stack": ^6.9.1
+    "@react-navigation/stack": ^6.3.10
     "@sentry/react-native": 4.9.0
     "@tanstack/react-query": ^4.16.1
     "@types/promise.allsettled": ^1
@@ -5990,6 +6025,7 @@ __metadata:
     promise.allsettled: ^1.0.6
     react: 18.1.0
     react-native: 0.70.5
+    react-native-gesture-handler: ~2.8.0
     react-native-render-html: ^6.3.4
     react-native-safe-area-context: 4.4.1
     react-native-screens: ~3.18.0
@@ -7790,7 +7826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -11169,7 +11205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.7":
+"prop-types@npm:^15.5.7, prop-types@npm:^15.7.2":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -11384,6 +11420,22 @@ __metadata:
     jscodeshift: ^0.13.1
     nullthrows: ^1.1.1
   checksum: 2a50ad71e09bc8cbb3694057cf47d6e9665c16f3968d1dc2b71e83c8c4e7be3b07b74bea08750ec9c8f6c60e6c746a5f695963c8694e5a76edcbce35a53a6a06
+  languageName: node
+  linkType: hard
+
+"react-native-gesture-handler@npm:~2.8.0":
+  version: 2.8.0
+  resolution: "react-native-gesture-handler@npm:2.8.0"
+  dependencies:
+    "@egjs/hammerjs": ^2.0.17
+    hoist-non-react-statics: ^3.3.0
+    invariant: ^2.2.4
+    lodash: ^4.17.21
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 3dc4ab5cf160e471b07cd644e24f6384bdc4fc777f259fb12dfb42a5c9a15f84f60043ce3a1cd737f8dc563892a52566c8ab33bed0b1635f2898ac8ba75c8668
   languageName: node
   linkType: hard
 

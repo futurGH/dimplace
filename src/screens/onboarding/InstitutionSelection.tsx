@@ -2,11 +2,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Fuse from "fuse.js";
 import { useState } from "react";
 import { ActivityIndicator } from "react-native";
-import {
-	getInstitutionInfo,
-	getInstitutionList,
-	type InstitutionList,
-} from "../../api/institutions";
+import { getInstitutionInfo, getInstitutionList, type InstitutionList } from "../../api/institutions";
 import { Input } from "../../components/elements/Input";
 import { List, type ListItemProps } from "../../components/elements/List";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
@@ -54,9 +50,7 @@ export function InstitutionSelection(
 
 	if (loadingWebView) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
@@ -86,10 +80,7 @@ export function InstitutionSelection(
 						if (!info?.tenantId) return;
 						configActions.setTenantId(info.tenantId);
 						navigation.navigate("AuthWebView", {
-							source: buildAuthUrl({
-								tenantId: info.tenantId,
-								clientId: config.clientId,
-							}),
+							source: buildAuthUrl({ tenantId: info.tenantId, clientId: config.clientId }),
 						});
 					});
 				}}

@@ -46,9 +46,7 @@ export function Home() {
 
 	if (isLoading && !isRefetching || error) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);

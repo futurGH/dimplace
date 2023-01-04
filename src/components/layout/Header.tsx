@@ -8,7 +8,7 @@ import { Typography } from "../../style/typography";
 // Written out for assignability to (from? parameter variance is confusing) BottomTabHeaderProps
 export type HeaderProps = {
 	route: { name: NativeStackHeaderProps["route"]["name"] };
-	options: {
+	options?: {
 		title?: NativeStackHeaderProps["options"]["title"];
 		headerTitle?: NativeStackHeaderProps["options"]["headerTitle"];
 		headerLeft?: NativeStackHeaderProps["options"]["headerLeft"];
@@ -17,11 +17,8 @@ export type HeaderProps = {
 	paddingTop?: number;
 };
 export function Header(
-	{
-		route: { name },
-		options: { title: _title, headerTitle, headerLeft, headerRight },
-		paddingTop,
-	}: HeaderProps,
+	{ route: { name }, options: { title: _title, headerTitle, headerLeft, headerRight } = {}, paddingTop }:
+		HeaderProps,
 ) {
 	const { Colors } = useColorTheme();
 	const styles = createStyles(Colors);

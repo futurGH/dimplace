@@ -28,19 +28,13 @@ export function CourseGrades() {
 	const errorHandling = (error: unknown) =>
 		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["courseGrades", {
-			accessToken: config.accessToken,
-			orgId,
-			demoMode: config.__DEMO__,
-		}],
+		queryKey: ["courseGrades", { accessToken: config.accessToken, orgId, demoMode: config.__DEMO__ }],
 		queryFn: query(errorHandling, fetchCourseGrades),
 	});
 
 	if (isLoading || error || !data) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
@@ -61,11 +55,7 @@ export function CourseGrades() {
 	});
 
 	const listItemStyles = makeListItemStyles(Colors, false);
-	listItemStyles.title = {
-		...listItemStyles.title,
-		...Typography.Heading,
-		color: Colors.TextPrimary,
-	};
+	listItemStyles.title = { ...listItemStyles.title, ...Typography.Heading, color: Colors.TextPrimary };
 	listItemStyles.label = { ...listItemStyles.label, ...Typography.Body, color: Colors.TextLabel };
 	return (
 		<Container>
@@ -78,15 +68,7 @@ export function CourseGrades() {
 								<>
 									{item.title}
 									{item.weight
-										? (
-											<>
-												&nbsp;{
-													<Text style={styles.weight}>
-														({item.weight}%)
-													</Text>
-												}
-											</>
-										)
+										? <>&nbsp;{<Text style={styles.weight}>({item.weight}%)</Text>}</>
 										: null}
 								</>
 							}

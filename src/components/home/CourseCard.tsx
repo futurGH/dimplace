@@ -16,8 +16,8 @@ export interface CourseCardProps {
 }
 export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps) {
 	const { Colors } = useColorTheme();
-	console.log(Colors.Active);
 	const styles = createStyles(Colors);
+
 	const linkTo = useLinkTo();
 	const courseIdFragments = id.split("/");
 	const courseId = courseIdFragments[courseIdFragments.length - 1];
@@ -27,16 +27,11 @@ export function CourseCard({ id, name, imageUrl, assignments }: CourseCardProps)
 				<View
 					style={[
 						styles.content,
-						assignments.length
-							? { paddingVertical: 24 }
-							: { paddingTop: 24, paddingBottom: 20 },
+						assignments.length ? { paddingVertical: 24 } : { paddingTop: 24, paddingBottom: 20 },
 					]}
 				>
 					<ImageBackground style={styles.image} source={{ uri: imageUrl }}>
-						<LinearGradient
-							colors={[Colors.Card + "00", Colors.Card]}
-							style={styles.gradient}
-						/>
+						<LinearGradient colors={[Colors.Card + "00", Colors.Card]} style={styles.gradient} />
 					</ImageBackground>
 					<Text style={styles.title}>{name}</Text>
 				</View>
@@ -81,11 +76,6 @@ const createStyles = (Colors: ColorTheme) =>
 			overflow: "hidden",
 		},
 		gradient: { width: "100%", height: "100%" },
-		title: {
-			...Typography.Subheading,
-			color: Colors.TextPrimary,
-			maxWidth: "100%",
-			marginTop: 16,
-		},
+		title: { ...Typography.Subheading, color: Colors.TextPrimary, maxWidth: "100%", marginTop: 16 },
 		footer: { backgroundColor: Colors.Button, width: "100%", flex: 1, flexShrink: 1 },
 	});

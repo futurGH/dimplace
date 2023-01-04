@@ -1,22 +1,19 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Dimensions, FlatList, ImageBackground, StyleSheet, Text, View } from "react-native";
-import {
-	AnnouncementCard,
-	AnnouncementCardProps,
-} from "../../../components/course/feed/AnnouncementCard";
+import { AnnouncementCard, AnnouncementCardProps } from "../../../components/course/feed/AnnouncementCard";
 import { Container } from "../../../components/layout/Container";
 import { useColorTheme } from "../../../style/ColorThemeProvider";
 import type { ColorTheme } from "../../../style/colorThemes";
 import { Typography } from "../../../style/typography";
-import type { CourseHomeStackScreenProps } from "./CourseHomeStack";
+import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
 
 export function CourseFeed() {
 	const { Colors } = useColorTheme();
 	const styles = createStyles(Colors);
 
-	const route = useRoute<CourseHomeStackScreenProps<"CourseFeed">["route"]>();
-	const navigation = useNavigation<CourseHomeStackScreenProps<"CourseFeed">["navigation"]>();
+	const route = useRoute<CourseTabNavigatorScreenProps<"CourseFeed">["route"]>();
+	const navigation = useNavigation<CourseTabNavigatorScreenProps<"CourseFeed">["navigation"]>();
 	const { activityFeedArticles, organization } = route.params;
 	const windowHeight = Dimensions.get("window").height;
 	return (
@@ -29,7 +26,7 @@ export function CourseFeed() {
 						<AnnouncementCard
 							{...item}
 							onPress={() =>
-								navigation.navigate("CourseFeedPost", {
+								navigation.navigate("CourseFeedPostModal", {
 									articleId: item.id,
 									orgName: organization?.name || "Announcement",
 								})}
@@ -55,8 +52,8 @@ export function CourseFeed() {
 					<View style={styles.noFeedContainer}>
 						<Text style={styles.noFeedTitle}>Nothing to see here!</Text>
 						<Text style={styles.noFeedText}>
-							There don’t appear to be any posts here yet. Check back for
-							announcements, assignments, and updates from your teacher.
+							There don’t appear to be any posts here yet. Check back for announcements,
+							assignments, and updates from your teacher.
 						</Text>
 					</View>
 				)}

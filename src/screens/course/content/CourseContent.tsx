@@ -23,9 +23,7 @@ export function CourseContent() {
 	const styles = createStyles(Colors);
 
 	const route = useRoute<CourseTabNavigatorScreenProps<"CourseContent">["route"]>();
-	const navigation = useNavigation<
-		CourseTabNavigatorScreenProps<"CourseContent">["navigation"]
-	>();
+	const navigation = useNavigation<CourseTabNavigatorScreenProps<"CourseContent">["navigation"]>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
 	const { orgId } = route.params || {};
@@ -35,20 +33,14 @@ export function CourseContent() {
 	const errorHandling = (error: unknown) =>
 		handleErrors({ error, navigation, config, actions: configActions });
 	const { data, error, isLoading, refetch, isRefetching } = useQuery({
-		queryKey: ["courseContent", {
-			accessToken: config.accessToken,
-			orgId,
-			demoMode: config.__DEMO__,
-		}],
+		queryKey: ["courseContent", { accessToken: config.accessToken, orgId, demoMode: config.__DEMO__ }],
 		queryFn: query(errorHandling, fetchCourseContent),
 	});
 	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
 	if (isLoading && !isRefetching || error || !data) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
@@ -56,6 +48,7 @@ export function CourseContent() {
 
 	const { contentRoot } = data as { contentRoot: { modules: Array<CourseContent> } };
 
+	// noinspection JSMismatchedCollectionQueryUpdate
 	const collapsedSections: Array<string> = [];
 	return (
 		<Container>
@@ -74,8 +67,8 @@ export function CourseContent() {
 					<View style={styles.noContentContainer}>
 						<Text style={styles.noContentTitle}>It's a ghost town! 👻</Text>
 						<Text style={styles.noContentText}>
-							Check back for content related to this course. Contact your instructor
-							if something should be here but isn't.
+							Check back for content related to this course. Contact your instructor if
+							something should be here but isn't.
 						</Text>
 					</View>
 				)}

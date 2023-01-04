@@ -1,9 +1,5 @@
 import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import type {
-	CompositeScreenProps,
-	NavigationProp,
-	NavigatorScreenParams,
-} from "@react-navigation/native";
+import type { CompositeScreenProps, NavigationProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { QueryClient, QueryFunctionContext, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
@@ -19,10 +15,7 @@ import { WriteIcon } from "../../assets/icons/write";
 import type { AnnouncementCardProps } from "../../components/course/feed/AnnouncementCard";
 import { Header } from "../../components/layout/Header";
 import { HeaderlessContainer } from "../../components/layout/HeaderlessContainer";
-import type {
-	RootStackScreenProps,
-	StackParamList,
-} from "../../components/layout/NavigationWrapper";
+import type { RootStackScreenProps, StackParamList } from "../../components/layout/NavigationWrapper";
 import { TabBar } from "../../components/layout/TabBar";
 import { graphql } from "../../gql";
 import type { CoursePageQuery } from "../../gql/graphql";
@@ -32,34 +25,24 @@ import type { ColorTheme } from "../../style/colorThemes";
 import { Typography } from "../../style/typography";
 import { handleErrors } from "../../util/errors";
 import { query } from "../../util/query";
-import { fetchCourseAssignments } from "./assignments/CourseAssignments";
-import {
-	CourseAssignmentsStack,
-	type CourseAssignmentsStackParamList,
-} from "./assignments/CourseAssignmentsStack";
+import { CourseAssignments, fetchCourseAssignments } from "./assignments/CourseAssignments";
 import { CourseContent, fetchCourseContent } from "./content/CourseContent";
-import { CourseHomeStack, type CourseHomeStackParamList } from "./feed/CourseHomeStack";
+import { CourseFeed } from "./feed/CourseFeed";
 import { CourseGrades, fetchCourseGrades } from "./grades/CourseGrades";
 
 export type CourseTabNavigatorParamList = {
-	CourseHomeStack:
-		& NavigatorScreenParams<CourseHomeStackParamList>
-		& Partial<
-			& Pick<NonNullable<CoursePageQuery["activityFeedArticlePage"]>, "activityFeedArticles">
-			& Pick<CoursePageQuery, "organization">
-		>;
+	CourseFeed: Partial<
+		& Pick<NonNullable<CoursePageQuery["activityFeedArticlePage"]>, "activityFeedArticles">
+		& Pick<CoursePageQuery, "organization">
+	>;
 	CourseContent: { orgId: string };
-	CourseAssignmentsStack: NavigatorScreenParams<CourseAssignmentsStackParamList> & {
-		orgName: string;
-		orgId: string;
-	};
+	CourseAssignments: { orgId: string; orgName: string };
 	CourseGrades: { orgId: string };
 };
-export type CourseTabNavigatorScreenProps<T extends keyof CourseTabNavigatorParamList> =
-	CompositeScreenProps<
-		BottomTabScreenProps<CourseTabNavigatorParamList, T>,
-		RootStackScreenProps<keyof StackParamList>
-	>;
+export type CourseTabNavigatorScreenProps<T extends keyof CourseTabNavigatorParamList> = CompositeScreenProps<
+	BottomTabScreenProps<CourseTabNavigatorParamList, T>,
+	RootStackScreenProps<keyof StackParamList>
+>;
 
 const Tab = createBottomTabNavigator<CourseTabNavigatorParamList>();
 
@@ -72,7 +55,9 @@ export function CourseNavigation() {
 	const queryClient = useQueryClient();
 
 	const { id: courseId } = route.params || {};
-	const id = `https://${config.tenantId}.organizations.api.brightspace.com/${courseId}`;
+	const id = courseId?.startsWith("https")
+		? courseId
+		: `https://${config.tenantId}.organizations.api.brightspace.com/${courseId}`;
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
@@ -85,9 +70,7 @@ export function CourseNavigation() {
 
 	if (isLoading || error) {
 		return (
-			<HeaderlessContainer
-				style={{ justifyContent: "center", alignItems: "center", height: "100%" }}
-			>
+			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
 				<ActivityIndicator />
 			</HeaderlessContainer>
 		);
@@ -105,15 +88,13 @@ export function CourseNavigation() {
 			screenOptions={{
 				header: Header,
 				headerLeft: () => <CoursePageHeaderLeftButton />,
-				headerRight: () => (
-					<CoursePageHeaderRightButton url={data?.organization?.homeUrl} />
-				),
+				headerRight: () => <CoursePageHeaderRightButton url={data?.organization?.homeUrl} />,
 				headerTitle: data?.organization?.name,
 			}}
 		>
 			<Tab.Screen
-				name="CourseHomeStack"
-				component={CourseHomeStack}
+				name="CourseFeed"
+				component={CourseFeed}
 				options={{
 					headerTitle: "",
 					title: "Feed",
@@ -140,14 +121,12 @@ export function CourseNavigation() {
 				initialParams={{ orgId: id }}
 			/>
 			<Tab.Screen
-				name="CourseAssignmentsStack"
-				component={CourseAssignmentsStack}
+				name="CourseAssignments"
+				component={CourseAssignments}
 				options={{
 					headerTitle: data?.organization?.name || "Assignments",
 					title: "Assignments",
-					tabBarIcon: ({ color, size }) => (
-						<WriteIcon width={size} height={size} fill={color} />
-					),
+					tabBarIcon: ({ color, size }) => <WriteIcon width={size} height={size} fill={color} />,
 				}}
 				initialParams={{ orgName: data?.organization?.name, orgId: id }}
 			/>
@@ -205,16 +184,10 @@ const createStyles = (Colors: ColorTheme) =>
 		leftButton: { flexDirection: "row", alignItems: "center", height: 24 },
 		leftButtonText: { ...Typography.Body, color: Colors.TextSecondary, marginLeft: 8 },
 	});
-const createIconStyles = (Colors: ColorTheme) => ({
-	width: 24,
-	height: 24,
-	fill: Colors.TextSecondary,
-});
+const createIconStyles = (Colors: ColorTheme) => ({ width: 24, height: 24, fill: Colors.TextSecondary });
 
 export function fetchCourseFeed(
-	{ queryKey }: QueryFunctionContext<
-		[string, { id: string; courseId: string; demoMode: boolean }]
-	>,
+	{ queryKey }: QueryFunctionContext<[string, { id: string; courseId: string; demoMode: boolean }]>,
 ) {
 	const [, { id, courseId, demoMode }] = queryKey;
 	if (demoMode) {

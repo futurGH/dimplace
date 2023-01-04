@@ -49,9 +49,7 @@ export function TabBar(
 						onLongPress={onLongPress}
 					>
 						{icon}
-						<Text style={[styles.tabLabel, isFocused ? styles.activeTab : {}]}>
-							{label}
-						</Text>
+						<Text style={[styles.tabLabel, isFocused ? styles.activeTab : {}]}>{label}</Text>
 					</Pressable>
 				);
 			})}

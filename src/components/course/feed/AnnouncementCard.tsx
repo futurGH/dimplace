@@ -37,12 +37,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 
 	const authorIcon = author.imageUrl.includes("Framework.UserProfileBadge")
 		? <UserProfileIcon style={styles.authorIcon} fill={Colors.Inactive} />
-		: (
-			<Image
-				style={[styles.authorIcon, styles.authorImageIcon]}
-				source={{ uri: author.imageUrl }}
-			/>
-		);
+		: <Image style={[styles.authorIcon, styles.authorImageIcon]} source={{ uri: author.imageUrl }} />;
 
 	const attachments = attachmentLinks?.length
 		? (
@@ -73,13 +68,9 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 						</View>
 					</View>
 					<View style={styles.body}>
-						{"name" in props
-							? <Text style={styles.bodyTitle}>{props.name}</Text>
-							: null}
+						{"name" in props ? <Text style={styles.bodyTitle}>{props.name}</Text> : null}
 						<Html width={cardWidth} body={body} />
-						{"dueDate" in props
-							? <Text style={styles.bodyFootnote}>{props.dueDate}</Text>
-							: null}
+						{"dueDate" in props ? <Text style={styles.bodyFootnote}>{props.dueDate}</Text> : null}
 						{attachments}
 					</View>
 				</View>

@@ -1,7 +1,7 @@
 {
   "typescript": {
     "indentWidth": 4,
-    "lineWidth": 100,
+    "lineWidth": 110,
     "useTabs": true,
     "preferSingleLine": true,
     "arrowFunction.useParentheses": "force",

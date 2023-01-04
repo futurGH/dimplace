@@ -17,10 +17,7 @@ export async function getToken(
 	body.append("code", code);
 	body.append("redirect_uri", "brightspacepulse://auth");
 	body.append("client_id", clientId);
-	const response = await fetch("https://auth.brightspace.com/core/connect/token", {
-		method: "POST",
-		body,
-	});
+	const response = await fetch("https://auth.brightspace.com/core/connect/token", { method: "POST", body });
 	if (!response.ok) {
 		return null;
 	}

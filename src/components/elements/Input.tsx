@@ -4,10 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { useColorTheme } from "../../style/ColorThemeProvider";
 import type { ColorTheme } from "../../style/colorThemes";
 
-export type InputProps = TextInput["props"] & {
-	icon?: ReactNode;
-	containerStyle?: View["props"]["style"];
-};
+export type InputProps = TextInput["props"] & { icon?: ReactNode; containerStyle?: View["props"]["style"] };
 export function Input({ style, ...props }: InputProps) {
 	const { Colors } = useColorTheme();
 	const baseStyles = createStyles(Colors);

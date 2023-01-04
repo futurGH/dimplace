@@ -13,8 +13,7 @@ const institutionListValidator = t.object({
 export type InstitutionList = Array<{ name: string; links: { self?: string; lms?: string } }>;
 export async function getInstitutionList(contains: string = ""): Promise<InstitutionList> {
 	const response = await fetch(
-		`https://lms-disco.api.brightspace.com/institutions`
-			+ (contains ? `?contains=${contains}` : ""),
+		`https://lms-disco.api.brightspace.com/institutions` + (contains ? `?contains=${contains}` : ""),
 		{ method: "GET" },
 	);
 	if (!response.ok) {
@@ -43,10 +42,9 @@ const institutionInfoValidator = t.object({
 
 export type InstitutionInfo = t.Infer<typeof institutionInfoValidator>;
 export async function getInstitutionInfo(lmsDomain: string): Promise<InstitutionInfo | null> {
-	const response = await fetch(
-		`https://landlord.brightspace.com/v1/tenants?domain=${lmsDomain}`,
-		{ method: "GET" },
-	);
+	const response = await fetch(`https://landlord.brightspace.com/v1/tenants?domain=${lmsDomain}`, {
+		method: "GET",
+	});
 	if (!response.ok) {
 		return null;
 	}
