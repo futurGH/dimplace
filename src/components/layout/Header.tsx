@@ -34,7 +34,7 @@ export function Header(
 			<View style={styles.container}>
 				<View style={styles.icon}>{leftIcon}</View>
 				<Text numberOfLines={1} style={styles.title}>{title}</Text>
-				<View style={styles.icon}>{rightIcon}</View>
+				<View style={{ ...styles.icon, ...styles.rightIcon }}>{rightIcon}</View>
 			</View>
 		</View>
 	);
@@ -46,18 +46,12 @@ const createStyles = (Colors: ColorTheme) =>
 		container: {
 			width: "100%",
 			flexDirection: "row",
-			justifyContent: "space-between",
 			alignItems: "center",
+			justifyContent: "space-between",
 			paddingHorizontal: "5%",
 			paddingVertical: 16,
 		},
-		title: {
-			...Typography.Heading,
-			color: Colors.TextPrimary,
-			textAlign: "center",
-			width: "50%",
-			marginHorizontal: 32,
-			flex: 1,
-		},
-		icon: { maxHeight: 28 },
+		title: { ...Typography.Heading, color: Colors.TextPrimary, textAlign: "center", width: "50%" },
+		icon: { maxHeight: 28, flexGrow: 1, flexBasis: 0 },
+		rightIcon: { flexDirection: "row", justifyContent: "flex-end" },
 	});

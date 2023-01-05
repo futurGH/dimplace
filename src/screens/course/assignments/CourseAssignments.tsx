@@ -51,7 +51,9 @@ export function CourseAssignments() {
 	const { complete, incomplete } = (data?.activities as Array<AssignmentFragment> || []).reduce<
 		Record<"complete" | "incomplete", Array<ListItemProps & { date: Date }>>
 	>((acc, activity) => {
-		if (activity.organization?.id !== orgId) return acc;
+		if (activity.organization?.id !== orgId) {
+			return acc;
+		}
 		if (!activity.source?.name || !activity.id) return acc;
 		const matchingGrade = formatGrade(
 			data?.userGrades.find((grade) => grade.activity?.id === activity.id)?.value,
@@ -161,7 +163,7 @@ export const MOCK_COURSE_ASSIGNMENTS: CourseAssignmentsQuery = {
 	activities: [{
 		__typename: "Activity",
 		id: "1",
-		organization: { id: "https://.organizations.api.brightspace.com/1" },
+		organization: { id: "https://demo.organizations.api.brightspace.com/1" },
 		source: { name: "Assignment 1", url: "https://dimplace.com" },
 		completed: false,
 	}] as Array<AssignmentFragment>,

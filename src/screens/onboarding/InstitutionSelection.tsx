@@ -72,6 +72,7 @@ export function InstitutionSelection(
 				onItemPress={(item) => {
 					if (item.title === DEMO_TITLE) {
 						configActions.__SET_DEMO__(true);
+						configActions.setTenantId("demo");
 						navigation.navigate("Home");
 					}
 					if (!item.label) return;

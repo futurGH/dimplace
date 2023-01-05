@@ -15,14 +15,17 @@ export function Settings() {
 	const styles = createStyles(Colors);
 
 	const [linkColor, setLinkColor] = useState<string>(Colors.TextLabel);
-	const settings = useStoreState((state) => state.settings);
 
-	const transformedSettings = Object.entries(settings).reduce<Parameters<typeof SettingsList>[0]["data"]>(
+	const settingsModel = useStoreState((state) => state.settings);
+	const settings = Object.entries(settingsModel).filter(([k, s]) =>
+		k in settingsModel && s.name?.trim?.()?.length && s.type?.trim?.()?.length
+	);
+
+	const transformedSettings = settings.reduce<Parameters<typeof SettingsList>[0]["data"]>(
 		(acc, [key, value], currentIndex) => {
-			if (!(key in settings)) return acc;
 			const setting = value as Setting;
 			acc.push({
-				key: key as keyof typeof settings,
+				key: key as keyof typeof settingsModel,
 				type: setting.type,
 				name: setting.name as never,
 				description: setting.description,
@@ -38,7 +41,7 @@ export function Settings() {
 
 	return (
 		<Container>
-			<View>
+			<View style={{ flexGrow: 1 }}>
 				<Header route={{ name: "Settings" }} paddingTop={0} />
 				<SettingsList data={transformedSettings} />
 			</View>
@@ -67,14 +70,7 @@ export function Settings() {
 const createStyles = (Colors: ColorTheme) =>
 	StyleSheet.create({
 		title: { ...Typography.Title, color: Colors.TextPrimary, textAlign: "center", marginTop: 16 },
-		info: {
-			flex: 1,
-			marginVertical: 24,
-			paddingHorizontal: 24,
-			alignItems: "center",
-			justifyContent: "flex-end",
-			width: "100%",
-		},
+		info: { position: "absolute", bottom: 24, alignSelf: "center" },
 		text: { ...Typography.Body, color: Colors.TextLabel, marginBottom: 16, textAlign: "center" },
 		tiny: { ...Typography.Caption, color: Colors.TextLabel, lineHeight: 20 },
 		link: { ...Typography.Callout, color: Colors.TextLabel, textDecorationLine: "underline" },

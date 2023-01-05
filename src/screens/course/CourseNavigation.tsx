@@ -173,7 +173,7 @@ export function CoursePageHeaderRightButton({ url }: { url?: string | undefined 
 	const { Colors } = useColorTheme();
 	const iconStyles = createIconStyles(Colors);
 	return (
-		<Pressable onPress={() => url && Linking.openURL(url)}>
+		<Pressable onPress={() => url && Linking.openURL(url)} style={iconStyles}>
 			<ExternalIcon {...iconStyles} />
 		</Pressable>
 	);

@@ -139,6 +139,7 @@ export function NavigationWrapper() {
 							headerLeft: () => (
 								<Pressable
 									onPress={() => navRef.isReady() && navRef.navigate("SettingsModal")}
+									style={iconStyles}
 								>
 									<CircleMenuIcon {...iconStyles} />
 								</Pressable>
@@ -146,6 +147,7 @@ export function NavigationWrapper() {
 							headerRight: () => (
 								<Pressable
 									onPress={() => navRef.isReady() && navRef.navigate("NotificationsModal")}
+									style={iconStyles}
 								>
 									<NotificationBellIcon {...iconStyles} />
 								</Pressable>

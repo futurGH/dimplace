@@ -5,7 +5,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	name: "dimplace",
 	slug: "dimplace",
 	scheme: "dimplace",
-	version: "1.2.0",
+	version: "1.2.2",
 	orientation: "portrait",
 	icon: "./assets/icon.png",
 
@@ -18,10 +18,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		supportsTablet: false,
 		userInterfaceStyle: "dark",
 		bundleIdentifier: "com.dimplace",
-		buildNumber: "2023.01.04.1",
+		buildNumber: "2023.01.05.1",
 		config: { usesNonExemptEncryption: false },
 	},
-	android: { package: "com.dimplace", versionCode: 202301041 },
+	android: { package: "com.dimplace", versionCode: 202301051 },
 	androidStatusBar: { barStyle: "light-content", backgroundColor: "#131720" },
 	plugins: ["sentry-expo"],
 	hooks: {
