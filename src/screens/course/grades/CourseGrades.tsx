@@ -117,5 +117,9 @@ const MOCK_COURSE_GRADES: CourseGradesQuery = {
 		activity: { id: "1", gradeInfo: { type: "weighted", value: 97 } },
 		name: "Assignment 1",
 		value: "34 / 35",
+	}, {
+		activity: { id: "2", gradeInfo: { type: "weighted", value: 3 } },
+		name: "Assignment 2",
+		value: "18 / 18",
 	}],
 };

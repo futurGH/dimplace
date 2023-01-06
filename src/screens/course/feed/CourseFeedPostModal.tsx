@@ -260,10 +260,11 @@ const MOCK_COURSE_FEED_POST: {
 } = {
 	activityFeedArticle: {
 		type: "article",
-		author: { displayName: "John Doe", imageUrl: "https://i.pravatar.cc/128" },
+		author: { displayName: "John Doe", imageUrl: "https://picsum.photos/128.jpg" },
 		id: "1",
-		message: "This is an announcement",
-		publishedDate: "2020-12-31T00:00:00.000Z",
+		message:
+			"As we approach the midpoint of the semester, don't forget to start thinking about any projects or papers that may be due. Start brainstorming ideas and outlining your work as soon as possible, and don't hesitate to reach out to me or your TA for feedback and guidance. With some careful planning and hard work, you can successfully complete all of the assignments and achieve your academic goals for the course.",
+		publishedDate: "2021-01-05T00:00:00.000Z",
 		commentsCount: 0,
 		isPinned: false,
 		commentsLink: "https://dimplace.com",

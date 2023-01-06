@@ -69,7 +69,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
 					</View>
 					<View style={styles.body}>
 						{"name" in props ? <Text style={styles.bodyTitle}>{props.name}</Text> : null}
-						<Html width={cardWidth} body={body} />
+						<Html width={cardWidth} body={body} numberOfLines={4} />
 						{"dueDate" in props ? <Text style={styles.bodyFootnote}>{props.dueDate}</Text> : null}
 						{attachments}
 					</View>

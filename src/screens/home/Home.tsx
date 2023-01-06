@@ -156,6 +156,13 @@ const MOCK_COURSE_LIST_DATA: CourseListQuery = {
 				name: "Demo Course",
 				imageUrl: "https://picsum.photos/1080/460.jpg",
 			},
+		}, {
+			organization: {
+				__typename: "Organization",
+				id: "2",
+				name: "Demo Course",
+				imageUrl: "https://picsum.photos/1080/460.jpg",
+			},
 		}],
 	},
 	activities: [{

@@ -283,9 +283,18 @@ const MOCK_COURSE_PAGE_DATA: Omit<CoursePageQuery, "activityFeedArticlePage"> & 
 		id: "1",
 		activityFeedArticles: [{
 			id: "1",
-			author: { displayName: "John Doe", imageUrl: "https://picsum.photos/128.jpg" },
-			publishedDate: "2021-01-01T00:00:00Z",
-			message: "This is an announcement",
+			author: { displayName: "John Appleseed", imageUrl: "https://picsum.photos/128.jpg" },
+			publishedDate: "2022-01-05T00:00:00Z",
+			message:
+				"As we approach the midpoint of the semester, don't forget to start thinking about any projects or papers that may be due. Start brainstorming ideas and outlining your work as soon as possible, and don't hesitate to reach out to me or your TA for feedback and guidance. With some careful planning and hard work, you can successfully complete all of the assignments and achieve your academic goals for the course.",
+			commentsCount: "0",
+			attachmentLinks: [],
+		}, {
+			id: "2",
+			author: { displayName: "John Appleseed", imageUrl: "https://picsum.photos/128.jpg" },
+			publishedDate: "2021-09-18T00:00:00Z",
+			message:
+				"Welcome to the course! I'm excited to be working with all of you this semester. Before we dive into the material, I wanted to go over a few course logistics. Make sure to check the syllabus for important dates and deadlines, and don't hesitate to reach out to me if you have any questions or concerns.",
 			commentsCount: "0",
 			attachmentLinks: [],
 		}],

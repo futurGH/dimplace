@@ -200,11 +200,17 @@ const MOCK_COURSE_CONTENT: CourseContentQuery = {
 		modules: [{
 			__typename: "ContentModule",
 			title: "Module 1",
-			children: [{
-				__typename: "ContentTopic",
-				title: "Topic 1",
-				viewUrl: "https://www.dimplace.com",
-			}] as Array<CourseContent>,
+			children: [
+				{ __typename: "ContentTopic", title: "Topic 1", viewUrl: "https://www.dimplace.com" },
+				{ __typename: "ContentTopic", title: "Topic 2", viewUrl: "https://www.dimplace.com" },
+			],
+		}, {
+			__typename: "ContentModule",
+			title: "Module 2",
+			children: [
+				{ __typename: "ContentTopic", title: "Topic 3", viewUrl: "https://www.dimplace.com" },
+				{ __typename: "ContentTopic", title: "Topic 4", viewUrl: "https://www.dimplace.com" },
+			],
 		}],
 	},
 } as never;

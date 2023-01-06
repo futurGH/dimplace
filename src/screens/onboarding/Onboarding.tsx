@@ -12,7 +12,10 @@ import { Typography } from "../../style/typography";
 export function Onboarding({ navigation }: NativeStackScreenProps<StackParamList, "Onboarding">) {
 	const config = useStoreState((state) => state.config);
 	const { Colors } = useColorTheme();
-	if (config.onboarded) navigation.navigate("Home");
+	if (config.onboarded) {
+		navigation.navigate("Home");
+		return null;
+	}
 	const styles = createStyles(Colors);
 	return (
 		<HeaderlessContainer style={styles.content}>

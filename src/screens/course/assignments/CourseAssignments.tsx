@@ -166,6 +166,18 @@ export const MOCK_COURSE_ASSIGNMENTS: CourseAssignmentsQuery = {
 		organization: { id: "https://demo.organizations.api.brightspace.com/1" },
 		source: { name: "Assignment 1", url: "https://dimplace.com" },
 		completed: false,
+	}, {
+		__typename: "Activity",
+		id: "2",
+		organization: { id: "https://demo.organizations.api.brightspace.com/1" },
+		source: { name: "Assignment 2", url: "https://dimplace.com" },
+		completed: true,
+		feedback: { text: "Good job!" },
+		gradeInfo: { type: "weighted", value: 97 },
 	}] as Array<AssignmentFragment>,
-	userGrades: [],
+	userGrades: [{
+		activity: { id: "2", gradeInfo: { type: "weighted", value: 3 } },
+		name: "Assignment 2",
+		value: "18 / 18",
+	}],
 } as never;

@@ -51,7 +51,15 @@ const createStyles = (Colors: ColorTheme) =>
 			paddingHorizontal: "5%",
 			paddingVertical: 16,
 		},
-		title: { ...Typography.Heading, color: Colors.TextPrimary, textAlign: "center", width: "50%" },
+		title: {
+			...Typography.Heading,
+			color: Colors.TextPrimary,
+			textAlign: "center",
+			maxWidth: "50%",
+			paddingHorizontal: 24,
+			flexGrow: 0,
+			flexShrink: 1,
+		},
 		icon: { maxHeight: 28, flexGrow: 1, flexBasis: 0 },
 		rightIcon: { flexDirection: "row", justifyContent: "flex-end" },
 	});

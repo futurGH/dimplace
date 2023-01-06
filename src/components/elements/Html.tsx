@@ -16,7 +16,7 @@ interface HtmlProps extends Partial<RenderHTMLProps> {
 	bodyStyle?: MixedStyleDeclaration;
 	numberOfLines?: number;
 }
-export function Html({ width, body, bodyStyle = {}, numberOfLines = 4, ...props }: HtmlProps) {
+export function Html({ width, body, bodyStyle = {}, numberOfLines, ...props }: HtmlProps) {
 	const { Colors } = useColorTheme();
 	const defaultBodyStyle = createStyles(Colors);
 	bodyStyle = { ...defaultBodyStyle, ...bodyStyle };
