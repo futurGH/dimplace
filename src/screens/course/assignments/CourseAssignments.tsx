@@ -51,7 +51,7 @@ export function CourseAssignments() {
 	const { complete, incomplete } = (data?.activities as Array<AssignmentFragment> || []).reduce<
 		Record<"complete" | "incomplete", Array<ListItemProps & { date: Date }>>
 	>((acc, activity) => {
-		if (activity.organization?.id !== orgId) {
+		if (activity.organization?.id !== orgId && !config.__DEMO__) {
 			return acc;
 		}
 		if (!activity.source?.name || !activity.id) return acc;
