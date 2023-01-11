@@ -185,6 +185,7 @@ export function SectionList<T extends ListItemProps>(
 							sections={[{ ...item, showCount }]}
 							collapsedSections={collapsedSections}
 							nested={true}
+							onItemPress={onItemPress}
 							{...props}
 							style={[props.style, { marginLeft: 16 }]}
 						/>

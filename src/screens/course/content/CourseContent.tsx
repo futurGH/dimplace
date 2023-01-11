@@ -74,7 +74,8 @@ export function CourseContent() {
 				)}
 				onItemPress={(item) => {
 					const link = item.pdfHref
-						|| (item.type?.endsWith("pdf") && item.downloadHref)
+						|| (item.type?.endsWith("pdf")
+							&& item.downloadHref?.replace("stream=false", "stream=true"))
 						|| item.viewUrl
 						|| null;
 					if (!link) return;
