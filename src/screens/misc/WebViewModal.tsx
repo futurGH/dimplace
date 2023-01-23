@@ -24,7 +24,10 @@ export function WebViewModal() {
 
 	const { bottom } = useSafeAreaInsets();
 
-	props.onLoadStart ||= persistHeaders ? (state) => setUri(state.nativeEvent.url) : undefined;
+	if (!props.onLoadStart) {
+		props.onLoadStart = persistHeaders ? (state) => setUri(state.nativeEvent.url) : undefined;
+	}
+
 	return (
 		<Container>
 			{heading && (

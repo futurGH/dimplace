@@ -8,10 +8,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	version: "1.2.3",
 	orientation: "portrait",
 	icon: "./assets/icon.png",
-
 	userInterfaceStyle: "dark",
 	splash: { image: "./assets/splash.png", resizeMode: "cover", backgroundColor: "#131720" },
-	updates: { fallbackToCacheTimeout: 0 },
+	updates: { fallbackToCacheTimeout: 0, url: "https://u.expo.dev/9392383f-fb3c-4441-9ab9-2fdfd11e4396" },
+	runtimeVersion: { policy: "appVersion" },
 	assetBundlePatterns: ["**/*"],
 	jsEngine: "hermes",
 	ios: {
