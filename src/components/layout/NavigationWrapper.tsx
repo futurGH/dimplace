@@ -31,9 +31,11 @@ import { CourseFeedPostModal } from "../../screens/course/feed/CourseFeedPostMod
 import { Home } from "../../screens/home/Home";
 import { Notifications } from "../../screens/home/Notifications";
 import { Settings } from "../../screens/home/Settings";
+import { WebViewModal, type WebViewModalProps } from "../../screens/misc/WebViewModal";
 import { AuthWebView } from "../../screens/onboarding/AuthWebView";
 import { InstitutionSelection } from "../../screens/onboarding/InstitutionSelection";
 import { Onboarding } from "../../screens/onboarding/Onboarding";
+import { useStoreState } from "../../store/store";
 import { useColorTheme } from "../../style/ColorThemeProvider";
 import type { ColorTheme } from "../../style/colorThemes";
 import { Header } from "./Header";
@@ -54,6 +56,7 @@ export type StackParamList = {
 	};
 	SettingsModal: undefined;
 	NotificationsModal: undefined;
+	WebViewModal: WebViewModalProps;
 };
 export type RootStackScreenProps<T extends keyof StackParamList> = StackScreenProps<StackParamList, T>;
 
@@ -75,6 +78,7 @@ export function NavigationWrapper() {
 	});
 
 	const rehydrated = useStoreRehydrated();
+	const config = useStoreState((state) => state.config);
 
 	const onReady = useCallback(async () => {
 		if (fontsLoaded && rehydrated) {
@@ -120,7 +124,10 @@ export function NavigationWrapper() {
 				ref={navRef}
 				theme={{ dark: true, colors: { ...DefaultTheme.colors, background: Colors.Background } }}
 			>
-				<Stack.Navigator screenOptions={{ header: Header, headerShown: false }}>
+				<Stack.Navigator
+					screenOptions={{ header: Header, headerShown: false }}
+					initialRouteName={config.onboarded ? "Home" : "Onboarding"}
+				>
 					<Stack.Group navigationKey="Onboarding">
 						<Stack.Screen name="Onboarding" component={Onboarding} />
 						<Stack.Screen name="InstitutionSelection" component={InstitutionSelection} />
@@ -162,6 +169,7 @@ export function NavigationWrapper() {
 						<Stack.Screen name="CourseAssignmentModal" component={CourseAssignmentModal} />
 						<Stack.Screen name="SettingsModal" component={Settings} />
 						<Stack.Screen name="NotificationsModal" component={Notifications} />
+						<Stack.Screen name="WebViewModal" component={WebViewModal} />
 					</Stack.Group>
 				</Stack.Navigator>
 			</NavigationContainer>

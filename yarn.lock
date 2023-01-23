@@ -6031,6 +6031,7 @@ __metadata:
     react-native-screens: ~3.18.0
     react-native-svg: 13.4.0
     react-native-webview: 11.23.1
+    react-native-webview-modal: ../react-native-webview-modal/package.tgz
     sentry-expo: ~6.0.0
     ts-node: ^10.9.1
     typed: ^4.1.2
@@ -10150,6 +10151,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mitt@npm:*":
+  version: 3.0.0
+  resolution: "mitt@npm:3.0.0"
+  checksum: f7be5049d27d18b1dbe9408452d66376fa60ae4a79fe9319869d1b90ae8cbaedadc7e9dab30b32d781411256d468be5538996bb7368941c09009ef6bbfa6bfc7
+  languageName: node
+  linkType: hard
+
 "mixin-deep@npm:^1.2.0":
   version: 1.3.2
   resolution: "mixin-deep@npm:1.3.2"
@@ -11205,7 +11213,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.7, prop-types@npm:^15.7.2":
+"prop-types@npm:*, prop-types@npm:^15.5.7, prop-types@npm:^15.7.2":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -11281,7 +11289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.9.1":
+"qs@npm:^6.5.1, qs@npm:^6.9.1":
   version: 6.11.0
   resolution: "qs@npm:6.11.0"
   dependencies:
@@ -11446,6 +11454,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-portal@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "react-native-portal@npm:1.3.0"
+  dependencies:
+    mitt: "*"
+    prop-types: "*"
+    react: "*"
+  checksum: f2d201c7b50a356854442fdf430c8d3a78e11cfda98a50074c21ca4bb1e98188ff87d8d80ee7b3b8926b0284b78c5f9ea96ec06a054017d3b22fe46ced5a37cd
+  languageName: node
+  linkType: hard
+
 "react-native-render-html@npm:^6.3.4":
   version: 6.3.4
   resolution: "react-native-render-html@npm:6.3.4"
@@ -11499,6 +11518,36 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: e630c057d6a0947c4d729538f643585a1fd9380975c1cf9adffad7647822b35219a9e1e60407f422b2b70592ed7f7e8766fab15df74f9cfce0b1c8a1c3544676
+  languageName: node
+  linkType: hard
+
+"react-native-use-dimensions@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "react-native-use-dimensions@npm:1.3.4"
+  checksum: 696eaaa01e9a7aa0840cda8a57a84742d6fcb2cd97549dc63a86c114d5ee6e9330ff8182ac54bd53795372f111164bd68f6f6a81fb77d2903b1b5e625b273127
+  languageName: node
+  linkType: hard
+
+"react-native-web-webview@npm:1.0.1":
+  version: 1.0.1
+  resolution: "react-native-web-webview@npm:1.0.1"
+  dependencies:
+    qs: ^6.5.1
+  peerDependencies:
+    file-loader: "*"
+    react-native-web: "*"
+  checksum: a258b363442fe5de051b5c27b641094d2840d946f12285f875a07f4d3667d39fe27da067cad9496766c5aea66bef3e767b64e4bffaf62affd2ca1c23cca509ba
+  languageName: node
+  linkType: hard
+
+"react-native-webview-modal@file:../react-native-webview-modal/package.tgz::locator=dimplace%40workspace%3A.":
+  version: 0.0.1-alpha.7
+  resolution: "react-native-webview-modal@file:../react-native-webview-modal/package.tgz::locator=dimplace%40workspace%3A."
+  dependencies:
+    react-native-portal: ^1.3.0
+    react-native-use-dimensions: ^1.3.4
+    react-native-web-webview: 1.0.1
+  checksum: 5ff60fae2c7666560494ac1f262bd07cb657a2e9b83712c6bdd9f1d580eaa2c49952acfc959fa93453b00b65ccab8d126bb383da5ac3b80b994983ad98678d2e
   languageName: node
   linkType: hard
 
@@ -11575,6 +11624,15 @@ __metadata:
   peerDependencies:
     react: ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: 6052c7e3e9627485120ebd8257f128aad8f56386fe8d42374b7743eac1be457c33506d153c7886b4e32923c0c352d402ab805ef9ca02dbcd8393b2bdeb6e5af8
+  languageName: node
+  linkType: hard
+
+"react@npm:*":
+  version: 18.2.0
+  resolution: "react@npm:18.2.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: 88e38092da8839b830cda6feef2e8505dec8ace60579e46aa5490fc3dc9bba0bd50336507dc166f43e3afc1c42939c09fe33b25fae889d6f402721dcd78fca1b
   languageName: node
   linkType: hard
 

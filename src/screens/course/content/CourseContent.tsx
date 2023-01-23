@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
-import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
 import { SectionList } from "../../../components/elements/SectionList";
@@ -51,42 +51,56 @@ export function CourseContent() {
 	// noinspection JSMismatchedCollectionQueryUpdate
 	const collapsedSections: Array<string> = [];
 	return (
-		<Container>
-			<SectionList
-				sections={transformSections(contentRoot.modules)}
-				collapsedSections={collapsedSections}
-				keyExtractor={(item) =>
-					`${item.title}-${
-						// one of these has got to exist, right?
-						item.modifiedDate
-						|| item.viewUrl
-						|| item.pdfHref
-						|| item.downloadHref
-						|| item.descriptionHtml}`}
-				ListEmptyComponent={() => (
-					<View style={styles.noContentContainer}>
-						<Text style={styles.noContentTitle}>It's a ghost town! 👻</Text>
-						<Text style={styles.noContentText}>
-							Check back for content related to this course. Contact your instructor if
-							something should be here but isn't.
-						</Text>
-					</View>
-				)}
-				onItemPress={(item) => {
-					const link = item.pdfHref
-						|| (item.type?.endsWith("pdf")
-							&& item.downloadHref?.replace("stream=false", "stream=true"))
-						|| item.viewUrl
-						|| null;
-					if (!link) return;
-					// openAuthSession causes (some?) auth system(s?) to return "forbidden"
-					WebBrowser.openBrowserAsync(link, { windowName: item.title }).catch(
-						() => {}, // top tier error handling
-					);
-				}}
-				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
-			/>
-		</Container>
+		<>
+			<Container>
+				<SectionList
+					sections={transformSections(contentRoot.modules)}
+					collapsedSections={collapsedSections}
+					keyExtractor={(item) =>
+						`${item.title}-${
+							// one of these has got to exist, right?
+							item.modifiedDate
+							|| item.viewUrl
+							|| item.pdfHref
+							|| item.downloadHref
+							|| item.descriptionHtml}`}
+					ListEmptyComponent={() => (
+						<View style={styles.noContentContainer}>
+							<Text style={styles.noContentTitle}>It's a ghost town! 👻</Text>
+							<Text style={styles.noContentText}>
+								Check back for content related to this course. Contact your instructor if
+								something should be here but isn't.
+							</Text>
+						</View>
+					)}
+					onItemPress={async (item) => {
+						let uri: string | undefined;
+						if (
+							!uri && (item.type?.endsWith("pdf") || item.downloadHref?.includes("d2l/api"))
+						) uri = item.downloadHref?.replace("stream=false", "stream=true");
+						if (!uri && item.viewUrl) {
+							const { hostname } = Linking.parse(item.viewUrl);
+							// does this work for other orgs?
+							const authLoginUrl = `https://${hostname}/d2l/lp/auth/api/apilogin.d2l`;
+							await fetch(authLoginUrl, {
+								method: "POST",
+								headers: { Authorization: "Bearer " + config.accessToken },
+								credentials: "include",
+							});
+							uri = item.viewUrl;
+						}
+						if (!uri) return;
+
+						navigation.navigate("WebViewModal", {
+							persistHeaders: true,
+							heading: { route: { name: item.title } },
+							source: { uri, headers: { Authorization: "Bearer " + config.accessToken } },
+						});
+					}}
+					refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
+				/>
+			</Container>
+		</>
 	);
 }
 

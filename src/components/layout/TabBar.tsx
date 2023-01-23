@@ -1,11 +1,14 @@
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { ColorTheme } from "../../style/colorThemes";
 import { Typography } from "../../style/typography";
 export function TabBar(
 	{ navigation, state, descriptors, Colors }: BottomTabBarProps & { Colors: ColorTheme },
 ) {
-	const styles = createStyles(Colors);
+	const { bottom } = useSafeAreaInsets();
+	const verticalPadding = bottom > 20 ? bottom : 20;
+	const styles = createStyles(Colors, verticalPadding);
 	return (
 		<View style={styles.container}>
 			{state.routes.map((route, index) => {
@@ -57,7 +60,7 @@ export function TabBar(
 	);
 }
 
-const createStyles = (Colors: ColorTheme) =>
+const createStyles = (Colors: ColorTheme, verticalPadding: number) =>
 	StyleSheet.create({
 		container: {
 			backgroundColor: Colors.Background,
@@ -66,8 +69,8 @@ const createStyles = (Colors: ColorTheme) =>
 			justifyContent: "space-between",
 			alignItems: "center",
 			paddingHorizontal: 32,
-			paddingTop: 20,
-			paddingBottom: 40,
+			paddingTop: verticalPadding,
+			paddingBottom: verticalPadding,
 		},
 		tab: { justifyContent: "center", alignItems: "center", color: Colors.TextLabel },
 		tabLabel: { ...Typography.Caption, color: Colors.TextLabel, marginTop: 4 },
