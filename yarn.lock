@@ -3385,15 +3385,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/elements@npm:^1.3.12":
-  version: 1.3.12
-  resolution: "@react-navigation/elements@npm:1.3.12"
+"@react-navigation/elements@npm:^1.3.12, @react-navigation/elements@npm:^1.3.13":
+  version: 1.3.13
+  resolution: "@react-navigation/elements@npm:1.3.13"
   peerDependencies:
     "@react-navigation/native": ^6.0.0
     react: "*"
     react-native: "*"
     react-native-safe-area-context: ">= 3.0.0"
-  checksum: 070bedf8caf0f35fb7c80452eff21413d41c9ac72f9017da969373f9caac74dfd3541df028a648852fe6e6881cd4158b4ddf3eda1afa1a414a9297cd475f902f
+  checksum: 341d8d44ecda16bbed990d40f10bedd368d579ffe1fd4568f0293f97299768167a110763170da92ff14ccff3916704dbc133465776ecdc9ac65cc8bf3caa1e31
   languageName: node
   linkType: hard
 
@@ -3438,10 +3438,10 @@ __metadata:
   linkType: hard
 
 "@react-navigation/stack@npm:^6.3.10":
-  version: 6.3.10
-  resolution: "@react-navigation/stack@npm:6.3.10"
+  version: 6.3.11
+  resolution: "@react-navigation/stack@npm:6.3.11"
   dependencies:
-    "@react-navigation/elements": ^1.3.12
+    "@react-navigation/elements": ^1.3.13
     color: ^4.2.3
     warn-once: ^0.1.0
   peerDependencies:
@@ -3451,7 +3451,7 @@ __metadata:
     react-native-gesture-handler: ">= 1.0.0"
     react-native-safe-area-context: ">= 3.0.0"
     react-native-screens: ">= 3.0.0"
-  checksum: 6efac9780dceeb0de65e69634ea75b955fdc9ebab6807f455d60c1037b67bf5a0cb5708790cf7808616a2ec53159822bba766c719648fb91a2c7fd9e4cd5f51a
+  checksum: a826f3ed56b280e27762c08e822e88c33b395d51cfa5b277dd45f7d7ef1884674222ce316a102c36ea5f96e554f7f45673e87c0715799689f9533ddc272b0d2d
   languageName: node
   linkType: hard
 
@@ -3493,7 +3493,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli@npm:1.74.4":
+"@sentry/cli@npm:1.74.4, @sentry/cli@npm:^1.52.4":
   version: 1.74.4
   resolution: "@sentry/cli@npm:1.74.4"
   dependencies:
@@ -3507,23 +3507,6 @@ __metadata:
   bin:
     sentry-cli: bin/sentry-cli
   checksum: 6fe63095edbb0f8c250ad813e24fddd65b3266763fbf628cfd865d2f68f7248ec38e600f220d6530a54ebf1a10cc51e1b5fbf203e28fab223d80a5afd4d5dfb2
-  languageName: node
-  linkType: hard
-
-"@sentry/cli@npm:^1.52.4":
-  version: 1.74.6
-  resolution: "@sentry/cli@npm:1.74.6"
-  dependencies:
-    https-proxy-agent: ^5.0.0
-    mkdirp: ^0.5.5
-    node-fetch: ^2.6.7
-    npmlog: ^4.1.2
-    progress: ^2.0.3
-    proxy-from-env: ^1.1.0
-    which: ^2.0.2
-  bin:
-    sentry-cli: bin/sentry-cli
-  checksum: 3d1ef94d5505ed23858503228b59ae1ed401774e27466d7a47eba47be3855e9706f12292d4a0a6135303a5916791620e0d3a184d2fda9e28f2d26ccd347b36fb
   languageName: node
   linkType: hard
 
@@ -6031,7 +6014,6 @@ __metadata:
     react-native-screens: ~3.18.0
     react-native-svg: 13.4.0
     react-native-webview: 11.23.1
-    react-native-webview-modal: ../react-native-webview-modal/package.tgz
     sentry-expo: ~6.0.0
     ts-node: ^10.9.1
     typed: ^4.1.2
@@ -7553,15 +7535,15 @@ __metadata:
   linkType: hard
 
 "glob@npm:^8.0.1":
-  version: 8.0.3
-  resolution: "glob@npm:8.0.3"
+  version: 8.1.0
+  resolution: "glob@npm:8.1.0"
   dependencies:
     fs.realpath: ^1.0.0
     inflight: ^1.0.4
     inherits: 2
     minimatch: ^5.0.1
     once: ^1.3.0
-  checksum: 50bcdea19d8e79d8de5f460b1939ffc2b3299eac28deb502093fdca22a78efebc03e66bf54f0abc3d3d07d8134d19a32850288b7440d77e072aa55f9d33b18c5
+  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
   languageName: node
   linkType: hard
 
@@ -10151,13 +10133,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mitt@npm:*":
-  version: 3.0.0
-  resolution: "mitt@npm:3.0.0"
-  checksum: f7be5049d27d18b1dbe9408452d66376fa60ae4a79fe9319869d1b90ae8cbaedadc7e9dab30b32d781411256d468be5538996bb7368941c09009ef6bbfa6bfc7
-  languageName: node
-  linkType: hard
-
 "mixin-deep@npm:^1.2.0":
   version: 1.3.2
   resolution: "mixin-deep@npm:1.3.2"
@@ -11213,7 +11188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:*, prop-types@npm:^15.5.7, prop-types@npm:^15.7.2":
+"prop-types@npm:^15.5.7, prop-types@npm:^15.7.2":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -11289,7 +11264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.5.1, qs@npm:^6.9.1":
+"qs@npm:^6.9.1":
   version: 6.11.0
   resolution: "qs@npm:6.11.0"
   dependencies:
@@ -11454,17 +11429,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-portal@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "react-native-portal@npm:1.3.0"
-  dependencies:
-    mitt: "*"
-    prop-types: "*"
-    react: "*"
-  checksum: f2d201c7b50a356854442fdf430c8d3a78e11cfda98a50074c21ca4bb1e98188ff87d8d80ee7b3b8926b0284b78c5f9ea96ec06a054017d3b22fe46ced5a37cd
-  languageName: node
-  linkType: hard
-
 "react-native-render-html@npm:^6.3.4":
   version: 6.3.4
   resolution: "react-native-render-html@npm:6.3.4"
@@ -11518,36 +11482,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: e630c057d6a0947c4d729538f643585a1fd9380975c1cf9adffad7647822b35219a9e1e60407f422b2b70592ed7f7e8766fab15df74f9cfce0b1c8a1c3544676
-  languageName: node
-  linkType: hard
-
-"react-native-use-dimensions@npm:^1.3.4":
-  version: 1.3.4
-  resolution: "react-native-use-dimensions@npm:1.3.4"
-  checksum: 696eaaa01e9a7aa0840cda8a57a84742d6fcb2cd97549dc63a86c114d5ee6e9330ff8182ac54bd53795372f111164bd68f6f6a81fb77d2903b1b5e625b273127
-  languageName: node
-  linkType: hard
-
-"react-native-web-webview@npm:1.0.1":
-  version: 1.0.1
-  resolution: "react-native-web-webview@npm:1.0.1"
-  dependencies:
-    qs: ^6.5.1
-  peerDependencies:
-    file-loader: "*"
-    react-native-web: "*"
-  checksum: a258b363442fe5de051b5c27b641094d2840d946f12285f875a07f4d3667d39fe27da067cad9496766c5aea66bef3e767b64e4bffaf62affd2ca1c23cca509ba
-  languageName: node
-  linkType: hard
-
-"react-native-webview-modal@file:../react-native-webview-modal/package.tgz::locator=dimplace%40workspace%3A.":
-  version: 0.0.1-alpha.7
-  resolution: "react-native-webview-modal@file:../react-native-webview-modal/package.tgz::locator=dimplace%40workspace%3A."
-  dependencies:
-    react-native-portal: ^1.3.0
-    react-native-use-dimensions: ^1.3.4
-    react-native-web-webview: 1.0.1
-  checksum: 5ff60fae2c7666560494ac1f262bd07cb657a2e9b83712c6bdd9f1d580eaa2c49952acfc959fa93453b00b65ccab8d126bb383da5ac3b80b994983ad98678d2e
   languageName: node
   linkType: hard
 
@@ -11624,15 +11558,6 @@ __metadata:
   peerDependencies:
     react: ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: 6052c7e3e9627485120ebd8257f128aad8f56386fe8d42374b7743eac1be457c33506d153c7886b4e32923c0c352d402ab805ef9ca02dbcd8393b2bdeb6e5af8
-  languageName: node
-  linkType: hard
-
-"react@npm:*":
-  version: 18.2.0
-  resolution: "react@npm:18.2.0"
-  dependencies:
-    loose-envify: ^1.1.0
-  checksum: 88e38092da8839b830cda6feef2e8505dec8ace60579e46aa5490fc3dc9bba0bd50336507dc166f43e3afc1c42939c09fe33b25fae889d6f402721dcd78fca1b
   languageName: node
   linkType: hard
 

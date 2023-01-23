@@ -230,7 +230,7 @@ export function SectionList<T extends ListItemProps>(
 				);
 			}}
 			sections={sections as never}
-			keyExtractor={(item) => `${item.title}-${item.label}`}
+			keyExtractor={(item) => `${item.title}-${item.label || ""}`}
 			getItemCount={(items) => items?.data?.length || items?.length || 0}
 			keyboardShouldPersistTaps="handled"
 			stickySectionHeadersEnabled={true}

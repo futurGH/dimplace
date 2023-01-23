@@ -55,6 +55,7 @@ export function CourseContent() {
 			<Container>
 				<SectionList
 					sections={transformSections(contentRoot.modules)}
+					initialNumToRender={999}
 					collapsedSections={collapsedSections}
 					keyExtractor={(item) =>
 						`${item.title}-${
@@ -114,6 +115,7 @@ function transformSections(
 		item.label = descriptionHtml
 			|| (item.modifiedDate ? formatDate(new Date(item.modifiedDate)) : null)
 			|| undefined;
+		if (item.label) item.label = item.label.trim();
 		if (item.__typename === "ContentModule") {
 			return { ...item, data: transformSections(children) };
 		}
