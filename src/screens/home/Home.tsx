@@ -110,6 +110,7 @@ export function Home() {
 				refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} />}
 				showsVerticalScrollIndicator={false}
 				extraData={Colors.Active}
+				contentContainerStyle={{ paddingBottom: 48 }}
 			/>
 		</Container>
 	);
