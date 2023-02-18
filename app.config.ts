@@ -11,7 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	userInterfaceStyle: "dark",
 	splash: { image: "./assets/splash.png", resizeMode: "cover", backgroundColor: "#131720" },
 	updates: { fallbackToCacheTimeout: 0, url: "https://u.expo.dev/9392383f-fb3c-4441-9ab9-2fdfd11e4396" },
-	runtimeVersion: { policy: "appVersion" },
+	runtimeVersion: { policy: "sdkVersion" },
 	assetBundlePatterns: ["**/*"],
 	jsEngine: "hermes",
 	ios: {

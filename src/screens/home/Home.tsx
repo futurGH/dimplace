@@ -41,6 +41,7 @@ export function Home() {
 				endDate: end.toISOString(),
 			});
 		}),
+		placeholderData: config.placeholderData.courseList,
 	});
 	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
@@ -51,6 +52,8 @@ export function Home() {
 			</HeaderlessContainer>
 		);
 	}
+
+	actions.setPlaceholderData({ courseList: data });
 
 	const currentDate = new Date();
 	const courses: Array<CourseCardProps> =

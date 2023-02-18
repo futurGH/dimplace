@@ -1,5 +1,6 @@
 import { Action, action, Thunk, thunk } from "easy-peasy";
 import { gqlClient } from "../api/gqlClient";
+import type { CourseListQuery } from "../gql/graphql";
 
 export interface ConfigModel {
 	onboarded: boolean;
@@ -12,6 +13,8 @@ export interface ConfigModel {
 	updateAccessToken: Thunk<ConfigModel, undefined, any, {}, Promise<[string, null] | [null, unknown]>>;
 	refreshToken: string;
 	setRefreshToken: Action<ConfigModel, string>;
+	placeholderData: Partial<{ courseList: CourseListQuery }>;
+	setPlaceholderData: Action<ConfigModel, this["placeholderData"]>;
 	__DEMO__: boolean;
 	__SET_DEMO__: Action<ConfigModel, boolean>;
 }
@@ -65,6 +68,10 @@ export const configModel: ConfigModel = {
 	refreshToken: "",
 	setRefreshToken: action((state, payload) => {
 		state.refreshToken = payload;
+	}),
+	placeholderData: {},
+	setPlaceholderData: action((state, payload) => {
+		Object.assign(state.placeholderData, payload);
 	}),
 	__DEMO__: false,
 	__SET_DEMO__: action((state, payload) => {
