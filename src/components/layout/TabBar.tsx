@@ -69,7 +69,7 @@ const createStyles = (Colors: ColorTheme, verticalPadding: number) =>
 			justifyContent: "space-between",
 			alignItems: "center",
 			paddingHorizontal: 32,
-			paddingTop: verticalPadding,
+			paddingTop: Math.floor(verticalPadding / 2),
 			paddingBottom: verticalPadding,
 		},
 		tab: { justifyContent: "center", alignItems: "center", color: Colors.TextLabel },
