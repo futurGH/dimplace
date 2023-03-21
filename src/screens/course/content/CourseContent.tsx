@@ -1,8 +1,12 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
+import Fuse from "fuse.js";
+import { useState } from "react";
 import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
+import { SearchIcon } from "../../../assets/icons/search";
+import { Input } from "../../../components/elements/Input";
 import { SectionList } from "../../../components/elements/SectionList";
 import { Container } from "../../../components/layout/Container";
 import { HeaderlessContainer } from "../../../components/layout/HeaderlessContainer";
@@ -12,11 +16,14 @@ import { useStoreActions, useStoreState } from "../../../store/store";
 import { useColorTheme } from "../../../style/ColorThemeProvider";
 import type { ColorTheme } from "../../../style/colorThemes";
 import { Typography } from "../../../style/typography";
+import { useDebounce } from "../../../util/debounce";
 import { handleErrors } from "../../../util/errors";
 import { formatDate } from "../../../util/formatDate";
 import { query } from "../../../util/query";
 import { useRefreshing } from "../../../util/useRefreshing";
 import type { CourseTabNavigatorScreenProps } from "../CourseNavigation";
+
+const fuse = new Fuse<CourseContent>([], { threshold: 0.25, distance: 150, keys: ["title"] });
 
 export function CourseContent() {
 	const { Colors } = useColorTheme();
@@ -38,6 +45,20 @@ export function CourseContent() {
 	});
 	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
+	const [filter, setFilter] = useState("");
+	const [filteredSections, setFilteredSections] = useState<Array<CourseContent>>([]);
+	useDebounce(
+		() => {
+			if (filter.length >= 3) {
+				setFilteredSections(filterSections(contentRoot.modules, filter));
+			} else {
+				setFilteredSections([]);
+			}
+		},
+		[filter],
+		100,
+	);
+
 	if (isLoading && !isRefetching || error || !data) {
 		return (
 			<HeaderlessContainer style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
@@ -51,58 +72,105 @@ export function CourseContent() {
 	// noinspection JSMismatchedCollectionQueryUpdate
 	const collapsedSections: Array<string> = [];
 	return (
-		<>
-			<Container>
-				<SectionList
-					sections={transformSections(contentRoot.modules)}
-					initialNumToRender={999}
-					collapsedSections={collapsedSections}
-					keyExtractor={(item) =>
-						`${item.title}-${
-							// one of these has got to exist, right?
-							item.modifiedDate
-							|| item.viewUrl
-							|| item.pdfHref
-							|| item.downloadHref
-							|| item.descriptionHtml}`}
-					ListEmptyComponent={() => (
-						<View style={styles.noContentContainer}>
-							<Text style={styles.noContentTitle}>It's a ghost town! 👻</Text>
-							<Text style={styles.noContentText}>
-								Check back for content related to this course. Contact your instructor if
-								something should be here but isn't.
-							</Text>
-						</View>
-					)}
-					onItemPress={async (item) => {
-						let uri: string | undefined;
-						if (
-							!uri && (item.type?.endsWith("pdf") || item.downloadHref?.includes("d2l/api"))
-						) uri = item.downloadHref?.replace("stream=false", "stream=true");
-						if (!uri && item.viewUrl) {
-							const { hostname } = Linking.parse(item.viewUrl);
-							// does this work for other orgs?
-							const authLoginUrl = `https://${hostname}/d2l/lp/auth/api/apilogin.d2l`;
-							await fetch(authLoginUrl, {
-								method: "POST",
-								headers: { Authorization: "Bearer " + config.accessToken },
-								credentials: "include",
-							});
-							uri = item.viewUrl;
-						}
-						if (!uri) return;
-
-						navigation.navigate("WebViewModal", {
-							persistHeaders: true,
-							heading: { route: { name: item.title } },
-							source: { uri, headers: { Authorization: "Bearer " + config.accessToken } },
+		<Container>
+			<Input
+				icon={
+					<SearchIcon
+						fill={filter ? Colors.TextPrimary : Colors.Inactive}
+						style={{ width: 20, height: 20, marginRight: 8 }}
+					/>
+				}
+				value={filter}
+				onChangeText={setFilter}
+				placeholder="Search"
+				autoCapitalize="none"
+				containerStyle={{ marginBottom: 12 }}
+			/>
+			<SectionList
+				sections={transformSections(filter.length >= 3 ? filteredSections : contentRoot.modules)}
+				initialNumToRender={999}
+				collapsedSections={collapsedSections}
+				keyExtractor={(item) =>
+					`${item.title}-${
+						// one of these has got to exist, right?
+						item.modifiedDate
+						|| item.viewUrl
+						|| item.pdfHref
+						|| item.downloadHref
+						|| item.descriptionHtml}`}
+				ListEmptyComponent={() =>
+					filter.length >= 3 ? <EmptyFilterPlaceholder /> : <NoContentPlaceholder />}
+				onItemPress={async (item) => {
+					let uri: string | undefined;
+					if (!uri && (item.type?.endsWith("pdf") || item.downloadHref?.includes("d2l/api"))) {uri =
+							item.downloadHref?.replace("stream=false", "stream=true");}
+					if (!uri && item.viewUrl) {
+						const { hostname } = Linking.parse(item.viewUrl);
+						// does this work for other orgs?
+						const authLoginUrl = `https://${hostname}/d2l/lp/auth/api/apilogin.d2l`;
+						await fetch(authLoginUrl, {
+							method: "POST",
+							headers: { Authorization: "Bearer " + config.accessToken },
+							credentials: "include",
 						});
-					}}
-					refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
-				/>
-			</Container>
-		</>
+						uri = item.viewUrl;
+					}
+					if (!uri) return;
+
+					navigation.navigate("WebViewModal", {
+						persistHeaders: true,
+						sharedCookiesEnabled: true,
+						heading: { route: { name: item.title } },
+						source: { uri, headers: { Authorization: "Bearer " + config.accessToken } },
+					});
+				}}
+				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
+			/>
+		</Container>
 	);
+
+	function filterSections(sections: Array<CourseContent>, filter: string) {
+		fuse.setCollection(sections);
+		const searchResult = fuse.search(filter).map((result) => result.item);
+		const filteredSections: Array<CourseContent> = [];
+		for (const section of sections) {
+			if (searchResult.some((result) => result.title === section.title)) {
+				filteredSections.push(section);
+				continue;
+			}
+			if (section.children?.length) {
+				const filteredChildren = filterSections(section.children, filter);
+				if (filteredChildren.length) {
+					filteredSections.push({ ...section, children: filteredChildren });
+				}
+			}
+		}
+		return filteredSections;
+	}
+
+	function NoContentPlaceholder() {
+		return (
+			<View style={styles.noContentContainer}>
+				<Text style={styles.noContentTitle}>It's a ghost town! 👻</Text>
+				<Text style={styles.noContentText}>
+					Check back for content related to this course. Contact your instructor if something should
+					be here but isn't.
+				</Text>
+			</View>
+		);
+	}
+
+	function EmptyFilterPlaceholder() {
+		return (
+			<View style={[styles.noContentContainer, { marginTop: 16 }]}>
+				<Text style={styles.noContentTitle}>There's nothing here!</Text>
+				<Text style={styles.noContentText}>
+					There doesn't seem to be any content matching your search. Try double checking for typos
+					or mistakes.
+				</Text>
+			</View>
+		);
+	}
 }
 
 function transformSections(

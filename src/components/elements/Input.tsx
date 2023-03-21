@@ -25,10 +25,7 @@ const createStyles = (Colors: ColorTheme) =>
 	StyleSheet.create({
 		container: {
 			backgroundColor: Colors.Input,
-			flex: 1,
 			flexDirection: "row",
-			justifyContent: "center",
-			alignItems: "center",
 			borderRadius: 9999,
 			overflow: "hidden",
 			paddingLeft: 20,
