@@ -125,6 +125,7 @@ export function CourseContent() {
 					});
 				}}
 				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
+				keyboardShouldPersistTaps="never"
 			/>
 		</Container>
 	);
@@ -162,7 +163,7 @@ export function CourseContent() {
 
 	function EmptyFilterPlaceholder() {
 		return (
-			<View style={[styles.noContentContainer, { marginTop: 16 }]}>
+			<View style={[styles.noContentContainer]}>
 				<Text style={styles.noContentTitle}>There's nothing here!</Text>
 				<Text style={styles.noContentText}>
 					There doesn't seem to be any content matching your search. Try double checking for typos
@@ -193,7 +194,7 @@ function transformSections(
 
 const createStyles = (Colors: ColorTheme) =>
 	StyleSheet.create({
-		noContentContainer: { width: "100%", flex: 1, alignItems: "center" },
+		noContentContainer: { width: "100%", flex: 1, alignItems: "center", marginTop: 16 },
 		noContentTitle: { ...Typography.Subheading, color: Colors.TextPrimary, marginBottom: 12 },
 		noContentText: { ...Typography.Body, color: Colors.TextLabel, textAlign: "center" },
 	});
