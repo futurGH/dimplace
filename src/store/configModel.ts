@@ -52,7 +52,6 @@ export const configModel: ConfigModel = {
 			const data = await response.json();
 
 			if (!response.ok || !data.access_token) return [null, data];
-			if (!data.access_token) return [null, data];
 
 			gqlClient.setHeader("Authorization", "Bearer " + data.access_token);
 			actions.setAccessToken(data.access_token);
