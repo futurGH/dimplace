@@ -1,4 +1,4 @@
-import { Action, action, Computed, computed } from "easy-peasy";
+import { type Action, action, type Computed, computed } from "easy-peasy";
 import type { ColorThemes } from "../style/colorThemes";
 
 export const TimeUnits = { Minutes: 60, Hours: 3600, Days: 86400 } as const;

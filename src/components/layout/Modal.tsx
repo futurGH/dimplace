@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import { CardStyleInterpolators, StackNavigationOptions } from "@react-navigation/stack";
+import { CardStyleInterpolators, type StackNavigationOptions } from "@react-navigation/stack";
 import type { ReactNode } from "react";
-import { Pressable, StyleSheet, ViewStyle } from "react-native";
+import { Pressable, StyleSheet, type ViewStyle } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import { ChevronDownIcon } from "../../assets/icons/chevron-down";
 import { useColorTheme } from "../../style/ColorThemeProvider";

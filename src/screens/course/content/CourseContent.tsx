@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
+import { type QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import Fuse from "fuse.js";
 import { useState } from "react";

@@ -7,15 +7,15 @@ import {
 import {
 	createNavigationContainerRef,
 	DefaultTheme,
-	LinkingOptions,
+	type LinkingOptions,
 	NavigationContainer,
-	NavigatorScreenParams,
+	type NavigatorScreenParams,
 } from "@react-navigation/native";
 import {
 	CardStyleInterpolators,
 	createStackNavigator,
-	StackNavigationOptions,
-	StackScreenProps,
+	type StackNavigationOptions,
+	type StackScreenProps,
 	TransitionSpecs,
 } from "@react-navigation/stack";
 import { useStoreRehydrated } from "easy-peasy";
@@ -26,7 +26,7 @@ import { Pressable, View } from "react-native";
 import { CircleMenuIcon } from "../../assets/icons/circle-menu";
 import { NotificationBellIcon } from "../../assets/icons/notification-bell";
 import { CourseAssignmentModal } from "../../screens/course/assignments/CourseAssignmentModal";
-import { CourseNavigation, CourseTabNavigatorParamList } from "../../screens/course/CourseNavigation";
+import { CourseNavigation, type CourseTabNavigatorParamList } from "../../screens/course/CourseNavigation";
 import { CourseFeedPostModal } from "../../screens/course/feed/CourseFeedPostModal";
 import { Home } from "../../screens/home/Home";
 import { Notifications } from "../../screens/home/Notifications";

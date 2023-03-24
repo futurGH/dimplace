@@ -228,7 +228,6 @@ const COURSE_FEED_POST_QUERY = graphql(/* GraphQL */ `
 		activityFeedCommentPage(id: $commentsId) {
 			activityFeedComments {
 				id
-				type
 				author {
 					imageUrl
 					displayName

@@ -1,7 +1,7 @@
-import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { type BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { CompositeScreenProps, NavigationProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { QueryClient, QueryFunctionContext, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, type QueryFunctionContext, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import type { SvgProps } from "react-native-svg";

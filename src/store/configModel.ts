@@ -1,4 +1,4 @@
-import { Action, action, Thunk, thunk } from "easy-peasy";
+import { type Action, action, type Thunk, thunk } from "easy-peasy";
 import { gqlClient } from "../api/gqlClient";
 import type { CourseListQuery } from "../gql/graphql";
 

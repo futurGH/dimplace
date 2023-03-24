@@ -1,4 +1,4 @@
-import { View, ViewStyle } from "react-native";
+import { View, type ViewStyle } from "react-native";
 import { useColorTheme } from "../../style/ColorThemeProvider";
 
 export function ItemSeparator({ style }: { style?: ViewStyle }) {

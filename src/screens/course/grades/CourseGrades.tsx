@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
+import { type QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
 import { List, ListItem, makeListItemStyles } from "../../../components/elements/List";

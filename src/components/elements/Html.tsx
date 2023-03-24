@@ -1,9 +1,9 @@
 import { Text } from "react-native";
 import type { MixedStyleDeclaration, RenderHTMLProps } from "react-native-render-html";
 import RenderHtml, {
-	CustomRendererProps,
+	type CustomRendererProps,
 	defaultSystemFonts,
-	TBlock,
+	type TBlock,
 	TNodeChildrenRenderer,
 } from "react-native-render-html";
 import { useColorTheme } from "../../style/ColorThemeProvider";

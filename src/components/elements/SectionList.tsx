@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
 	Dimensions,
 	type GestureResponderEvent,
@@ -6,7 +6,7 @@ import {
 	SectionList as NativeSectionList,
 	type SectionListProps as NativeSectionListProps,
 	TouchableOpacity,
-	ViewStyle,
+	type ViewStyle,
 } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 import type { MixedStyleDeclaration } from "react-native-render-html";

@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { useStoreActions, useStoreState } from "../store/store";
-import { ColorTheme, ColorThemeName, ColorThemes } from "./colorThemes";
+import { type ColorTheme, type ColorThemeName, ColorThemes } from "./colorThemes";
 
 const ThemeContext = createContext<
 	{ Colors: ColorTheme; colorThemeName: ColorThemeName; setColors: (themeName: ColorThemeName) => void }

@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
+import { type QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import { ActivityIndicator, RefreshControl, StyleSheet } from "react-native";
 import { gqlClient } from "../../../api/gqlClient";
 import { WriteIcon } from "../../../assets/icons/write";

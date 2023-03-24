@@ -1,7 +1,10 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Dimensions, FlatList, ImageBackground, StyleSheet, Text, View } from "react-native";
-import { AnnouncementCard, AnnouncementCardProps } from "../../../components/course/feed/AnnouncementCard";
+import {
+	AnnouncementCard,
+	type AnnouncementCardProps,
+} from "../../../components/course/feed/AnnouncementCard";
 import { Container } from "../../../components/layout/Container";
 import { useColorTheme } from "../../../style/ColorThemeProvider";
 import type { ColorTheme } from "../../../style/colorThemes";
