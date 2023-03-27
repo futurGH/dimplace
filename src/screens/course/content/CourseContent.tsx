@@ -33,7 +33,7 @@ export function CourseContent() {
 	const navigation = useNavigation<CourseTabNavigatorScreenProps<"CourseContent">["navigation"]>();
 	const config = useStoreState((state) => state.config);
 	const configActions = useStoreActions((actions) => actions.config);
-	const { orgId } = route.params || {};
+	const { orgId, filterQuery } = route.params || {};
 
 	gqlClient.setHeader("Authorization", "Bearer " + config.accessToken);
 
@@ -45,17 +45,19 @@ export function CourseContent() {
 	});
 	const [isRefreshing, refresh] = useRefreshing(refetch, errorHandling);
 
-	const [filter, setFilter] = useState("");
+	const [filter, setFilter] = useState(filterQuery || "");
 	const [filteredSections, setFilteredSections] = useState<Array<CourseContent>>([]);
+	const [foundPerfectMatch, setFoundPerfectMatch] = useState(false);
 	useDebounce(
 		() => {
+			setFoundPerfectMatch(false);
 			if (filter.length >= 3) {
 				setFilteredSections(filterSections(contentRoot.modules, filter));
 			} else {
 				setFilteredSections([]);
 			}
 		},
-		[filter],
+		[filter, foundPerfectMatch],
 		100,
 	);
 
@@ -102,8 +104,9 @@ export function CourseContent() {
 					filter.length >= 3 ? <EmptyFilterPlaceholder /> : <NoContentPlaceholder />}
 				onItemPress={async (item) => {
 					let uri: string | undefined;
-					if (!uri && (item.type?.endsWith("pdf") || item.downloadHref?.includes("d2l/api"))) {uri =
-							item.downloadHref?.replace("stream=false", "stream=true");}
+					if (!uri && (item.type?.endsWith("pdf") || item.downloadHref?.includes("d2l/api"))) {
+						uri = item.downloadHref?.replace("stream=false", "stream=true");
+					}
 					if (!uri && item.viewUrl) {
 						const { hostname } = Linking.parse(item.viewUrl);
 						// does this work for other orgs?
@@ -130,13 +133,18 @@ export function CourseContent() {
 		</Container>
 	);
 
-	function filterSections(sections: Array<CourseContent>, filter: string) {
+	function filterSections(sections: Array<CourseContent>, filter: string): Array<CourseContent> {
 		fuse.setCollection(sections);
 		const searchResult = fuse.search(filter).map((result) => result.item);
 		const filteredSections: Array<CourseContent> = [];
 		for (const section of sections) {
 			if (searchResult.some((result) => result.title === section.title)) {
-				filteredSections.push(section);
+				if (section.title.toLowerCase() === filter.toLowerCase()) {
+					setFoundPerfectMatch(true);
+					filteredSections.push(section);
+				} else if (!foundPerfectMatch) {
+					filteredSections.push(section);
+				}
 				continue;
 			}
 			if (section.children?.length) {
@@ -145,6 +153,21 @@ export function CourseContent() {
 					filteredSections.push({ ...section, children: filteredChildren });
 				}
 			}
+		}
+		if (foundPerfectMatch) {
+			const filterPerfectMatch = (toFilter: Array<CourseContent>) =>
+				toFilter.reduce<Array<CourseContent>>((acc, section) => {
+					if (section.title.toLowerCase() === filter.toLowerCase()) {
+						acc.push(section);
+					} else if (section.children?.length) {
+						const filteredChildren = filterPerfectMatch(section.children);
+						if (filteredChildren.length) {
+							acc.push({ ...section, children: filteredChildren });
+						}
+					}
+					return acc;
+				}, []);
+			return filterPerfectMatch(filteredSections);
 		}
 		return filteredSections;
 	}

@@ -35,7 +35,7 @@ export type CourseTabNavigatorParamList = {
 		& Pick<NonNullable<CoursePageQuery["activityFeedArticlePage"]>, "activityFeedArticles">
 		& Pick<CoursePageQuery, "organization">
 	>;
-	CourseContent: { orgId: string };
+	CourseContent: { orgId: string; filterQuery: string };
 	CourseAssignments: { orgId: string; orgName: string };
 	CourseGrades: { orgId: string };
 };
